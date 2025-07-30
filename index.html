@@ -439,16 +439,29 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   if (consumerImport > 250) {
     const hasTODInput = document.getElementById('todDay').value !== "";
     if (!hasTODInput) {
-      consumerMsg = `<span style="color:red;">To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including Own Consumption from Solar [OC]).</span>`;
-    } else {
+  consumerMsg = `<span style="color:red;">
+    To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including Own Consumption from Solar [OC]).<br>
+    ഉപഭോക്താവായി കണക്കാക്കുന്നതിന് ഉപയോഗിച്ച മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ] ടിയോടി (TOD) റീഡിങ് മാതൃകയിൽ നൽകേണ്ടതാണ് (സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ [OC] ഉൾപ്പെടെ).
+  </span>`;
+    }
+    else {
       const d = parseFloat(document.getElementById('todDay').value) || 0;
       const p = parseFloat(document.getElementById('todPeak').value) || 0;
       const op = parseFloat(document.getElementById('todOffpeak').value) || 0;
       const dayTotal = d + ownSolarDay;
-
+      const Total = d + p + op;
+      
       // Validate that TOD day input is at least equal to ownSolarDay
     if (d < ownSolarDay) {
   alert(`As a Consumer, Daytime TOD units (D) must be at least equal to Own Consumption from Solar (OC): ${ownSolarDay} units.\n\nഉപഭോക്താവായി കണക്കാക്കുമ്പോൾ, പകൽ സമയത്തെ ടിയോടി യൂണിറ്റുകൾ (D) കുറഞ്ഞത് സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ (OC) തുല്യമായിരിക്കണം: ${ownSolarDay} യൂണിറ്റ്`);
+  return;
+}
+
+if (Total != consumerImport) {
+  alert(
+    `Consumer total usage (${consumerImport}) and TOD total (${Total}) not matching.\n\n` +
+    `ഉപഭോക്താവിന്‍റെ മൊത്തം ഉപയോഗം (${consumerImport}) ടിയോടി റീഡിങ്ങുമായി (${Total}) പൊരുത്തപ്പെടുന്നില്ല. ദയവായി ശരിയായ യൂണിറ്റുകൾ നൽകുക.`
+  );
   return;
 }
 
