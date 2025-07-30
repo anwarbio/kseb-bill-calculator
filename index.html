@@ -3,36 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <title>KSEB Prosumer Bill Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Noto Sans Malayalam', Arial, sans-serif;
-      margin: 2rem;
+      margin: 1rem;
       background: #f7f7f7;
     }
+
     h1 {
       color: #1e88e5;
+      font-size: 1.5rem;
+      text-align: center;
     }
+
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
     input, select, button {
       padding: 0.5rem;
       margin: 0.5rem 0;
       width: 100%;
-      max-width: 400px;
+      box-sizing: border-box;
+      font-size: 1rem;
     }
+
     .result {
       background: #e3f2fd;
       padding: 1rem;
       margin-top: 1rem;
       border-left: 5px solid #1e88e5;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    .hidden {
-      display: none;
-    }
+
     .timestamp {
       font-size: 0.9rem;
       color: #555;
+      text-align: center;
       margin-bottom: 1rem;
     }
+
+    .hidden {
+      display: none;
+    }
+
     .debug {
       background: #fff8dc;
       color: #333;
@@ -42,6 +61,18 @@
       padding: 1rem;
       margin-top: 1rem;
     }
+
+    #downloadFullPDF {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: #1e88e5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
     @media print {
       #billForm, #downloadFullPDF, .timestamp, #debugPanel {
         display: none;
@@ -55,52 +86,53 @@
 <body>
 
 <div id="pdfContent">
-  <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
+  <h1>KSEB Prosumer Bill Calculator<br><span style="font-size: 1rem;">കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</span></h1>
   <div class="timestamp" id="timestamp"></div>
 
   <form id="billForm">
 
-  <label>Connection Type / കണക്ഷൻ തരം:</label><br>
-  <select id="connectionType">
-    <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക് </option>
-    </select><br>
+    <label>Connection Type / കണക്ഷൻ തരം:</label>
+    <select id="connectionType">
+      <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക്</option>
+    </select>
 
-  <label>Phase Type / ഫേസ് തരം:</label><br>
-  <select id="phaseType">
-    <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
-    <option value="three">Three Phase / ത്രിഫേസ്</option>
-  </select><br>
+    <label>Phase Type / ഫേസ് തരം:</label>
+    <select id="phaseType">
+      <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
+      <option value="three">Three Phase / ത്രിഫേസ്</option>
+    </select>
 
-  <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label><br>
-  <input type="number" id="importUnits" required><br>
+    <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label>
+    <input type="number" id="importUnits" required>
 
-  <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label><br>
-  <input type="number" id="exportUnits" required><br>
+    <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label>
+    <input type="number" id="exportUnits" required>
 
-  <label> Total Solar Energy Generation in Units [EG] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം:</label><br>
-  <input type="number" id="Solar" value="0"><br>
+    <label>Total Solar Energy Generation [EG] / മൊത്തം സോളാർ ഊർജം:</label>
+    <input type="number" id="Solar" value="0">
 
-  <div id="todFields" class="hidden">
-    <label>Day Units (D) / ദിന സമയ ഉപഭോഗം:</label><br>
-    <input type="number" id="todDay"><br>
+    <div id="todFields" class="hidden">
+      <label>Day Units (D) / ദിന സമയ ഉപഭോഗം:</label>
+      <input type="number" id="todDay">
 
-    <label>Peak Units (P) / പീക്ക് ടൈം ഉപഭോഗം:</label><br>
-    <input type="number" id="todPeak"><br>
+      <label>Peak Units (P) / പീക്ക് ടൈം ഉപഭോഗം:</label>
+      <input type="number" id="todPeak">
 
-    <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label><br>
-    <input type="number" id="todOffpeak"><br>
-  </div>
+      <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label>
+      <input type="number" id="todOffpeak">
+    </div>
 
-  <button type="submit">Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക</button>
-</form>
+    <button type="submit">Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക</button>
+  </form>
 
   <div class="result" id="result" style="display: none;"></div>
   <div id="debugPanel" class="debug hidden"></div>
 </div>
 
-<button id="downloadFullPDF" style="margin-top: 1rem;">Download Full Page as PDF</button>
+<button id="downloadFullPDF">Download Full Page as PDF</button>
 
 <script>
+// Insert timestamp
 const now = new Date();
 document.getElementById('timestamp').textContent = `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
 
@@ -441,5 +473,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   resultDiv.scrollIntoView({ behavior: 'smooth' });
 });
 </script>
+
 </body>
 </html>
+
