@@ -439,12 +439,19 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   if (consumerImport > 250) {
     const hasTODInput = document.getElementById('todDay').value !== "";
     if (!hasTODInput) {
-      consumerMsg = `<span style="color:red;">To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including solar usage[OC]).</span>`;
+      consumerMsg = `<span style="color:red;">To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including Own Consumption from Solar [OC]).</span>`;
     } else {
       const d = parseFloat(document.getElementById('todDay').value) || 0;
       const p = parseFloat(document.getElementById('todPeak').value) || 0;
       const op = parseFloat(document.getElementById('todOffpeak').value) || 0;
       const dayTotal = d + ownSolarDay;
+
+      // Validate that TOD day input is at least equal to ownSolarDay
+    if (d < ownSolarDay) {
+  alert(`As a Consumer, Daytime TOD units (D) must be at least equal to Own Consumption from Solar (OC): ${ownSolarDay} units.\n\nഉപഭോക്താവായി കണക്കാക്കുമ്പോൾ, പകൽ സമയത്തെ ടിയോടി യൂണിറ്റുകൾ (D) കുറഞ്ഞത് സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ (OC) തുല്യമായിരിക്കണം: ${ownSolarDay} യൂണിറ്റ്`);
+  return;
+}
+
 
       consumerEnergy = calculateTODCharge(d, p, op);
       consumerEString = getTODCalculationString(d, p, op);
