@@ -56,6 +56,10 @@
       width: 100%;
       margin-top: 1rem;
     }
+    .page-gap {
+      page-break-after: always;
+      height: 1.5rem;
+    }
 
     @media (min-width: 600px) {
       h1 {
@@ -116,6 +120,8 @@
 </form>
 
   <div class="result" id="result" style="display: none;"></div>
+  <div class="page-gap"></div>
+
   <div id="debugPanel" class="debug hidden"></div>
 </div>
 
@@ -123,21 +129,20 @@
 
 <script>
 const now = new Date();
-document.getElementById('downloadFullPDF').addEventListener('click', () => {
-  window.scrollTo(0, 0); // Ensure top of page is visible
+  document.getElementById('timestamp').textContent = `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
 
-  const element = document.getElementById('pdfContent');
-  const opt = {
-    margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right in inches
-    filename:     `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 3, scrollY: 0 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
-    pagebreak:    { mode: ['css', 'legacy'] }
-  };
-
-  html2pdf().set(opt).from(element).save();
-});
+  document.getElementById('downloadFullPDF').addEventListener('click', () => {
+    const element = document.getElementById('pdfContent');
+    const opt = {
+      margin: 0.5,
+      filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, scrollY: 0 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'] }
+    };
+    html2pdf().set(opt).from(element).save();
+  });
 </script>
 
 <script>
@@ -434,7 +439,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   if (consumerImport > 250) {
     const hasTODInput = document.getElementById('todDay').value !== "";
     if (!hasTODInput) {
-      consumerMsg = `<span style="color:red;">To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including solar usage).</span>`;
+      consumerMsg = `<span style="color:red;">To calculate as a Consumer (non-Prosumer), please provide TOD readings for total units: ${consumerImport} (including solar usage[OC]).</span>`;
     } else {
       const d = parseFloat(document.getElementById('todDay').value) || 0;
       const p = parseFloat(document.getElementById('todPeak').value) || 0;
@@ -455,6 +460,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const resultDiv = document.getElementById('result');
   resultDiv.style.display = 'block';
   resultDiv.innerHTML = `
+  <div style="page-break-after: always;"></div>
     <h3>Prosumer Bill</h3>
     <strong>Billing Type:</strong> ${connectionType}, ${isTOD ? 'TOD' : 'Non-TOD'}<br>
     Own Consumption from Solar during Day time [OC]: ${ownSolarDay}<br>
@@ -465,6 +471,8 @@ document.getElementById('billForm').addEventListener('submit', async function (e
     Meter Rent: ₹${meterCharge.toFixed(2)} <span style="font-size: smaller;">(${meterInfo.label})</span><br>
     <b>Total Bill (as a prosumer): ₹${total.toFixed(2)}</b><br><hr>
 
+
+    
     <h3>As a Consumer (without Solar Export)</h3>
     Total Units Consumed [I+OC]: ${consumerImport}<br>
     ${consumerMsg || `
