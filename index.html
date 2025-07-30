@@ -441,8 +441,8 @@ document.getElementById('billForm').addEventListener('submit', async function (e
       const op = parseFloat(document.getElementById('todOffpeak').value) || 0;
       const dayTotal = d + ownSolarDay;
 
-      consumerEnergy = calculateTODCharge(dayTotal, p, op);
-      consumerEString = getTODCalculationString(dayTotal, p, op);
+      consumerEnergy = calculateTODCharge(d, p, op);
+      consumerEString = getTODCalculationString(d, p, op);
     }
   } else {
     consumerEnergy = calculateDomesticCharge(consumerImport);
