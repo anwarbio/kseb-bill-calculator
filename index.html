@@ -3,55 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <title>KSEB Prosumer Bill Calculator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     body {
       font-family: 'Noto Sans Malayalam', Arial, sans-serif;
       margin: 1rem;
       background: #f7f7f7;
     }
-
     h1 {
       color: #1e88e5;
       font-size: 1.5rem;
-      text-align: center;
     }
-
-    form {
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
     input, select, button {
-      padding: 0.5rem;
+      padding: 0.6rem;
       margin: 0.5rem 0;
       width: 100%;
+      max-width: 100%;
       box-sizing: border-box;
-      font-size: 1rem;
     }
-
     .result {
       background: #e3f2fd;
       padding: 1rem;
       margin-top: 1rem;
       border-left: 5px solid #1e88e5;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
+      word-wrap: break-word;
     }
-
     .timestamp {
       font-size: 0.9rem;
       color: #555;
-      text-align: center;
       margin-bottom: 1rem;
     }
-
-    .hidden {
-      display: none;
-    }
-
     .debug {
       background: #fff8dc;
       color: #333;
@@ -61,16 +44,23 @@
       padding: 1rem;
       margin-top: 1rem;
     }
-
+    .hidden {
+      display: none;
+    }
     #downloadFullPDF {
-      display: block;
-      margin: 1rem auto;
-      padding: 0.75rem;
-      font-size: 1rem;
-      background: #1e88e5;
+      background: #4CAF50;
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 600px) {
+      h1 {
+        font-size: 2rem;
+      }
     }
 
     @media print {
@@ -86,55 +76,71 @@
 <body>
 
 <div id="pdfContent">
-  <h1>KSEB Prosumer Bill Calculator<br><span style="font-size: 1rem;">കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</span></h1>
+  <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
   <div class="timestamp" id="timestamp"></div>
 
   <form id="billForm">
 
-    <label>Connection Type / കണക്ഷൻ തരം:</label>
-    <select id="connectionType">
-      <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക്</option>
-    </select>
+  <label>Connection Type / കണക്ഷൻ തരം:</label><br>
+  <select id="connectionType">
+    <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക് </option>
+    </select><br>
 
-    <label>Phase Type / ഫേസ് തരം:</label>
-    <select id="phaseType">
-      <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
-      <option value="three">Three Phase / ത്രിഫേസ്</option>
-    </select>
+  <label>Phase Type / ഫേസ് തരം:</label><br>
+  <select id="phaseType">
+    <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
+    <option value="three">Three Phase / ത്രിഫേസ്</option>
+  </select><br>
 
-    <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label>
-    <input type="number" id="importUnits" required>
+  <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label><br>
+  <input type="number" id="importUnits" required><br>
 
-    <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label>
-    <input type="number" id="exportUnits" required>
+  <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label><br>
+  <input type="number" id="exportUnits" required><br>
 
-    <label>Total Solar Energy Generation [EG] / മൊത്തം സോളാർ ഊർജം:</label>
-    <input type="number" id="Solar" value="0">
+  <label> Total Solar Energy Generation in Units [EG] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം:</label><br>
+  <input type="number" id="Solar" value="0"><br>
 
-    <div id="todFields" class="hidden">
-      <label>Day Units (D) / ദിന സമയ ഉപഭോഗം:</label>
-      <input type="number" id="todDay">
+  <div id="todFields" class="hidden">
+    <label>Day Units (D) / ദിന സമയ ഉപഭോഗം:</label><br>
+    <input type="number" id="todDay"><br>
 
-      <label>Peak Units (P) / പീക്ക് ടൈം ഉപഭോഗം:</label>
-      <input type="number" id="todPeak">
+    <label>Peak Units (P) / പീക്ക് ടൈം ഉപഭോഗം:</label><br>
+    <input type="number" id="todPeak"><br>
 
-      <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label>
-      <input type="number" id="todOffpeak">
-    </div>
+    <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label><br>
+    <input type="number" id="todOffpeak"><br>
+  </div>
 
-    <button type="submit">Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക</button>
-  </form>
+  <button type="submit">Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക</button>
+</form>
 
   <div class="result" id="result" style="display: none;"></div>
   <div id="debugPanel" class="debug hidden"></div>
 </div>
 
-<button id="downloadFullPDF">Download Full Page as PDF</button>
+<button id="downloadFullPDF" style="margin-top: 1rem;">Download Full Page as PDF</button>
 
 <script>
-// Insert timestamp
 const now = new Date();
-document.getElementById('timestamp').textContent = `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
+document.getElementById('downloadFullPDF').addEventListener('click', () => {
+  window.scrollTo(0, 0); // Ensure top of page is visible
+
+  const element = document.getElementById('pdfContent');
+  const opt = {
+    margin:       [0.5, 0.5, 0.5, 0.5], // top, left, bottom, right in inches
+    filename:     `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { scale: 3, scrollY: 0 },
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak:    { mode: ['css', 'legacy'] }
+  };
+
+  html2pdf().set(opt).from(element).save();
+});
+</script>
+
+<script>
 
 let slabs = [], charges = {}, todRates = {}, fixedChargeTable = [];
 let meterChargeTable = [];
@@ -473,7 +479,5 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   resultDiv.scrollIntoView({ behavior: 'smooth' });
 });
 </script>
-
 </body>
 </html>
-
