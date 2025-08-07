@@ -84,7 +84,7 @@
 }
 
 .result, .input-section {
-  zoom: 0.90; /* scales only result & input content visually */
+  zoom: 0.85; /* scales only result & input content visually */
   transform-origin: top left;
 }
 
@@ -271,7 +271,7 @@ const opt = {
   filename:     `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
   image:        { type: 'jpeg', quality: 0.98},
   html2canvas: {
-    scale: 4,         // High DPI rendering
+    scale: 6,         // High DPI rendering
     scrollY: 0,
     useCORS: true,      // In case fonts or images are external
     windowWidth: element.scrollWidth, // Force full width
@@ -842,8 +842,7 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {
     Previous banked balance [B]: ${Bank} units <br>
     Updated banked balance [UB] (UB = E + B - I): ${newBank} units <br>
     <br>
-    <hr>
-
+    <hr>    
     <h3>Prosumer Bill</h3>
     Billing Type: ${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, ${billmethPros} <br>
     Own solar consumption during Day [OC]: ${ownSolarDay} units<br>
