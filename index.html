@@ -97,6 +97,12 @@
   line-height: 0 !important;
   font-size: 0 !important;
 }
+
+/* To avoid page break inside */
+.avoid-page-break {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
   
 
     /* Responsive heading for wider screens */
@@ -193,10 +199,13 @@ input, select, button, label {
         <input type="number" id="todPeak" placeholder="Units imported during peak time (peak: PK).e.g. 100"><br>
       </div>
 
-      <button type="submit">Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക</button>
+      <button type="submit" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+              Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
+      </button>
 
+      
       <!-- Hidden field for tracking last update -->
-      <input type="hidden" id="lastUpdated" value=" 07 Aug 2025">
+      <input type="hidden" id="lastUpdated" value=" 08 Aug 2025">
     </form>
 
     <!-- === Output Section === -->
@@ -204,10 +213,10 @@ input, select, button, label {
   <div class="result" id="result" style="display: none;"></div>
     
   <div id="debugPanel" class="debug hidden"></div>
-  </div>
-
+  
   <!-- PDF Download Button -->
   <button id="downloadFullPDF">Download Full Page as PDF</button>
+</div>
 
 <!--Custom Alters -->
   <div id="customAlert" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
@@ -271,7 +280,7 @@ const opt = {
   filename:     `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
   image:        { type: 'jpeg', quality: 0.98},
   html2canvas: {
-    scale: 6,         // High DPI rendering
+    scale: 4,         // High DPI rendering
     scrollY: 0,
     useCORS: true,      // In case fonts or images are external
     windowWidth: element.scrollWidth, // Force full width
@@ -437,12 +446,12 @@ function getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank) {
   const netUnits = importUnits - exportUnits;
   const bankReduced = netUnits - Bank;
 
-  let billtype = "telescopic"; // Default assumption for low usage
+  let billtype = "error"; // Default assumption for low usage
 
-  if (importUnits >= 250 && bankReduced < 250) {
-    billtype = "non-telescopic";
-  } else if (importUnits >= 250 && bankReduced >= 250) {
+  if (bankReduced < 250) {
     billtype = "telescopic";
+  } else if (bankReduced >= 250) {
+    billtype = "non-telescopic";
   }
 
   return { billtype };
@@ -493,8 +502,17 @@ function calculateDomesticChargeString(units) {
     units -= slabUnits;
     prevLimit = slab.limit;
   }
-  return parts.length > 0 ? parts.join(' + ') : '0 units billed';
+
+  // Add '+' to the end of each line except the last
+  const formatted = parts.map((line, index) =>
+    index < parts.length - 1 ? `${line} +` : line
+  );
+
+  return formatted.length > 0
+    ? formatted.join('<br>')
+    : '0 units billed';
 }
+
 
 function calculateTODCharge(day, peak, offpeak) {
   return todBaseRate * (
@@ -506,15 +524,26 @@ function calculateTODCharge(day, peak, offpeak) {
 
 function getTODCalculationString(day, peak, offpeak) {
   const parts = [];
-  if (day > 0) parts.push(`NL:${day} * ₹${todBaseRate} * ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
-  if (offpeak > 0) parts.push(`OP:${offpeak} * ₹${todBaseRate} * ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
-  if (peak > 0) parts.push(`PK:${peak} * ₹${todBaseRate} * ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
-  return parts.length > 0 ? parts.join(' <span style="font-weight:bold; font-size:1.5em;"> + </span> ') : '0 units billed';
+
+  if (day > 0) parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
+  if (offpeak > 0) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
+  if (peak > 0) parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+
+  if (parts.length === 0) return '0 units billed';
+
+  // Add ` +` to all except the last line
+  for (let i = 0; i < parts.length - 1; i++) {
+    parts[i] += ' +';
+  }
+
+  return parts.join('<br>');
 }
+
+
 
 function getFixedChargeString(importUnits, ownSolarDay) {
   const total = importUnits + ownSolarDay;
-  return `I:${importUnits}+OC:${ownSolarDay}=${total}`;
+  return `I:${importUnits} + OC:${ownSolarDay} = ${total}`;
 }
 
 
@@ -544,6 +573,7 @@ function getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank) 
     adjPeak -= useFromImport;
     remainingExport  -= useFromImport;
   }
+
   // Final calculation
   const energyCharge = calculateTODCharge(adjDay, adjPeak, adjOffpeak);
   const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak);
@@ -605,7 +635,7 @@ function showYesNoPrompt(message) {
 
     modal.innerHTML = `
       <div style="background:white; padding:20px; border-radius:8px; max-width:500px; text-align:center">
-        <div style="margin-bottom:20px;">${message}</div>
+        <div style="margin-bottom:10px;">${message}</div>
         <button id="yesBtn" style="margin-right:20px; padding:6px 14px;">Yes</button>
         <button id="noBtn" style="padding:6px 14px;">No</button>
       </div>
@@ -670,7 +700,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const netUnits = Math.max(0, importUnits - (Bank + exportUnits));
   const newBank = Math.max(0, Bank + exportUnits - importUnits);
 
-  const billmethPros = getBillingTypeProsumer(netUnits, exportUnits, Solar, Bank).billtype;
+  const billmethPros = getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank).billtype;
 
   const meterInfo = getMeterRent(connectionType, phaseType);
   const fixedInfo = getFixedCharge(phaseType, totalUnits);
@@ -723,10 +753,14 @@ console.log("testing if the fxn is called");
  console.log("ConsumerImport:", consumerImport);
 
 
+if (userChoice == "" && TODAvailability === "yes" && consumerImport >= 250) {
+    const sumTOD = todDay + todPeak + todOffpeak;
+    dayTotal = todDay + ownSolarDay;
+}
+
  
 if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {  
     const message = `
-    To estimate consumer bill, you need to input TOD readings.<br><br>
     📌 Do you want to skip estimating bill as a Consumer? <br>
     നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?
   `;
@@ -744,14 +778,13 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {
 }
 
 
+
   if (userChoice == "need" && TODAvailability === "no" && consumerImport >= 250) {  
 
      if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
     const message = `
-    To calculate as a <b>Consumer (non-Prosumer)</b>, please provide TOD readings for total units: <b>${consumerImport}</b> (including Own Consumption from Solar [OC]).
-    <br><br>🔆 Own consumption from solar from the given input is <b>${ownSolarDay}</b> units.
-    <br><br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിന് ഉപയോഗിച്ച മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ] ടിയോടി (TOD) റീഡിങ് മാതൃകയിൽ നൽകേണ്ടതാണ് (സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ [OC] ഉൾപ്പെടെ).
-    <br><br>📌 നൽകിയിരിക്കുന്ന റീഡിങ് അനുസരിച്ചു സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ <b>(${ownSolarDay} യൂണിറ്റ്സ്)</b> ആണ്.
+    <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിന് ഉപയോഗിച്ച മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ] ടിയോടി (TOD) റീഡിങ് മാതൃകയിൽ നൽകേണ്ടതാണ് (സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ [OC] ഉൾപ്പെടെ).
+    <br><br>📌 നൽകിയിരിക്കുന്ന റീഡിങ് അനുസരിച്ചു സ്വയം ഉപയോഗിച്ച സോളാർ <b>(${ownSolarDay} യൂണിറ്റുകൾ)</b> ആണ്.
   `;
   showCustomAlert(message);
   return; }
@@ -787,7 +820,9 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {
   } else if (userChoice == "need" && TODAvailability === "yes" && consumerImport >= 250) {
     const sumTOD = todDay + todPeak + todOffpeak;
     dayTotal = todDay + ownSolarDay;
-    }  
+    } 
+    
+    
 
   const billmethCons = getBillingTypeConsumer(importUnits, exportUnits, Solar, Bank).billtype;
 
@@ -805,81 +840,139 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {
   console.log("Consumer tod PK:", todOffpeak);
     
   }
- 
- 
+
+
   const consumerdutyAmount = consumerEnergy * duty / 100;
   const consumersurchargeAmount = surcharge * consumerImport;
   const consumerTotal = consumerEnergy + consumerFixed + consumerMeter + consumerdutyAmount + consumersurchargeAmount;
 
   
-
   const resultDiv = document.getElementById('result');
-  resultDiv.style.display = 'block';
-   resultDiv.innerHTML = `
-    <h3>Input Values</h3>
-    Conection Type: ${connectionType}, Phase Type: ${phaseType}<br>
-    <br>
-    Given TOD Readings: <br>
-    
-  ${billmethPros === "telescopic" && TODAvailability == "No"
-  ? `Normal/day_time Units:&nbsp; &nbsp; As Prosumer (NL): NA &nbsp;&nbsp; As Consumer (NL + OC): ${todDay}<br>
-     Off Peak Units (OP):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As Prosumer: NA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp&nbsp;&nbsp; As Consumer: ${todOffpeak}<br>
-     Peak Units (PK):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As Prosumer: NA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; As Consumer: ${todPeak}<br> `
+resultDiv.style.display = 'block';
+resultDiv.innerHTML = `
+  <hr>
+  <h3>Input Values</h3>
+  Conection Type: <strong>${connectionType}</strong>, Phase Type: <strong>${phaseType}</strong><br><br>
+  
+ Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br>
 
-  : `Normal/day_time Units [NL]: ${todDay} <br>
-     Off Peak Units (OP): ${todOffpeak} <br>
-     Peak Units (PK): ${todPeak} <br>  
-  `}  
+  ${(TODAvailability === "yes" || consumerImport >= 250)
+     ? `
+        ${TODAvailability === "yes" 
+    ? `TOD bill reading` 
+    : `User-entered TOD values for estimating consumer bill`}
+<br><br>
+
+${billmethPros === "telescopic" && TODAvailability === "no"
+  ? `
+  <div class="avoid-page-break">
+    <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding-right: 13ch;">Time Slot</th>
+          <th style="text-align: left; padding-right: 6ch;">As Prosumer</th>
+          <th style="text-align: left;">As Consumer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Normal/Day Time Units</td>
+          <td>NA</td>
+          <td>${todDay} (NL + OC)</td>
+        </tr>
+        <tr>
+          <td>Off Peak Units (OP)</td>
+          <td>NA</td>
+          <td>${todOffpeak}</td>
+        </tr>
+        <tr>
+          <td>Peak Units (PK)</td>
+          <td>NA</td>
+          <td>${todPeak}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  `
+  : `
+  <div class="avoid-page-break">
+    <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding-right: 18ch;">Time Slot</th>
+          <th style="text-align: left;">Units</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Normal/Day Time Units [NL]</td>
+          <td>${todDay}</td>
+        </tr>
+        <tr>
+          <td>Off Peak Units (OP)</td>
+          <td>${todOffpeak}</td>
+        </tr>
+        <tr>
+          <td>Peak Units (PK)</td>
+          <td>${todPeak}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  `
+}
+     ` : ''}   
+     
+
   <br>
+  Units Imported (I): <strong>${importUnits}</strong><br>
+  Units Exported (E): <strong>${exportUnits}</strong><br>
+  Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong> <br>
+  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
+  Net units Imported [N] (N = I - E): <strong>${netImpUnits} units </strong> <br>
+  Previous banked balance [B]: <strong>${Bank} units </strong> <br>
+  <hr>
 
-    Units Imported (I): ${importUnits}<br>
-    Units Exported (E): ${exportUnits}<br>
-    Total Solar Energy Generated (GM): ${isNaN(Solar) ? "NA" : Solar} units <br>
-    Own solar consumption during Day [OC]: ${ownSolarDay} units<br>
+   <h3>Prosumer Bill</h3>
+    Billing Type: <strong>${connectionType}</strong>, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, <strong>${billmethPros}</strong> <br>
+    Own solar consumption during Day [OC]: <strong> ${ownSolarDay} units </strong><br>
+    Units Billed (N-B): <strong>${netUnits}</strong> <span style="font-size: smaller; color: gray;">&nbsp;&nbsp;(${netImpUnits} - ${Bank} = ${netUnits})</span><br>
+    ${billmethPros == "non-telescopic" ? `Adjusted TOD Units: NL: <strong>${adjDay}</strong>, OP: <strong>${adjOffpeak}</strong>, PK: <strong>${adjPeak}</strong><br>` : ``}
     <br>
-    Net units Imported [N] (N = I - E): ${netImpUnits} units <br>
+    Energy Charge: <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: gray;">${EChargeString}</span><br>
     <br>
-    Previous banked balance [B]: ${Bank} units <br>
-    Updated banked balance [UB] (UB = E + B - I): ${newBank} units <br>
+    Fixed Charge: <strong> ₹ ${fixedCharge.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${fixedChargeStr}, ${fixedLabel} slab) </span><br>
+    Duty (${duty}% of Energy): <strong> ₹ ${dutyAmount.toFixed(2)} </strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${energyCharge.toFixed(2)} X ${duty}% = ${dutyAmount.toFixed(2)}) </span> <br>
+    Fuel Surcharge (${surcharge}/unit): <strong> ₹ ${surchargeAmount.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${netUnits} X ${surcharge} = ${surchargeAmount.toFixed(2)}) </span> <br>
     <br>
-    <hr>    
-    <h3>Prosumer Bill</h3>
-    Billing Type: ${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, ${billmethPros} <br>
-    Own solar consumption during Day [OC]: ${ownSolarDay} units<br>
-    Units Billed (N-B): ${netUnits}<br>
-    ${billmethPros == "non-telescopic" ? `Adjusted TOD Units: NL: ${adjDay}, OP: ${adjOffpeak}, PK: ${adjPeak}<br>` : ``}
+    Meter Rent: <strong> ₹ ${meterCharge.toFixed(2)}</strong><br>
     <br>
-    Energy Charge: ₹ ${energyCharge.toFixed(2)}<br>
-    <span style="font-size: smaller; color: gray;">(${EChargeString})</span><br>
+    <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b> <br>
     <br>
-    Fixed Charge: ₹ ${fixedCharge.toFixed(2)} <br>
-    <span style="font-size: smaller;">(${fixedChargeStr}, ${fixedLabel} slab)</span><br>
-    <br>
-    Meter Rent: ₹ ${meterCharge.toFixed(2)}<br>
-    Duty (${duty}% of Energy): ₹ ${dutyAmount.toFixed(2)}<br>
-    Fuel Surcharge (${surcharge}/unit): ₹ ${surchargeAmount.toFixed(2)}<br>
-    <br>
-    <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b>
+    Updated banked balance (UB): <strong> ${newBank} units </strong> <br>
     <hr>
 
     <h3>As a Consumer (Without Export)</h3>
-    Billing Type: ${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, ${billmethCons} <br><br>
-    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = ${consumerImport}<br>
+    Billing Type: <strong>${connectionType}</strong>, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, <strong>${billmethCons}</strong> <br><br>
+    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
     
     ${billmethCons == "non-telescopic" ? `Adj_NL Reading [NL + OC]: ${dayTotal} <br>
-    Adjusted TOD Units: Adj_NL: ${dayTotal}, OP: ${todOffpeak}, PK: ${todPeak}<br>` : ``}
+    Adjusted TOD Units: Adj_NL: <strong>${dayTotal}</strong>, OP: <strong>${todOffpeak}</strong>, PK: <strong>${todPeak}</strong><br>` : ``}
     <br>             
-    Energy Charge: ₹ ${consumerEnergy.toFixed(2)}<br>
-    <span style="font-size: smaller; color: gray;">(${consumerEString})</span><br>
+    Energy Charge: <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: gray;">
+     ${userChoice === "skipped" ? 'TOD readings to be provided' : consumerEString}
+    </span><br>
     <br>
-    Fixed Charge: ₹ ${consumerFixed.toFixed(2)} <br>
-    <span style="font-size: smaller;">(${fixedChargeStr}, ${fixedLabel} slab)</span><br>
+    Fixed Charge:<strong> ₹ ${consumerFixed.toFixed(2)} </strong><span style="font-size: smaller;color: gray;">  &nbsp;&nbsp;(${fixedChargeStr}, ${fixedLabel} slab)</span><br>
+    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;"> &nbsp;&nbsp;(${consumerEnergy.toFixed(2)} X ${duty}% = ${consumerdutyAmount.toFixed(2)}) </span> <br>
+    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong><span style="font-size: smaller;color: gray;"> &nbsp;&nbsp;(${consumerImport} X ${surcharge} = ${consumersurchargeAmount.toFixed(2)}) </span> <br>
     <br>
-    Meter Rent: ₹ ${consumerMeter.toFixed(2)}<br>
-    Duty (${duty}% of Energy): ₹ ${consumerdutyAmount.toFixed(2)}<br>
-    Fuel Surcharge (${surcharge}/unit): ₹ ${consumersurchargeAmount.toFixed(2)}<br>
+    Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br>
     <br>
-    <b>Total Bill (consumer): ₹ ${consumerTotal.toFixed(2)}</b>
+    <b>Total Bill (consumer): <strong>₹ ${consumerTotal.toFixed(2)}</strong></b>
+    <hr>
      `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
   // Show debug panel if needed
