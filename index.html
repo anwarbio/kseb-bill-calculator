@@ -8,75 +8,112 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Malayalam&display=swap" rel="stylesheet">
   <!-- PDF download support -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <style>
-    /* === Base Styling === */
-    body {
-      font-family: 'Noto Sans Malayalam', Arial, sans-serif;
-      margin: 1rem;
-      background: #f7f7f7;
-    }
+  
 
-    h1 {
-      color: #1e88e5;
-      font-size: 1.5rem;
-    }
+<style>
+/* ===============================
+   KSEB Prosumer Bill Calculator
+   Consolidated & Annotated CSS
+   =============================== */
 
-  .result h3 {
-  margin-bottom: 0.5rem; /* Reduce bottom space */
-  margin-top: 1rem;      /* Optional: reduce top space too */
+/* ===== 1. Base Layout & Typography ===== */
+body {
+  font-family: 'Noto Sans Malayalam', Arial, sans-serif;
+  margin: 1rem;
+  background: #f7f7f7;
 }
 
-    input, select, button {
-      padding: 0.6rem;
-      margin: 0.5rem 0;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-    }
+h1 {
+  color: #1e88e5;
+  font-size: 1.5rem;
+}
 
-    /* === Results Box === */
-    .result {
-      background: #e3f2fd;
-      padding: 1rem;
-      margin-top: 1rem;
-      border-left: 5px solid #1e88e5;
-      word-wrap: break-word;
-    }
+@media (min-width: 600px) {
+  h1 { font-size: 2rem; }
+}
 
-    /* === Timestamps and Update Info === */
-    .timestamp {
-      font-size: 0.9rem;
-      color: #555;
-      margin-bottom: 1rem;
-    }
+/* ===== 2. Form Elements ===== */
+select, input[type="number"], button {
+  font-size: 16px;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
 
-    /* === Debug panel === */
-    .debug {
-      background: #fff8dc;
-      color: #333;
-      font-family: monospace;
-      white-space: pre-wrap;
-      border: 1px dashed #aaa;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
+input, select, textarea {
+  line-height: 1.4;
+  padding: 8px; /* Prevents mobile browser zoom on focus */
+}
 
-    .hidden {
-      display: none;
-    }
+button {
+  cursor: pointer;
+}
 
-    /* === PDF download button === */
-    #downloadFullPDF {
-      background: #4CAF50;
-      color: white;
-      border: none;
-      padding: 0.75rem;
-      font-size: 1rem;
-      width: 100%;
-      margin-top: 1rem;
-    }
+@media (min-width: 768px) {
+  select, input[type="number"], button {
+    max-width: 500px;
+  }
+}
 
-    
+@media (max-width: 767px) {
+  select, input[type="number"], button {
+    font-size: 18px; /* Larger for touch devices */
+  }
+}
+
+input, select, button, label {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+
+/* ===== 3. Results Box ===== */
+.result {
+  background: #e3f2fd;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-left: 5px solid #1e88e5;
+  word-wrap: break-word;
+}
+
+.result h3 {
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* ===== 4. Timestamp & Update Info ===== */
+.timestamp {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* ===== 5. Debug Panel ===== */
+.debug {
+  background: #fff8dc;
+  color: #333;
+  font-family: monospace;
+  white-space: pre-wrap;
+  border: 1px dashed #aaa;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.hidden { display: none; }
+
+/* ===== 6. PDF Download Button ===== */
+#downloadFullPDF {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* ===== 7. PDF & Print Adjustments ===== */
 #pdfContent {
   transform: scale(0.94);
   transform-origin: top left;
@@ -84,10 +121,11 @@
 }
 
 .result, .input-section {
-  zoom: 0.85; /* scales only result & input content visually */
+  zoom: 0.85; /* Scales content visually */
   transform-origin: top left;
 }
 
+/* Force page break at specific points */
 .pdf-page-break {
   page-break-before: always;
   margin: 0;
@@ -98,156 +136,158 @@
   font-size: 0 !important;
 }
 
-/* To avoid page break inside */
+
+/* Stronger no-break rule for important sections */
 .avoid-page-break {
-  page-break-inside: avoid;
-  break-inside: avoid;
+  page-break-inside: avoid !important;     /* For PDF generators */
+  break-inside: avoid !important;          /* Modern browsers */
+  -webkit-column-break-inside: avoid;      /* Chrome/Safari */
+  -moz-column-break-inside: avoid;         /* Firefox */
+  display: block;
 }
-  
 
-    /* Responsive heading for wider screens */
-    @media (min-width: 600px) {
-      h1 {
-        font-size: 2rem;
-      }
-    }
+/* Print-only adjustments */
+@media print {
+  body, html, #pdfContent { width: 100% !important; }
+  #billForm, #downloadFullPDF, .timestamp, #debugPanel {
+    display: none;
+  }
+  .result { display: block !important; }
+}
 
-    /* Print-friendly settings */
-    @media print {
-      body, html, #pdfContent {
-      width: 100% !important;
-      }
-      #billForm, #downloadFullPDF, .timestamp, #debugPanel {
-        display: none;
-      }
-      .result {
-        display: block !important;
-      }
-    }
-
-   
+/* ===== 8. Global Width & Overflow Fix ===== */
 body, html, #pdfContent {
   width: 100% !important;
   max-width: none !important;
   overflow-x: visible !important;
 }
-
-input, select, button, label {
-  max-width: 100% !important;
-  box-sizing: border-box;
-}
-
 </style>
 </head>
 
+
+
 <body>
-  
+
+
+    <!-- ===== Main PDF Content ===== -->
   <div id="pdfContent">
+
+    <!-- Title -->
     <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
 
-    <!-- Top bar: Timestamp (left) and Last Update (right) -->
+    <!-- Top Info Bar: Timestamp & Last Update -->
     <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #555; margin-bottom: 1rem;">
       <div id="timestamp"></div>
       <div id="lastUpdatedDisplay"></div>
     </div>
 
-    <!-- === Bill Input Form === -->
+    <!-- ===== Bill Input Form ===== -->
     <form id="billForm">
 
+      <!-- Connection Type -->
       <label for="connectionType">Connection Type / കണക്ഷൻ തരം:</label>
       <select id="connectionType" title="Select your connection type">
-      <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക്</option>
+        <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക്</option>
       </select>
 
-      <label for="Phase Type">Phase Type / ഫേസ് തരം:</label>
+      <!-- Phase Type -->
+      <label for="phaseType">Phase Type / ഫേസ് തരം:</label>
       <select id="phaseType" title="Select your phase type">
-      <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
-      <option value="three">Three Phase / ത്രിഫേസ്</option>
+        <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
+        <option value="three">Three Phase / ത്രിഫേസ്</option>
       </select>
 
-
+      <!-- Previous Bank Balance -->
       <label for="Bank">Previous Bank Balance Units:</label>
       <input type="number" id="Bank" value="0" placeholder="e.g. 10">
 
+      <!-- TOD Availability -->
       <label for="TODAvailability">Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</label>
       <select id="TODAvailability" title="Select yes if TOD bill is available">
-      <option value="No"> No / ഇല്ല</option>
-      <option value="Yes">Yes / ഉണ്ട്</option>
+        <option value="No">No / ഇല്ല</option>
+        <option value="Yes">Yes / ഉണ്ട്</option>
       </select>
 
-
-     <div id="importField">      
-     <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label>
-      <input type="number" id="importUnits" required placeholder="Units imported from grid.e.g. 100"><br>
-     </div>
-
-      <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label>
-      <input type="number" id="exportUnits" required placeholder="Units exported to grid.e.g. 100"><br>
-
-      <label>Total Solar Energy Generation [GM] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം:</label>
-      <input type="number" id="Solar" value="0" placeholder="Units of solar generated e.g. 100"><br>
-
-      <!-- Hidden initially, visible if TOD enabled -->
-      <div id="todFields" class="hidden">
-        <label>Normal (day) Units (NL) / ദിന സമയ ഉപഭോഗം:</label>
-        <input type="number" id="todDay" placeholder="Units imported during day time (normal: NL).e.g. 100"> <br>
-
-        <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label>
-        <input type="number" id="todOffpeak" placeholder="Units imported during off peak time (off peak: OP).e.g. 100"><br>
-
-        <label>Peak Units (PK) / പീക്ക് ടൈം ഉപഭോഗം:</label>
-        <input type="number" id="todPeak" placeholder="Units imported during peak time (peak: PK).e.g. 100"><br>
+      <!-- Import Units (hidden when TOD enabled) -->
+      <div id="importField">
+        <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label>
+        <input type="number" id="importUnits" required placeholder="Units imported from grid e.g. 100">
       </div>
 
+      <!-- Export Units -->
+      <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label>
+      <input type="number" id="exportUnits" required placeholder="Units exported to grid e.g. 100">
+
+      <!-- Solar Generation -->
+      <label>Total Solar Energy Generation [GM] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം:</label>
+      <input type="number" id="Solar" value="0" placeholder="Units of solar generated e.g. 100">
+
+      <!-- TOD Fields (visible only if TOD enabled) -->
+      <div id="todFields" class="hidden">
+        <label>Normal (day) Units (NL) / ദിന സമയ ഉപഭോഗം:</label>
+        <input type="number" id="todDay" placeholder="Units imported during day time (NL) e.g. 100">
+
+        <label>Off-Peak Units (OP) / ഓഫ്-പീക്ക് ഉപഭോഗം:</label>
+        <input type="number" id="todOffpeak" placeholder="Units imported during off-peak time (OP) e.g. 100">
+
+        <label>Peak Units (PK) / പീക്ക് ടൈം ഉപഭോഗം:</label>
+        <input type="number" id="todPeak" placeholder="Units imported during peak time (PK) e.g. 100">
+      </div>
+
+      <!-- Submit Button -->
       <button type="submit" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
-              Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
+        Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
       </button>
 
-      
-      <!-- Hidden field for tracking last update -->
-      <input type="hidden" id="lastUpdated" value=" 08 Aug 2025">
+      <!-- Hidden field for last update -->
+      <input type="hidden" id="lastUpdated" value="09 Aug 2025">
+
     </form>
+    <!-- ===== End of Bill Input Form ===== -->
 
-    <!-- === Output Section === -->
-  <div class="pdf-page-break"></div>
-  <div class="result" id="result" style="display: none;"></div>
-    
-  <div id="debugPanel" class="debug hidden"></div>
-  
-  <!-- PDF Download Button -->
-  <button id="downloadFullPDF">Download Full Page as PDF</button>
-</div>
+    <!-- Page Break for PDF -->
+    <div class="pdf-page-break"></div>
 
-<!--Custom Alters -->
-  <div id="customAlert" style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
-     background:#fff; border:2px solid red; padding:20px; z-index:1000; box-shadow:0 0 10px #000; color:red;">
-  <h3 style="margin-top:0;">Alert!</h3>
-  <div id="customAlertMessage"></div>
-  <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
-</div>
+    <!-- Calculation Result -->
+    <div class="result" id="result" style="display: none;"></div>
 
-<script>
-  // Set current date and time
+    <!-- Debug Panel -->
+    <div id="debugPanel" class="debug hidden"></div>
+
+    <!-- PDF Download Button -->
+    <button id="downloadFullPDF">Download Full Page as PDF</button>
+
+  </div>
+  <!-- ===== End of Main PDF Content ===== -->
+
+  <!-- ===== Custom Alert Box ===== -->
+  <div id="customAlert"
+       style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
+              background:#fff; border:2px solid red; padding:20px; z-index:1000; box-shadow:0 0 10px #000; color:red;">
+    <h3 style="margin-top:0;">Alert!</h3>
+    <div id="customAlertMessage"></div>
+    <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
+  </div>
+
+    <script>
+
+/* ======================================================
+   KSEB Prosumer Bill Calculator - JavaScript
+   Consolidated & Annotated in One Block
+   ====================================================== */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+  /* ===== 1. Initialization: Set Date, Time & Last Update ===== */
   const now = new Date();
   document.getElementById('timestamp').textContent =
     `Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()}`;
 
-  // Set last updated info
   const lastUpdatedValue = document.getElementById('lastUpdated').value;
   document.getElementById('lastUpdatedDisplay').textContent =
     `Software Last Updated: ${lastUpdatedValue}`;
-  </script>
 
-<script>
-  // to display custom Alerts
-function showCustomAlert(message) {
-  document.getElementById("customAlertMessage").innerHTML = message;
-  document.getElementById("customAlert").style.display = "block";
-}
-</script>
-
-<script>
- document.addEventListener('DOMContentLoaded', function () {
+  /* ===== 2. TOD Availability Toggle ===== */
   const todDropdown = document.getElementById('TODAvailability');
   const todSection = document.getElementById('todFields');
   const importField = document.getElementById('importField');
@@ -266,346 +306,225 @@ function showCustomAlert(message) {
   }
 
   todDropdown.addEventListener('change', handleTODToggle);
-  handleTODToggle(); // Run on page load
-});
-</script>
+  handleTODToggle(); // Run on load
 
+  /* ===== 3. Custom Alert Utility ===== */
+  function showCustomAlert(message) {
+    document.getElementById("customAlertMessage").innerHTML = message;
+    document.getElementById("customAlert").style.display = "block";
+  }
 
-<script>
-  // Handle PDF download
-  document.getElementById('downloadFullPDF').addEventListener('click', () => {
-    const element = document.getElementById('pdfContent');
-const opt = {
-  margin:       0.3, // in inches
-  filename:     `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
-  image:        { type: 'jpeg', quality: 0.98},
-  html2canvas: {
-    scale: 4,         // High DPI rendering
-    scrollY: 0,
-    useCORS: true,      // In case fonts or images are external
-    windowWidth: element.scrollWidth, // Force full width
-    windowHeight: element.scrollHeight
-  },
-  jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-  pagebreak: { mode: ['css', 'legacy'] }
-};
-html2pdf().set(opt).from(element).save();
-});
-</script>
+  /* ===== 4. Custom Yes/No Prompt Utility ===== */
+  function showYesNoPrompt(message) {
+    return new Promise((resolve) => {
+      const modal = document.createElement("div");
+      modal.id = "customPrompt";
+      Object.assign(modal.style, {
+        position: "fixed", top: "0", left: "0", width: "100%", height: "100%",
+        backgroundColor: "rgba(0,0,0,0.5)", display: "flex",
+        justifyContent: "center", alignItems: "center", zIndex: "9999"
+      });
 
-<script> 
-// -----------------------------------------
-// Billing & Tariff Calculation Logic
-// -----------------------------------------
+      modal.innerHTML = `
+        <div style="background:white; padding:20px; border-radius:8px; max-width:500px; text-align:center">
+          <div style="margin-bottom:10px;">${message}</div>
+          <button id="yesBtn" style="margin-right:20px; padding:6px 14px;">Yes</button>
+          <button id="noBtn" style="padding:6px 14px;">No</button>
+        </div>
+      `;
 
-// CSV Data Arrays
-let slabs = [], chargesTable = [], todRates = {};
-let fixedChargeTable = [], meterChargeTable = [];
-let isTOD = false, todBaseRate = 0, totalImport = 0;
-
-// Debug Logging Array
-let debugLog = [];
-
-// Show Debug Log Panel
-function showDebugPanel() {
-  const panel = document.getElementById('debugPanel');
-  panel.classList.remove('hidden');
-  panel.textContent = debugLog.join('\n');
-}
-
-// CSV Loading and Parsing
-function loadCSV(file, parser) {
-  return fetch(file)
-    .then(res => res.ok ? res.text() : Promise.reject(`Failed to load ${file}`))
-    .then(text => {
-      parser(text);
-      debugLog.push(`[LOADED] ${file}`);
-    })
-    .catch(error => {
-      console.error(`[CSV ERROR] ${file}:`, error);
-      debugLog.push(`[ERROR] ${error}`);
+      document.body.appendChild(modal);
+      document.getElementById("yesBtn").onclick = () => { modal.remove(); resolve(true); };
+      document.getElementById("noBtn").onclick = () => { modal.remove(); resolve(false); };
     });
-}
+  }
 
-function parseSlabs(text) {
-  const lines = text.trim().split('\n').slice(1);
-  slabs = lines.map(line => {
-    const [range, rate] = line.split(',');
-    const upper = parseInt(range.split('-')[1] || range.match(/\d+/g)?.[0]) || 0;
-    return { limit: upper, rate: parseFloat(rate) };
-  });
-  debugLog.push(`Parsed Slabs: ${JSON.stringify(slabs)}`);
-}
+  /* ===== 5. PDF Download Handler ===== */
+  document.getElementById('downloadFullPDF').addEventListener('click', () => {
+  const element = document.getElementById('pdfContent');
 
-function parseTODRates(text) {
-  const lines = text.trim().split('\n').slice(1);
-  todRates = {};
-  lines.forEach(line => {
-    const [label, rate] = line.split(',');
-    todRates[label.trim().toLowerCase()] = parseFloat(rate);
-  });
-  debugLog.push(`TOD Rates: ${JSON.stringify(todRates)}`);
-}
-
-function parseTODTariff(text) {
-  const lines = text.trim().split('\n').slice(1);
-  for (let line of lines) {
-    const [range, base] = line.split(',');
-    const upper = /above/i.test(range) ? Infinity : parseInt(range.match(/\d+/g)?.[0]) || 0;
-    if (totalImport <= upper) {
-      todBaseRate = parseFloat(base);
-      break;
+  const opt = {
+    margin: 0.3,
+    filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 4,
+      scrollY: 0,
+      useCORS: true,
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight
+    },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak: {
+      mode: ['css', 'legacy'],
+      before: '.pdf-page-break',  // Manual break trigger
+      avoid: '.avoid-page-break'  // Prevent split for sections/tables
     }
-  }
-  debugLog.push(`TOD Base Rate: ${todBaseRate}`);
-}
-
-function parseCharges(text) {
-  const lines = text.trim().split('\n').slice(1);
-  chargesTable = lines.map(line => {
-    const [label, duty, surcharge] = line.split(',');
-    return {
-      label: label.trim(),
-      duty: parseFloat(duty),
-      surcharge: parseFloat(surcharge)
-    };
-  });
-  debugLog.push(`Other Charges: ${JSON.stringify(chargesTable)}`);
-}
-
-function parseFixedCharges(text) {
-  const lines = text.trim().split('\n').slice(1);
-  fixedChargeTable = lines.map(line => {
-    const [slab, single, three] = line.split(',');
-    let min = 0, max = Infinity;
-    if (slab.includes('-')) {
-      [min, max] = slab.split('-').map(Number);
-    } else if (/above/i.test(slab)) {
-      min = parseInt(slab.match(/\d+/)?.[0]) || 0;
-    }
-    return { min, max, label: slab.trim(), single: parseFloat(single), three: parseFloat(three) };
-  });
-  debugLog.push(`Fixed Charges: ${JSON.stringify(fixedChargeTable)}`);
-}
-
-function parseMeterCharges(text) {
-  const lines = text.trim().split('\n').slice(1);
-  meterChargeTable = lines.map(line => {
-    const [type, single, three] = line.split(',');
-    return {
-      label: type.trim(),
-      single: parseFloat(single),
-      three: parseFloat(three)
-    };
-  });
-  debugLog.push(`Meter Charges: ${JSON.stringify(meterChargeTable)}`);
-}
-
-// -----------------------------------
-// Utility Functions for Bill Charges
-// -----------------------------------
-
-function getFixedCharge(phaseType, totalUnits) {
-  for (let row of fixedChargeTable) {
-    if (totalUnits > row.min && totalUnits <= row.max) {
-      return {
-        value: phaseType === 'three' ? row.three : row.single,
-        label: row.label
-      };
-    }
-  }
-  return { value: 0, label: 'Not found' };
-}
-
-function getMeterRent(connectionType, phaseType) {
-  for (let row of meterChargeTable) {
-    if (row.label === connectionType) {
-      const value = phaseType === 'three' ? row.three : row.single;
-      const label = `${row.label}-${phaseType}`;
-      return { value, label };
-    }
-  }
-  return { value: 0, label: 'Not found' };
-}
-
-function getOtherCharges(connectionType) {
-  for (let row of chargesTable) {
-    if (row.label === connectionType) {
-      return {
-        duty: row.duty,
-        surcharge: row.surcharge
-      };
-    }
-  }
-  return { duty: 0, surcharge: 0 };
-}
-
-function getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank) {
-  const ownSolarDay = Solar - exportUnits;
-  const totalUnits = importUnits + ownSolarDay;
-  const netUnits = importUnits - exportUnits;
-  const bankReduced = netUnits - Bank;
-
-  let billtype = "error"; // Default assumption for low usage
-
-  if (bankReduced < 250) {
-    billtype = "telescopic";
-  } else if (bankReduced >= 250) {
-    billtype = "non-telescopic";
-  }
-
-  return { billtype };
-}
-
-function getBillingTypeConsumer(importUnits, exportUnits, Solar, Bank) {
-  const ownSolarDay = Solar - exportUnits;
-  const totalUnits = importUnits + ownSolarDay;
-
-  let billtype = "telescopic"; // Default assumption
-
-  if (totalUnits >= 250) {
-    billtype = "non-telescopic";
-  }
-
-  return { billtype };
-}
-
-// -----------------------------
-// Energy Charge Calculations
-// -----------------------------
-
-function calculateDomesticCharge(units) {
-  let total = 0, prevLimit = 0;
-  for (let i = 0; i < slabs.length && units > 0; i++) {
-    const slab = slabs[i];
-    const slabUnits = Math.min(units, slab.limit - prevLimit);
-    const charge = slabUnits * slab.rate;
-    console.log(`Slab ${i}: ${slabUnits} units * ₹${slab.rate} = ₹${charge}`);
-    total += charge;
-    units -= slabUnits;
-    prevLimit = slab.limit;
-  }
-  console.log("Total energyCharge:", total);
-  return total;
-}
-
-
-function calculateDomesticChargeString(units) {
-  let total = 0, prevLimit = 0;
-  const parts = [];
-  for (let i = 0; i < slabs.length && units > 0; i++) {
-    const slab = slabs[i];
-    const slabUnits = Math.min(units, slab.limit - prevLimit);
-    const charge = slabUnits * slab.rate;
-    parts.push(`${slabUnits} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
-    total += charge;
-    units -= slabUnits;
-    prevLimit = slab.limit;
-  }
-
-  // Add '+' to the end of each line except the last
-  const formatted = parts.map((line, index) =>
-    index < parts.length - 1 ? `${line} +` : line
-  );
-
-  return formatted.length > 0
-    ? formatted.join('<br>')
-    : '0 units billed';
-}
-
-
-function calculateTODCharge(day, peak, offpeak) {
-  return todBaseRate * (
-    (day * todRates.nl) +
-    (peak * todRates.pk) +
-    (offpeak * todRates.op)
-  );
-}
-
-function getTODCalculationString(day, peak, offpeak) {
-  const parts = [];
-
-  if (day > 0) parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
-  if (offpeak > 0) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
-  if (peak > 0) parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
-
-  if (parts.length === 0) return '0 units billed';
-
-  // Add ` +` to all except the last line
-  for (let i = 0; i < parts.length - 1; i++) {
-    parts[i] += ' +';
-  }
-
-  return parts.join('<br>');
-}
-
-
-
-function getFixedChargeString(importUnits, ownSolarDay) {
-  const total = importUnits + ownSolarDay;
-  return `I:${importUnits} + OC:${ownSolarDay} = ${total}`;
-}
-
-
-function getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank) {
-  
-  let remainingExport = exportUnits + Bank;
-
-  let adjDay = todDay;
-  let adjOffpeak = todOffpeak;
-  let adjPeak = todPeak;
-
-  // Step 1: Subtract from Import Surplus (in order: Day → Offpeak → Peak)
-  if (remainingExport  > 0) {
-    const useFromImport = Math.min(adjDay, remainingExport );
-    adjDay -= useFromImport;
-    remainingExport  -= useFromImport;
-  }
-
-  if (remainingExport  > 0) {
-    const useFromImport = Math.min(adjOffpeak, remainingExport );
-    adjOffpeak -= useFromImport;  // ✅ fixed here
-    remainingExport  -= useFromImport;
-  }
-
-  if (remainingExport  > 0) {
-    const useFromImport = Math.min(adjPeak, remainingExport );
-    adjPeak -= useFromImport;
-    remainingExport  -= useFromImport;
-  }
-
-  // Final calculation
-  const energyCharge = calculateTODCharge(adjDay, adjPeak, adjOffpeak);
-  const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak);
-
-
-console.log("adjDay:", adjDay);
-console.log("adjOffpeak:", adjOffpeak);
-console.log("adjPeak:", adjPeak);
-console.log("energyCharge:", energyCharge);
-console.log("todBaseRate:", todBaseRate);
-console.log("todRates:", todRates);
-
-  return {
-    energyCharge,
-    EChargeString,
-    adjDay,
-    adjOffpeak,
-    adjPeak
   };
-}
+
+  html2pdf().set(opt).from(element).save();
+});
 
 
+  /* ===== 6. CSV Loading & Parsing Functions ===== */
+  let slabs = [], chargesTable = [], todRates = {};
+  let fixedChargeTable = [], meterChargeTable = [];
+  let todBaseRate = 0, totalImport = 0;
+  let debugLog = []; let userChoice = "";
 
-async function setupBilling(importUnits) {  
+  function loadCSV(file, parser) {
+    return fetch(file)
+      .then(res => res.ok ? res.text() : Promise.reject(`Failed to load ${file}`))
+      .then(text => { parser(text); debugLog.push(`[LOADED] ${file}`); })
+      .catch(err => { console.error(`[CSV ERROR] ${file}:`, err); debugLog.push(`[ERROR] ${err}`); });
+  }
 
-  await Promise.all([
-  loadCSV('fixed_charge.csv', parseFixedCharges),
-  loadCSV('meter_charges.csv', parseMeterCharges),
-  loadCSV('other_charges.csv', parseCharges),
-  loadCSV('tariff_tod_base.csv', parseTODTariff),
-  loadCSV('tariff_tod.csv', parseTODRates),
-  loadCSV('tariff_domestic_telescopic.csv', parseSlabs)]);
+  function parseSlabs(text) {
+    const lines = text.trim().split('\n').slice(1);
+    slabs = lines.map(line => {
+      const [range, rate] = line.split(',');
+      const upper = parseInt(range.split('-')[1] || range.match(/\d+/g)?.[0]) || 0;
+      return { limit: upper, rate: parseFloat(rate) };
+    });
+  }
+
+  function parseTODRates(text) {
+    const lines = text.trim().split('\n').slice(1);
+    todRates = {};
+    lines.forEach(line => {
+      const [label, rate] = line.split(',');
+      todRates[label.trim().toLowerCase()] = parseFloat(rate);
+    });
+  }
+
+  function parseTODTariff(text) {
+    const lines = text.trim().split('\n').slice(1);
+    for (let line of lines) {
+      const [range, base] = line.split(',');
+      const upper = /above/i.test(range) ? Infinity : parseInt(range.match(/\d+/g)?.[0]) || 0;
+      if (totalImport <= upper) { todBaseRate = parseFloat(base); break; }
+    }
+  }
+
+  function parseCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    chargesTable = lines.map(line => {
+      const [label, duty, surcharge] = line.split(',');
+      return { label: label.trim(), duty: parseFloat(duty), surcharge: parseFloat(surcharge) };
+    });
+  }
+
+  function parseFixedCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    fixedChargeTable = lines.map(line => {
+      const [slab, single, three] = line.split(',');
+      let min = 0, max = Infinity;
+      if (slab.includes('-')) { [min, max] = slab.split('-').map(Number); }
+      else if (/above/i.test(slab)) { min = parseInt(slab.match(/\d+/)?.[0]) || 0; }
+      return { min, max, label: slab.trim(), single: parseFloat(single), three: parseFloat(three) };
+    });
+  }
+
+  function getFixedChargeString(importUnits, ownSolarDay) {
+    const total = importUnits + ownSolarDay;
+    return `I:${importUnits} + OC:${ownSolarDay} = ${total}`;
+    }
+
+  function parseMeterCharges(text) {
+    const lines = text.trim().split('\n').slice(1);
+    meterChargeTable = lines.map(line => {
+      const [type, single, three] = line.split(',');
+      return { label: type.trim(), single: parseFloat(single), three: parseFloat(three) };
+    });
+  }
+
+  /* ===== 7. Bill Utility Functions ===== */
+  function getFixedCharge(phaseType, totalUnits) {
+    for (let row of fixedChargeTable) {
+      if (totalUnits > row.min && totalUnits <= row.max) {
+        return { value: phaseType === 'three' ? row.three : row.single, label: row.label };
+      }
+    }
+    return { value: 0, label: 'Not found' };
+  }
+
+  function getMeterRent(connectionType, phaseType) {
+    for (let row of meterChargeTable) {
+      if (row.label === connectionType) {
+        return { value: phaseType === 'three' ? row.three : row.single, label: `${row.label}-${phaseType}` };
+      }
+    }
+    return { value: 0, label: 'Not found' };
+  }
+
+  function getOtherCharges(connectionType) {
+    for (let row of chargesTable) {
+      if (row.label === connectionType) {
+        return { duty: row.duty, surcharge: row.surcharge };
+      }
+    }
+    return { duty: 0, surcharge: 0 };
+  }
+
+  function getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank) {
+    const netUnits = importUnits - exportUnits - Bank;
+    return { billtype: netUnits < 250 ? "telescopic" : "non-telescopic" };
+  }
+
+  function getBillingTypeConsumer(importUnits, exportUnits, Solar) {
+    const totalUnits = importUnits + (Solar - exportUnits);
+    return { billtype: totalUnits >= 250 ? "non-telescopic" : "telescopic" };
+  }
+
+  /* ===== 8. Energy Charge Calculations ===== */
+  function calculateDomesticCharge(units) {
+    let total = 0, prevLimit = 0;
+    for (let slab of slabs) {
+      if (units <= 0) break;
+      const slabUnits = Math.min(units, slab.limit - prevLimit);
+      total += slabUnits * slab.rate;
+      units -= slabUnits;
+      prevLimit = slab.limit;
+    }
+    return total;
+  }
+
+  function calculateDomesticChargeString(units) {
+    let prevLimit = 0, parts = [];
+    for (let slab of slabs) {
+      if (units <= 0) break;
+      const slabUnits = Math.min(units, slab.limit - prevLimit);
+      const charge = slabUnits * slab.rate;
+      parts.push(`${slabUnits} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
+      units -= slabUnits;
+      prevLimit = slab.limit;
+    }
+    return parts.map((line, i) => i < parts.length - 1 ? `${line} +` : line).join('<br>') || '0 units billed';
+  }
+
+  function calculateTODCharge(day, peak, offpeak) {
+    return todBaseRate * ((day * todRates.nl) + (peak * todRates.pk) + (offpeak * todRates.op));
+  }
+
+  function getTODCalculationString(day, peak, offpeak) {
+    let parts = [];
+    if (day) parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
+    if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
+    if (peak) parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+    for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
+    return parts.join('<br>') || '0 units billed';
+  }
+  
+
+  async function setupBilling(importUnits) { 
+
+    await Promise.all([
+     loadCSV('fixed_charge.csv', parseFixedCharges),
+    loadCSV('meter_charges.csv', parseMeterCharges),
+    loadCSV('other_charges.csv', parseCharges),
+    loadCSV('tariff_tod_base.csv', parseTODTariff),
+    loadCSV('tariff_tod.csv', parseTODRates),
+    loadCSV('tariff_domestic_telescopic.csv', parseSlabs)]);
 
   if (importUnits >= 250) {
     document.getElementById('todFields').classList.remove('hidden');
@@ -614,71 +533,33 @@ async function setupBilling(importUnits) {
     document.getElementById('todFields').classList.add('hidden');    
   }
 }
-</script>
-
-<script>
-
-function showYesNoPrompt(message) {
-  return new Promise((resolve) => {
-    const modal = document.createElement("div");
-    modal.id = "customPrompt";
-    modal.style.position = "fixed";
-    modal.style.top = "0";
-    modal.style.left = "0";
-    modal.style.width = "100%";
-    modal.style.height = "100%";
-    modal.style.backgroundColor = "rgba(0,0,0,0.5)";
-    modal.style.display = "flex";
-    modal.style.justifyContent = "center";
-    modal.style.alignItems = "center";
-    modal.style.zIndex = "9999";
-
-    modal.innerHTML = `
-      <div style="background:white; padding:20px; border-radius:8px; max-width:500px; text-align:center">
-        <div style="margin-bottom:10px;">${message}</div>
-        <button id="yesBtn" style="margin-right:20px; padding:6px 14px;">Yes</button>
-        <button id="noBtn" style="padding:6px 14px;">No</button>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    document.getElementById("yesBtn").onclick = () => {
-      document.body.removeChild(modal);
-      resolve(true);
-    };
-
-    document.getElementById("noBtn").onclick = () => {
-      document.body.removeChild(modal);
-      resolve(false);
-    };
-  });
-}
-
-let userChoice = "";
-
-</script>
 
 
-
-<script>
-
-// Form submit event: Main calculation handler
+  // ============================================
+// Form Submit Event: Main Calculation Handler
+// ============================================
 document.getElementById('billForm').addEventListener('submit', async function (e) {
   e.preventDefault();
 
-  const connectionType = document.getElementById('connectionType').value;
-  const phaseType = document.getElementById('phaseType').value;
-  const exportUnits = parseFloat(document.getElementById('exportUnits').value) || 0;
+  // ---------------------------
+  // 1. Retrieve and Parse Inputs
+  // ---------------------------
+  const connectionType   = document.getElementById('connectionType').value;
+  const phaseType        = document.getElementById('phaseType').value;
+  const exportUnits      = parseFloat(document.getElementById('exportUnits').value) || 0;
   const importUnitsInput = parseFloat(document.getElementById('importUnits').value) || 0;
-  const Solar = parseFloat(document.getElementById('Solar').value) || 0;
-  const Bank = parseFloat(document.getElementById('Bank').value) || 0;
-  const TODAvailability = document.getElementById('TODAvailability').value.trim().toLowerCase();
-  
-  const todDay = parseFloat(document.getElementById('todDay').value) || 0;
-  const todOffpeak = parseFloat(document.getElementById('todOffpeak').value) || 0;
-  const todPeak = parseFloat(document.getElementById('todPeak').value) || 0;
+  const Solar            = parseFloat(document.getElementById('Solar').value) || 0;
+  const Bank             = parseFloat(document.getElementById('Bank').value) || 0;
+  const TODAvailability  = document.getElementById('TODAvailability').value.trim().toLowerCase();
 
+  // TOD-specific inputs
+  const todDay     = parseFloat(document.getElementById('todDay').value) || 0;
+  const todOffpeak = parseFloat(document.getElementById('todOffpeak').value) || 0;
+  const todPeak    = parseFloat(document.getElementById('todPeak').value) || 0;
+
+  // ---------------------------
+  // 2. Determine Import Units
+  // ---------------------------
   let importUnits;
   if (TODAvailability === "yes") {
     importUnits = todDay + todOffpeak + todPeak;
@@ -689,298 +570,336 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   if (isNaN(importUnits)) {
     alert("Please enter a valid import unit value.");
     return;
-  }  
+  }
 
+  // ---------------------------
+  // 3. Load Tariff Data (Prosumer Mode)
+  // ---------------------------
   await setupBilling(importUnits);
 
-  const ownSolarDay = Solar - exportUnits;
-  const totalUnits = importUnits + ownSolarDay;
-  const consumerImport = totalUnits;
-  const netImpUnits = Math.max(0, importUnits - exportUnits);
-  const netUnits = Math.max(0, importUnits - (Bank + exportUnits));
-  const newBank = Math.max(0, Bank + exportUnits - importUnits);
+  // ---------------------------
+  // 4. Core Prosumer Calculations
+  // ---------------------------
+  const ownSolarDay  = Solar - exportUnits;                        // Self-used solar
+  const totalUnits   = importUnits + ownSolarDay;                  // I + OC
+  const consumerImport = totalUnits;                               // Consumer total usage
+  const netImpUnits  = Math.max(0, importUnits - exportUnits);     // N = I - E
+  const netUnits     = Math.max(0, importUnits - (Bank + exportUnits)); // N - B
+  const newBank      = Math.max(0, Bank + exportUnits - importUnits);   // UB
 
+  // Billing type for prosumer
   const billmethPros = getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank).billtype;
 
-  const meterInfo = getMeterRent(connectionType, phaseType);
-  const fixedInfo = getFixedCharge(phaseType, totalUnits);
+  // Fixed & Meter charges
+  const meterInfo      = getMeterRent(connectionType, phaseType);
+  const fixedInfo      = getFixedCharge(phaseType, totalUnits);
   const fixedChargeStr = getFixedChargeString(importUnits, ownSolarDay);
   const { value: meterCharge } = meterInfo;
   const { value: fixedCharge, label: fixedLabel } = fixedInfo;
+
+  // Other charges (duty, surcharge)
   const { duty, surcharge } = getOtherCharges(connectionType);
 
+  // ---------------------------
+  // 5. Energy Charge Calculation (Prosumer)
+  // ---------------------------
   let energyCharge = 0, EChargeString = "";
   let adjDay = 0, adjOffpeak = 0, adjPeak = 0;
-  let todP = 0, dayTotal = 0;
-
-console.log("testing if the fxn is called");
+  let dayTotal = 0;
 
   if (netUnits >= 250) {
-    console.log("Calling getEnergy...");
-  const energyResult = getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank);
-  energyCharge = energyResult.energyCharge;
-  EChargeString = energyResult.EChargeString;
-  adjDay = energyResult.adjDay;
-  adjOffpeak = energyResult.adjOffpeak;
-  adjPeak = energyResult.adjPeak;
-  console.log("Returned from getEnergy");
+    // Non-telescopic (TOD) billing
+    const energyResult = getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank);
+    energyCharge = energyResult.energyCharge;
+    EChargeString = energyResult.EChargeString;
+    adjDay = energyResult.adjDay;
+    adjOffpeak = energyResult.adjOffpeak;
+    adjPeak = energyResult.adjPeak;
+  } else {
+    // Telescopic billing
+    energyCharge = calculateDomesticCharge(netUnits);
+    EChargeString = calculateDomesticChargeString(netUnits);
+  }
 
-} else {
-  console.log("Calling getEnergy Domestic...");
-  console.log("slabs:", slabs);
-  energyCharge = calculateDomesticCharge(netUnits);
-  EChargeString = calculateDomesticChargeString(netUnits);
-  console.log("Returned getEnergy Domestic...");
-}
-  
-    
-  const dutyAmount = energyCharge * duty / 100;
+  // Duty & Surcharge
+  const dutyAmount      = energyCharge * duty / 100;
   const surchargeAmount = surcharge * netUnits;
+
+  // Total Prosumer Bill
   const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount;
 
+  // ---------------------------
+  // 6. Load Tariff Data (Consumer Mode)
+  // ---------------------------
   await setupBilling(consumerImport);
 
- 
-
-  let consumerEnergy = 0, consumerFixed = 0, consumerMeter = 0;
-  let consumerMsg = ""; let consumerEString = "";
+  // ---------------------------
+  // 7. Consumer Mode Pre-checks
+  // ---------------------------
+  let consumerEnergy = 0, consumerFixed = 0, consumerMeter = 0, consumerEString = "";
 
   const consumerMeterInfo = getMeterRent(connectionType, phaseType);
   const consumerFixedInfo = getFixedCharge(phaseType, consumerImport);
   consumerMeter = consumerMeterInfo.value;
   consumerFixed = consumerFixedInfo.value;
 
- console.log("ConsumerImport:", consumerImport);
-
-
-if (userChoice == "" && TODAvailability === "yes" && consumerImport >= 250) {
-    const sumTOD = todDay + todPeak + todOffpeak;
+  // Prompt only if conditions require
+  if (userChoice === "" && TODAvailability === "yes" && consumerImport >= 250) {
     dayTotal = todDay + ownSolarDay;
-}
-
- 
-if (TODAvailability === "no" && consumerImport >= 250 && userChoice == "" ) {  
-    const message = `
-    📌 Do you want to skip estimating bill as a Consumer? <br>
-    നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?
-  `;
-  const proceed = await showYesNoPrompt(message);
-
-  if (proceed) {
-    Consumerbill = "No"; // User chose to skip
-    userChoice = "skipped";
-  } else {
-    Consumerbill = "Yes";
-    userChoice = "need";      
   }
-  console.log("userChoice:", userChoice);
-  console.log("Consumerbill:", Consumerbill);
-}
 
+  if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
+    const message = `📌 Do you want to skip estimating bill as a Consumer?<br>
+    നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?`;
+    const proceed = await showYesNoPrompt(message);
+    userChoice = proceed ? "skipped" : "need";
+  }
 
+  // ---------------------------
+  // 8. Consumer Mode Adjustments
+  // ---------------------------
+  if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) {
 
-  if (userChoice == "need" && TODAvailability === "no" && consumerImport >= 250) {  
+    if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
+      showCustomAlert(`
+        <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിന് മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ]
+        ടിയോടി (TOD) രീതിയിൽ നൽകണം. സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
+      `);
+      return;
+    }
 
-     if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
-    const message = `
-    <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിന് ഉപയോഗിച്ച മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ] ടിയോടി (TOD) റീഡിങ് മാതൃകയിൽ നൽകേണ്ടതാണ് (സ്വയം ഉപയോഗിച്ച സോളാർ യൂണിറ്റുകൾ [OC] ഉൾപ്പെടെ).
-    <br><br>📌 നൽകിയിരിക്കുന്ന റീഡിങ് അനുസരിച്ചു സ്വയം ഉപയോഗിച്ച സോളാർ <b>(${ownSolarDay} യൂണിറ്റുകൾ)</b> ആണ്.
-  `;
-  showCustomAlert(message);
-  return; }
-
-                
     const sumImport = todDay + todPeak + todOffpeak;
 
-    
-    
-    if (userChoice == "need" && todDay < ownSolarDay) {
+    // Validation: Daytime TOD units >= own solar
+    if (todDay < ownSolarDay) {
       alert(`As a Consumer, Daytime TOD units (NL) must be ≥ Own Solar Use (GM - E) = ${ownSolarDay} units.`);
       return;
     }
-    if (userChoice == "need" && sumImport !== totalUnits) {
+
+    // Validation: Total TOD matches total usage
+    if (sumImport !== totalUnits) {
       alert(`Mismatch: Total TOD units (${sumImport}) ≠ Total import units (${totalUnits}).`);
-      return;      
+      return;
     }
 
-    if (userChoice == "skipped") {
-
-   todDay = 0;
-   todPeak = 0;
-   todOffpeak = 0;
-   importUnits =0;
-   exportUnits = 0;
-   Solar = 0;
-   Bank = 0;
-   ownSolarDay = 0;
-    }
-    
     dayTotal = todDay;
 
-  } else if (userChoice == "need" && TODAvailability === "yes" && consumerImport >= 250) {
-    const sumTOD = todDay + todPeak + todOffpeak;
+  } else if (userChoice === "need" && TODAvailability === "yes" && consumerImport >= 250) {
     dayTotal = todDay + ownSolarDay;
-    } 
-    
-    
-
-  const billmethCons = getBillingTypeConsumer(importUnits, exportUnits, Solar, Bank).billtype;
-
- if (billmethCons === "telescopic") {
-    consumerEnergy = calculateDomesticCharge(consumerImport);
-    consumerEString = calculateDomesticChargeString(consumerImport);}
-
-  if (billmethCons === "non-telescopic") {
-    console.log("Consumer non-telescopic energy charge gets called");
-    consumerEnergy = calculateTODCharge(dayTotal, todPeak, todOffpeak);
-    consumerEString = getTODCalculationString(dayTotal, todPeak, todOffpeak);
-  
-  console.log("Consumer tod NL:", dayTotal);
-  console.log("Consumer tod PK:", todPeak);
-  console.log("Consumer tod PK:", todOffpeak);
-    
   }
 
+  // ---------------------------
+  // 9. Consumer Energy Calculation
+  // ---------------------------
+  const billmethCons = getBillingTypeConsumer(importUnits, exportUnits, Solar, Bank).billtype;
 
-  const consumerdutyAmount = consumerEnergy * duty / 100;
+  if (billmethCons === "telescopic") {
+    consumerEnergy  = calculateDomesticCharge(consumerImport);
+    consumerEString = calculateDomesticChargeString(consumerImport);
+  }
+
+  if (billmethCons === "non-telescopic") {
+    consumerEnergy  = calculateTODCharge(dayTotal, todPeak, todOffpeak);
+    consumerEString = getTODCalculationString(dayTotal, todPeak, todOffpeak);
+  }
+
+  // Duty & Surcharge
+  const consumerdutyAmount      = consumerEnergy * duty / 100;
   const consumersurchargeAmount = surcharge * consumerImport;
+
+  // Total Consumer Bill
   const consumerTotal = consumerEnergy + consumerFixed + consumerMeter + consumerdutyAmount + consumersurchargeAmount;
 
-  
-  const resultDiv = document.getElementById('result');
+  // =============================
+// 11. Render Calculation Result
+// =============================
+const resultDiv = document.getElementById('result');
 resultDiv.style.display = 'block';
+
+// Build HTML output
 resultDiv.innerHTML = `
   <hr>
-  <h3>Input Values</h3>
-  Conection Type: <strong>${connectionType}</strong>, Phase Type: <strong>${phaseType}</strong><br><br>
-  
- Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br>
 
-  ${(TODAvailability === "yes" || consumerImport >= 250)
-     ? `
-        ${TODAvailability === "yes" 
-    ? `TOD bill reading` 
-    : `User-entered TOD values for estimating consumer bill`}
-<br><br>
+  <!-- ===== Input Summary ===== -->
+    <div class="avoid-page-break">
+    <h3>Input Values</h3>
+    Connection Type: <strong>${connectionType}</strong>, 
+    Phase Type: <strong>${phaseType}</strong><br><br>
 
-${billmethPros === "telescopic" && TODAvailability === "no"
-  ? `
-  <div class="avoid-page-break">
-    <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
-      <thead>
-        <tr>
-          <th style="text-align: left; padding-right: 13ch;">Time Slot</th>
-          <th style="text-align: left; padding-right: 6ch;">As Prosumer</th>
-          <th style="text-align: left;">As Consumer</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Normal/Day Time Units</td>
-          <td>NA</td>
-          <td>${todDay} (NL + OC)</td>
-        </tr>
-        <tr>
-          <td>Off Peak Units (OP)</td>
-          <td>NA</td>
-          <td>${todOffpeak}</td>
-        </tr>
-        <tr>
-          <td>Peak Units (PK)</td>
-          <td>NA</td>
-          <td>${todPeak}</td>
-        </tr>
-      </tbody>
-    </table>
+    Is TOD bill available? 
+    <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br>
+
+    ${
+      (TODAvailability === "yes" || consumerImport >= 250 )
+        ? `
+          ${TODAvailability === "yes" 
+            ? `TOD bill reading`
+            : `User-entered TOD values for estimating consumer bill`}
+          <br><br>
+
+          ${
+            billmethPros === "telescopic" && TODAvailability === "no"
+              ? `
+                <!-- Table: Prosumer NA vs Consumer TOD values -->
+                <div class="avoid-page-break">
+                  <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+                    <thead>
+                      <tr>
+                        <th style="text-align: left; padding-right: 13ch;">Time Slot</th>
+                        <th style="text-align: left; padding-right: 6ch;">As Prosumer</th>
+                        <th style="text-align: left;">As Consumer</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Normal/Day Time Units</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todDay} (NL + OC)`}</td></tr>
+                      <tr><td>Off Peak Units (OP)</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todOffpeak}`}</td></tr>
+                      <tr><td>Peak Units (PK)</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todPeak}`}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              `
+              : `
+                <!-- Table: TOD values only -->
+                <div class="avoid-page-break">
+                  <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
+                    <thead>
+                      <tr>
+                        <th style="text-align: left; padding-right: 18ch;">Time Slot</th>
+                        <th style="text-align: left;">Units</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td>Normal/Day Time Units [NL]</td><td>${todDay}</td></tr>
+                      <tr><td>Off Peak Units (OP)</td><td>${todOffpeak}</td></tr>
+                      <tr><td>Peak Units (PK)</td><td>${todPeak}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              `
+          }
+        `
+        : ``
+    }
+
+    <br>
+    Units Imported (I): <strong>${importUnits}</strong><br>
+    Units Exported (E): <strong>${exportUnits}</strong><br>
+    Total Solar Energy Generated (GM): 
+      <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
+    Own solar consumption during Day [OC]: 
+      <strong>${ownSolarDay} units</strong><br><br>
+    Net units Imported [N] (N = I - E): 
+      <strong>${netImpUnits} units</strong><br>
+    Previous banked balance [B]: 
+      <strong>${Bank} units</strong><br>
   </div>
-  `
-  : `
-  <div class="avoid-page-break">
-    <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
-      <thead>
-        <tr>
-          <th style="text-align: left; padding-right: 18ch;">Time Slot</th>
-          <th style="text-align: left;">Units</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Normal/Day Time Units [NL]</td>
-          <td>${todDay}</td>
-        </tr>
-        <tr>
-          <td>Off Peak Units (OP)</td>
-          <td>${todOffpeak}</td>
-        </tr>
-        <tr>
-          <td>Peak Units (PK)</td>
-          <td>${todPeak}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  `
-}
-     ` : ''}   
-     
-
-  <br>
-  Units Imported (I): <strong>${importUnits}</strong><br>
-  Units Exported (E): <strong>${exportUnits}</strong><br>
-  Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong> <br>
-  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
-  Net units Imported [N] (N = I - E): <strong>${netImpUnits} units </strong> <br>
-  Previous banked balance [B]: <strong>${Bank} units </strong> <br>
   <hr>
 
-   <h3>Prosumer Bill</h3>
-    Billing Type: <strong>${connectionType}</strong>, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, <strong>${billmethPros}</strong> <br>
-    Own solar consumption during Day [OC]: <strong> ${ownSolarDay} units </strong><br>
-    Units Billed (N-B): <strong>${netUnits}</strong> <span style="font-size: smaller; color: gray;">&nbsp;&nbsp;(${netImpUnits} - ${Bank} = ${netUnits})</span><br>
-    ${billmethPros == "non-telescopic" ? `Adjusted TOD Units: NL: <strong>${adjDay}</strong>, OP: <strong>${adjOffpeak}</strong>, PK: <strong>${adjPeak}</strong><br>` : ``}
+  <!-- ===== Prosumer Bill ===== -->
+   <div class="avoid-page-break">
+    <h3>Prosumer Bill</h3>
+    Billing Type: <strong>${connectionType}</strong>, 
+    ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
+    <strong>${billmethPros}</strong><br>
+
+    Own solar consumption during Day [OC]: 
+      <strong>${ownSolarDay} units</strong><br>
+
+    Units Billed (N-B): <strong>${netUnits}</strong> 
+      <span style="font-size: smaller; color: gray;">
+        (${netImpUnits} - ${Bank} = ${netUnits})
+      </span><br>
+
+    ${billmethPros === "non-telescopic" 
+      ? `Adjusted TOD Units: NL: <strong>${adjDay}</strong>, OP: <strong>${adjOffpeak}</strong>, PK: <strong>${adjPeak}</strong><br>` 
+      : ``}
+
     <br>
     Energy Charge: <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: gray;">${EChargeString}</span><br>
-    <br>
-    Fixed Charge: <strong> ₹ ${fixedCharge.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${fixedChargeStr}, ${fixedLabel} slab) </span><br>
-    Duty (${duty}% of Energy): <strong> ₹ ${dutyAmount.toFixed(2)} </strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${energyCharge.toFixed(2)} X ${duty}% = ${dutyAmount.toFixed(2)}) </span> <br>
-    Fuel Surcharge (${surcharge}/unit): <strong> ₹ ${surchargeAmount.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;">&nbsp;&nbsp;(${netUnits} X ${surcharge} = ${surchargeAmount.toFixed(2)}) </span> <br>
-    <br>
-    Meter Rent: <strong> ₹ ${meterCharge.toFixed(2)}</strong><br>
-    <br>
-    <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b> <br>
-    <br>
-    Updated banked balance (UB): <strong> ${newBank} units </strong> <br>
-    <hr>
+    <span style="font-size: smaller; color: gray;">${EChargeString}</span><br><br>
 
+    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${fixedChargeStr}, ${fixedLabel} slab)
+      </span><br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})
+      </span><br>
+
+    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${surchargeAmount.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})
+      </span><br><br>
+
+    Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong><br><br>
+
+    <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br><br>
+
+    Updated banked balance (UB): <strong>${newBank} units</strong><br>
+  </div>
+  <hr>
+
+  <!-- ===== Consumer Bill ===== -->
+  <div class="avoid-page-break">
+  <div class="avoid-page-break">
     <h3>As a Consumer (Without Export)</h3>
-    Billing Type: <strong>${connectionType}</strong>, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, <strong>${billmethCons}</strong> <br><br>
-    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
-    
-    ${billmethCons == "non-telescopic" ? `Adj_NL Reading [NL + OC]: ${dayTotal} <br>
-    Adjusted TOD Units: Adj_NL: <strong>${dayTotal}</strong>, OP: <strong>${todOffpeak}</strong>, PK: <strong>${todPeak}</strong><br>` : ``}
-    <br>             
-    Energy Charge: <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
+    Billing Type: <strong>${connectionType}</strong>, 
+    ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
+    <strong>${billmethCons}</strong><br><br>
+
+    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = 
+      <strong>${consumerImport}</strong><br>
+
+    ${billmethCons === "non-telescopic" 
+      ? `Adj_NL Reading [NL + OC]: ${dayTotal}<br>
+         Adjusted TOD Units: Adj_NL: <strong>${dayTotal}</strong>, 
+         OP: <strong>${todOffpeak}</strong>, 
+         PK: <strong>${todPeak}</strong><br>` 
+      : ``}
+
+    <br>
+    Energy Charge: 
+      <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: gray;">
-     ${userChoice === "skipped" ? 'TOD readings to be provided' : consumerEString}
-    </span><br>
-    <br>
-    Fixed Charge:<strong> ₹ ${consumerFixed.toFixed(2)} </strong><span style="font-size: smaller;color: gray;">  &nbsp;&nbsp;(${fixedChargeStr}, ${fixedLabel} slab)</span><br>
-    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong> <span style="font-size: smaller;color: gray;"> &nbsp;&nbsp;(${consumerEnergy.toFixed(2)} X ${duty}% = ${consumerdutyAmount.toFixed(2)}) </span> <br>
-    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong><span style="font-size: smaller;color: gray;"> &nbsp;&nbsp;(${consumerImport} X ${surcharge} = ${consumersurchargeAmount.toFixed(2)}) </span> <br>
-    <br>
-    Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br>
-    <br>
-    <b>Total Bill (consumer): <strong>₹ ${consumerTotal.toFixed(2)}</strong></b>
-    <hr>
-     `
+      ${userChoice === "skipped" 
+        ? 'TOD readings to be provided' 
+        : consumerEString}
+    </span><br><br>
+
+    Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${fixedChargeStr}, ${fixedLabel} slab)
+      </span><br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})
+      </span><br>
+
+    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: gray;">
+        (${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})
+      </span><br><br>
+
+    Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
+
+    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
+  <hr>
+    `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
-  // Show debug panel if needed
-  // showDebugPanel();
+    // Optional: Enable debug panel if needed
+    // showDebugPanel();
+});
 });
 
-  
+
 </script>
+
 </body>
+
 </html>
 
+
+  
