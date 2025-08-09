@@ -371,7 +371,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     html2canvas: {
       scale: 3, scrollY: 0, useCORS: true,
       windowWidth: element.scrollWidth,
-      //windowHeight: element.scrollHeight
+      windowHeight: element.scrollHeight
     },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
     pagebreak: { 
@@ -884,7 +884,6 @@ resultDiv.innerHTML = `
       : ``}
 
     <br>
-    <div class="avoid-page-break">
     Energy Charge: 
       <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: gray;">
@@ -892,9 +891,7 @@ resultDiv.innerHTML = `
         ? 'TOD readings to be provided' 
         : consumerEString}
     </span><br><br>
-    </div>
-
-    
+        
     Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
         (${fixedChargeStr}, ${fixedLabel} slab)
@@ -934,5 +931,6 @@ resultDiv.innerHTML = `
 
 
   
+
 
 
