@@ -369,9 +369,9 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
-      scale: 4, scrollY: 0, useCORS: true,
+      scale: 3, scrollY: 0, useCORS: true,
       windowWidth: element.scrollWidth,
-      windowHeight: element.scrollHeight
+      //windowHeight: element.scrollHeight
     },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
     pagebreak: { 
@@ -934,3 +934,4 @@ resultDiv.innerHTML = `
 
 
   
+
