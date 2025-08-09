@@ -126,7 +126,7 @@ input, select, button, label {
   padding: 0.75rem;
   font-size: 1rem;
   width: 100%;
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 
 /* ===== 7. PDF & Print Adjustments ===== */
@@ -146,7 +146,7 @@ input, select, button, label {
   page-break-after: always !important;   /* stronger enforcement */
   break-after: always !important;        /* modern browsers */
   margin: 0;
-  padding: 0;
+  padding: 10;
   border: none;
   height: 0 !important;
   line-height: 0 !important;
@@ -276,8 +276,7 @@ body, html, #pdfContent {
     <button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
     
     <!-- Page Break for PDF -->
-    <div class="pdf-page-break"></div>
-  </div>
+    
   <!-- ===== End of Main PDF Content ===== -->
 
   <!-- ===== Custom Alert Box ===== -->
@@ -742,9 +741,8 @@ resultDiv.style.display = 'block';
 // Build HTML output
 resultDiv.innerHTML = `
 <div id="pdfContent">
-  <hr>
-
-  <!-- ===== Input Summary ===== -->
+  <div class="pdf-page-break"> </div>
+   <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
     Connection Type: <strong>${connectionType}</strong>, 
     Phase Type: <strong>${phaseType}</strong><br><br>
@@ -803,11 +801,13 @@ resultDiv.innerHTML = `
         `
         : ``
     }
-
+   <div class="avoid-page-break">
     <br>
-   
     Units Imported (I): <strong>${importUnits}</strong><br>
     Units Exported (E): <strong>${exportUnits}</strong><br>
+    </div>
+    <div class="avoid-page-break">
+      <br>
     Total Solar Energy Generated (GM): 
       <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
     Own solar consumption during Day [OC]: 
@@ -816,11 +816,12 @@ resultDiv.innerHTML = `
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
       <strong>${Bank} units</strong><br>
+      </div>
     
   <hr>
-  <div class="avoid-page-break">
-
+  
   <!-- ===== Prosumer Bill ===== -->
+  <div class="pdf-page-break"> </div>
    <h3>Prosumer Bill</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -839,14 +840,17 @@ resultDiv.innerHTML = `
       : ``}
 
     <br>
+    <div class="avoid-page-break">
     Energy Charge: <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: gray;">${EChargeString}</span><br><br>
+    </div>
 
+    <div class="avoid-page-break">
     Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
         (${fixedChargeStr}, ${fixedLabel} slab)
       </span><br>
-
+      
     Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
         (${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})
@@ -856,7 +860,9 @@ resultDiv.innerHTML = `
       <span style="font-size: smaller;color: gray;">
         (${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})
       </span><br><br>
+      </div>
 
+    <div class="avoid-page-break">
     Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br><br>
@@ -864,9 +870,10 @@ resultDiv.innerHTML = `
     Updated banked balance (UB): <strong>${newBank} units</strong><br>
    <hr>
    </div>
+   
 
   <!-- ===== Consumer Bill ===== -->
-  <div class="avoid-page-break">
+  <div class="pdf-page-break"> </div>
     <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -883,6 +890,7 @@ resultDiv.innerHTML = `
       : ``}
 
     <br>
+    <div class="avoid-page-break">
     Energy Charge: 
       <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: gray;">
@@ -890,7 +898,9 @@ resultDiv.innerHTML = `
         ? 'TOD readings to be provided' 
         : consumerEString}
     </span><br><br>
+    </div>
 
+    <div class="avoid-page-break">
     Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
         (${fixedChargeStr}, ${fixedLabel} slab)
@@ -905,18 +915,22 @@ resultDiv.innerHTML = `
       <span style="font-size: smaller;color: gray;">
         (${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})
       </span><br><br>
+      </div>
 
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
     </div>
-      `
+   
+     `
+    
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
     // showDebugPanel();
 });
-});
 
+});
+ 
 
 </script>
 
