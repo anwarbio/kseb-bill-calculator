@@ -740,7 +740,7 @@ resultDiv.style.display = 'block';
 
 // Build HTML output
 resultDiv.innerHTML = `
-
+<div id="pdfContent">
      <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
     Connection Type: <strong>${connectionType}</strong>, 
@@ -905,14 +905,13 @@ resultDiv.innerHTML = `
     Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
         (${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})
-      </span><br><br>
-    
+      </span><br><br>    
 
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
     
-   
+   </div>
      `
     
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
@@ -931,6 +930,7 @@ resultDiv.innerHTML = `
 
 
   
+
 
 
 
