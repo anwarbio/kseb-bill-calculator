@@ -266,9 +266,6 @@ body, html, #pdfContent {
     </form>
     <!-- ===== End of Bill Input Form ===== -->
 
-    <!-- Page Break for PDF -->
-    <div class="pdf-page-break"></div>
-
     <!-- Calculation Result -->
     <div class="result" id="result" style="display: none;"></div>
 
@@ -277,7 +274,9 @@ body, html, #pdfContent {
 
     <!-- PDF Download Button -->
     <button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
-
+    
+    <!-- Page Break for PDF -->
+    <div class="pdf-page-break"></div>
   </div>
   <!-- ===== End of Main PDF Content ===== -->
 
@@ -765,7 +764,7 @@ resultDiv.innerHTML = `
             billmethPros === "telescopic" && TODAvailability === "no"
               ? `
                 <!-- Table: Prosumer NA vs Consumer TOD values -->
-                <div class="avoid-page-break">
+                
                   <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
                     <thead>
                       <tr>
@@ -780,11 +779,11 @@ resultDiv.innerHTML = `
                       <tr><td>Peak Units (PK)</td><td>NA</td><td>${userChoice === "skipped" ? 'NA' : `${todPeak}`}</td></tr>
                     </tbody>
                   </table>
-                </div>
+                
               `
               : `
                 <!-- Table: TOD values only -->
-                <div class="avoid-page-break">
+               
                   <table style="border-collapse: collapse; margin-bottom: 10px; width: auto; font-family: monospace; font-size: 16px;">
                     <thead>
                       <tr>
@@ -798,7 +797,7 @@ resultDiv.innerHTML = `
                       <tr><td>Peak Units (PK)</td><td>${todPeak}</td></tr>
                     </tbody>
                   </table>
-                </div>
+               
               `
           }
         `
@@ -806,6 +805,7 @@ resultDiv.innerHTML = `
     }
 
     <br>
+   
     Units Imported (I): <strong>${importUnits}</strong><br>
     Units Exported (E): <strong>${exportUnits}</strong><br>
     Total Solar Energy Generated (GM): 
@@ -816,9 +816,9 @@ resultDiv.innerHTML = `
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
       <strong>${Bank} units</strong><br>
-  
+    
   <hr>
-  <div class="pdf-page-break"></div>
+  <div class="avoid-page-break">
 
   <!-- ===== Prosumer Bill ===== -->
    <h3>Prosumer Bill</h3>
@@ -863,9 +863,10 @@ resultDiv.innerHTML = `
 
     Updated banked balance (UB): <strong>${newBank} units</strong><br>
    <hr>
-   <div class="pdf-page-break"></div>
+   </div>
 
   <!-- ===== Consumer Bill ===== -->
+  <div class="avoid-page-break">
     <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -925,4 +926,3 @@ resultDiv.innerHTML = `
 
 
   
-
