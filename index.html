@@ -812,7 +812,7 @@ resultDiv.innerHTML = `
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
       <strong>${Bank} units</strong><br>
-  </div>
+  
   <hr>
 
   <!-- ===== Prosumer Bill ===== -->
@@ -857,11 +857,10 @@ resultDiv.innerHTML = `
     <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br><br>
 
     Updated banked balance (UB): <strong>${newBank} units</strong><br>
-  </div>
-  <hr>
+   <hr>
 
   <!-- ===== Consumer Bill ===== -->
-    <h3>As a Consumer (Without Export)</h3>
+     <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
     <strong>${billmethCons}</strong><br><br>
@@ -903,7 +902,6 @@ resultDiv.innerHTML = `
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
-    </div>
       `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
@@ -920,4 +918,3 @@ resultDiv.innerHTML = `
 
 
   
-
