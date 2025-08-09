@@ -90,7 +90,7 @@ input, select, button, label {
   padding: 1rem;
   margin-top: 1rem;
   border-left: 5px solid #1e88e5;
-  word-wrap: break-word;
+ word-wrap: break-word;
 }
 
 .result h3 {
@@ -162,7 +162,7 @@ input, select, button, label {
   -moz-column-break-inside: avoid !important;
   display: block !important;
   margin-bottom: 0 !important; /* reduce gap */
-  padding-bottom: 0 !important;
+  padding-bottom: 1 !important;
   overflow: visible !important;
 }
 
@@ -741,8 +741,7 @@ resultDiv.style.display = 'block';
 // Build HTML output
 resultDiv.innerHTML = `
 <div id="pdfContent">
-  <div class="pdf-page-break"> </div>
-   <!-- ===== Input Summary ===== -->
+     <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
     Connection Type: <strong>${connectionType}</strong>, 
     Phase Type: <strong>${phaseType}</strong><br><br>
@@ -801,13 +800,11 @@ resultDiv.innerHTML = `
         `
         : ``
     }
-   <div class="avoid-page-break">
     <br>
     Units Imported (I): <strong>${importUnits}</strong><br>
     Units Exported (E): <strong>${exportUnits}</strong><br>
-    </div>
-    <div class="avoid-page-break">
-      <br>
+    
+    <br>
     Total Solar Energy Generated (GM): 
       <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
     Own solar consumption during Day [OC]: 
@@ -815,13 +812,10 @@ resultDiv.innerHTML = `
     Net units Imported [N] (N = I - E): 
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
-      <strong>${Bank} units</strong><br>
-      </div>
-    
+      <strong>${Bank} units</strong><br>        
   <hr>
   
   <!-- ===== Prosumer Bill ===== -->
-  <div class="pdf-page-break"> </div>
    <h3>Prosumer Bill</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -873,7 +867,7 @@ resultDiv.innerHTML = `
    
 
   <!-- ===== Consumer Bill ===== -->
-  <div class="pdf-page-break"> </div>
+  
     <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
