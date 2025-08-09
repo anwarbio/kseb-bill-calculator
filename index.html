@@ -28,6 +28,15 @@ h1 {
   font-size: 1.5rem;
 }
 
+hr {
+  margin: 0.1rem 0;
+}
+
+h3 {
+  margin-top: 0.1rem; /* smaller top margin */
+  margin-bottom: 0.1rem;
+}
+
 @media (min-width: 600px) {
   h1 { font-size: 2rem; }
 }
@@ -60,6 +69,13 @@ button {
 @media (max-width: 767px) {
   select, input[type="number"], button {
     font-size: 18px; /* Larger for touch devices */
+  }
+}
+
+
+@media print {
+  .no-print {
+    display: none !important;
   }
 }
 
@@ -144,6 +160,8 @@ input, select, button, label {
   -webkit-column-break-inside: avoid;      /* Chrome/Safari */
   -moz-column-break-inside: avoid;         /* Firefox */
   display: block;
+  margin-bottom: 0; /* reduce gap after block */
+  padding-bottom: 0;
 }
 
 /* Print-only adjustments */
@@ -235,7 +253,7 @@ body, html, #pdfContent {
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+      <button type="submit" class="no-print" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
         Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
       </button>
 
@@ -255,7 +273,7 @@ body, html, #pdfContent {
     <div id="debugPanel" class="debug hidden"></div>
 
     <!-- PDF Download Button -->
-    <button id="downloadFullPDF">Download Full Page as PDF</button>
+    <button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
 
   </div>
   <!-- ===== End of Main PDF Content ===== -->
@@ -340,33 +358,36 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ===== 5. PDF Download Handler ===== */
-  document.getElementById('downloadFullPDF').addEventListener('click', () => {
-  const element = document.getElementById('pdfContent');
+document.getElementById('downloadFullPDF').addEventListener('click', () => {
+  // Hide no-print elements
+  document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
 
+  const element = document.getElementById('pdfContent');
   const opt = {
     margin: 0.3,
     filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
-      scale: 4,
-      scrollY: 0,
-      useCORS: true,
+      scale: 4, scrollY: 0, useCORS: true,
       windowWidth: element.scrollWidth,
       windowHeight: element.scrollHeight
     },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
-    pagebreak: {
-      mode: ['css', 'legacy'],
-      before: '.pdf-page-break',  // Manual break trigger
-      avoid: '.avoid-page-break'  // Prevent split for sections/tables
-    }
+    pagebreak: { 
+  mode: ['css', 'legacy'], 
+  before: '.pdf-page-break',   // Force new page before this element
+  avoid: '.avoid-page-break'   // Keep these elements from splitting
+  }
   };
 
-  html2pdf().set(opt).from(element).save();
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Restore no-print elements after PDF is generated
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+  });
 });
 
 
-  /* ===== 6. CSV Loading & Parsing Functions ===== */
+    /* ===== 6. CSV Loading & Parsing Functions ===== */
   let slabs = [], chargesTable = [], todRates = {};
   let fixedChargeTable = [], meterChargeTable = [];
   let todBaseRate = 0, totalImport = 0;
@@ -721,7 +742,6 @@ resultDiv.innerHTML = `
   <hr>
 
   <!-- ===== Input Summary ===== -->
-    <div class="avoid-page-break">
     <h3>Input Values</h3>
     Connection Type: <strong>${connectionType}</strong>, 
     Phase Type: <strong>${phaseType}</strong><br><br>
@@ -796,8 +816,7 @@ resultDiv.innerHTML = `
   <hr>
 
   <!-- ===== Prosumer Bill ===== -->
-   <div class="avoid-page-break">
-    <h3>Prosumer Bill</h3>
+   <h3>Prosumer Bill</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
     <strong>${billmethPros}</strong><br>
@@ -843,7 +862,6 @@ resultDiv.innerHTML = `
 
   <!-- ===== Consumer Bill ===== -->
   <div class="avoid-page-break">
-  <div class="avoid-page-break">
     <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -886,8 +904,8 @@ resultDiv.innerHTML = `
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
-  <hr>
-    `
+    </div>
+      `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
     // showDebugPanel();
