@@ -153,7 +153,7 @@ input, select, button, label {
   border: none;
 
   /* Optional: make it invisible but still functional */
-  height: 1px; /* small positive height */
+  height: 50px; /* small positive height */
   background: none;
 }
 
@@ -745,6 +745,7 @@ resultDiv.innerHTML = `
 <div id="pdfContent">
      <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
+    </div>
     Connection Type: <strong>${connectionType}</strong>, 
     Phase Type: <strong>${phaseType}</strong><br><br>
 
@@ -814,12 +815,13 @@ resultDiv.innerHTML = `
     Net units Imported [N] (N = I - E): 
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
-      <strong>${Bank} units</strong><br>        
-  <hr>
-  
+      <strong>${Bank} units</strong><br> 
+      <br>       
+    
   <!-- ===== Prosumer Bill ===== -->
-  <br><br>
-   <h3>Prosumer Bill</h3>
+  <div class="pdf-page-break"> </div>
+     <h3>Prosumer Bill</h3>
+     <br>
     Billing Type: <strong>${connectionType}</strong>, 
     ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
     <strong>${billmethPros}</strong><br>
@@ -865,14 +867,14 @@ resultDiv.innerHTML = `
     <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br><br>
 
     Updated banked balance (UB): <strong>${newBank} units</strong><br>
-   <hr>
+    <br>
     </div>
    
   <div class="pdf-page-break"> </div>
-  <br><br>
-  <!-- ===== Consumer Bill ===== -->
+    <!-- ===== Consumer Bill ===== -->
   <div class="avoid-page-break">
       <h3>As a Consumer (Without Export)</h3>
+      <br>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
     <strong>${billmethCons}</strong><br><br>
