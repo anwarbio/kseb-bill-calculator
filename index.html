@@ -141,17 +141,20 @@ input, select, button, label {
   transform-origin: top left;
 }
 
-/* Force page break before this element */
+/* Force page break */
 .pdf-page-break {
-  page-break-after: always !important;   /* stronger enforcement */
-  break-after: always !important;        /* modern browsers */
-  margin: 0;
-  padding: 10;
-  border: none;
-  height: 0 !important;
-  line-height: 0 !important;
-  font-size: 0 !important;
+  page-break-before: always !important; /* start a new page before this element */
+  break-before: page !important;        /* modern browsers */
   display: block !important;
+
+  /* Ensure no leftover spacing */
+  margin: 0;
+  padding: 0;
+  border: none;
+
+  /* Optional: make it invisible but still functional */
+  height: 1px; /* small positive height */
+  background: none;
 }
 
 /* Avoid breaking inside these important sections */
@@ -191,8 +194,7 @@ body, html, #pdfContent {
 
 
     <!-- ===== Main PDF Content ===== -->
-  <div id="pdfContent">
-
+  
     <!-- Title -->
     <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
 
@@ -286,7 +288,7 @@ body, html, #pdfContent {
     <h3 style="margin-top:0;">Alert!</h3>
     <div id="customAlertMessage"></div>
     <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
-  </div>
+  
 
     <script>
 
@@ -816,6 +818,7 @@ resultDiv.innerHTML = `
   <hr>
   
   <!-- ===== Prosumer Bill ===== -->
+  <br><br>
    <h3>Prosumer Bill</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
@@ -863,12 +866,13 @@ resultDiv.innerHTML = `
 
     Updated banked balance (UB): <strong>${newBank} units</strong><br>
    <hr>
-   </div>
+    </div>
    
-
+  <div class="pdf-page-break"> </div>
+  <br><br>
   <!-- ===== Consumer Bill ===== -->
-  
-    <h3>As a Consumer (Without Export)</h3>
+  <div class="avoid-page-break">
+      <h3>As a Consumer (Without Export)</h3>
     Billing Type: <strong>${connectionType}</strong>, 
     ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
     <strong>${billmethCons}</strong><br><br>
@@ -909,8 +913,9 @@ resultDiv.innerHTML = `
 
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong><br><br>
 
-    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b> 
-</div>
+    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b>
+    </div> 
+    </div>
      `    
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
@@ -928,7 +933,6 @@ resultDiv.innerHTML = `
 
 
   
-
 
 
 
