@@ -541,6 +541,54 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     return parts.join('<br>') || '0 units billed';
   }
   
+function getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank) {
+  
+  let remainingExport = exportUnits + Bank;
+
+  let adjDay = todDay;
+  let adjOffpeak = todOffpeak;
+  let adjPeak = todPeak;
+
+  // Step 1: Subtract from Import Surplus (in order: Day → Offpeak → Peak)
+  if (remainingExport  > 0) {
+    const useFromImport = Math.min(adjDay, remainingExport );
+    adjDay -= useFromImport;
+    remainingExport  -= useFromImport;
+  }
+
+  if (remainingExport  > 0) {
+    const useFromImport = Math.min(adjOffpeak, remainingExport );
+    adjOffpeak -= useFromImport;  // ✅ fixed here
+    remainingExport  -= useFromImport;
+  }
+
+  if (remainingExport  > 0) {
+    const useFromImport = Math.min(adjPeak, remainingExport );
+    adjPeak -= useFromImport;
+    remainingExport  -= useFromImport;
+  }
+  // Final calculation
+  const energyCharge = calculateTODCharge(adjDay, adjPeak, adjOffpeak);
+  const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak);
+
+
+console.log("adjDay:", adjDay);
+console.log("adjOffpeak:", adjOffpeak);
+console.log("adjPeak:", adjPeak);
+console.log("energyCharge:", energyCharge);
+console.log("todBaseRate:", todBaseRate);
+console.log("todRates:", todRates);
+
+  return {
+    energyCharge,
+    EChargeString,
+    adjDay,
+    adjOffpeak,
+    adjPeak
+  };
+}
+
+  
 
   async function setupBilling(importUnits) { 
 
