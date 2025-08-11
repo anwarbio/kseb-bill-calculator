@@ -204,6 +204,8 @@ body, html, #pdfContent {
       <div id="lastUpdatedDisplay"></div>
     </div>
 
+    
+
     <!-- ===== Bill Input Form ===== -->
     <form id="billForm">
 
@@ -743,9 +745,16 @@ resultDiv.style.display = 'block';
 // Build HTML output
 resultDiv.innerHTML = `
 <div id="pdfContent">
-     <!-- ===== Input Summary ===== -->
+
+     <!-- Title -->
+    <h3>KSEB Prosumer Bill Calculator </h3>
+    
+    <!-- Top Info Bar: Timestamp & Last Update -->
+    Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()} <br>
+    Software Last Updated: ${lastUpdatedValue}
+    <br><br>
+    <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
-    </div>
     Connection Type: <strong>${connectionType}</strong>, 
     Phase Type: <strong>${phaseType}</strong><br><br>
 
@@ -815,7 +824,7 @@ resultDiv.innerHTML = `
     Net units Imported [N] (N = I - E): 
       <strong>${netImpUnits} units</strong><br>
     Previous banked balance [B]: 
-      <strong>${Bank} units</strong><br>            
+      <strong>${Bank} units</strong>        
     
   <!-- ===== Prosumer Bill ===== -->
   <div class="pdf-page-break"> </div>
@@ -860,14 +869,13 @@ resultDiv.innerHTML = `
       </span><br><br>
       </div>
 
-    <div class="avoid-page-break">
     Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong><br><br>
 
     <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br><br>
 
-    Updated banked balance (UB): <strong>${newBank} units</strong><br>
-    </div>
-   
+    Updated banked balance (UB): <strong>${newBank} units</strong>
+    
+    
   <div class="pdf-page-break"> </div>
     <!-- ===== Consumer Bill ===== -->
   <div class="avoid-page-break">
@@ -915,6 +923,7 @@ resultDiv.innerHTML = `
 
     <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b>
     </div> 
+
     </div>
      `    
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
@@ -933,7 +942,6 @@ resultDiv.innerHTML = `
 
 
   
-
 
 
 
