@@ -265,7 +265,7 @@ body, html, #pdfContent {
       </button>
 
       <!-- Hidden field for last update -->
-      <input type="hidden" id="lastUpdated" value="09 Aug 2025">
+      <input type="hidden" id="lastUpdated" value="14 Aug 2025">
 
     </form>
     <!-- ===== End of Bill Input Form ===== -->
@@ -280,6 +280,15 @@ body, html, #pdfContent {
     <button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
     
     <!-- Page Break for PDF -->
+     <div class="pdf-container" style="margin-top: 20px;">
+    <span style="font-size: 0.9em; color: blue;">
+        Latest KSEB Tariff Circular Used for Calculations:
+    </span>
+    <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">
+        📄 View Circular
+    </a>
+    </div>
+
     
   <!-- ===== End of Main PDF Content ===== -->
 
@@ -423,14 +432,24 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     });
   }
 
-  function parseTODTariff(text) {
-    const lines = text.trim().split('\n').slice(1);
+ function parseTODTariff(text) {
+    const lines = text.trim().split('\n').slice(1); // skip header
+    const table = [];
+
     for (let line of lines) {
-      const [range, base] = line.split(',');
-      const upper = /above/i.test(range) ? Infinity : parseInt(range.match(/\d+/g)?.[0]) || 0;
-      if (totalImport <= upper) { todBaseRate = parseFloat(base); break; }
+        const [range, base] = line.split(',').map(v => v.trim());
+
+        if (/above/i.test(range)) {
+            table.push({ upper: Infinity, base: parseFloat(base) });
+        } else {
+            const nums = range.match(/\d+/g); // gets ["0", "300"]
+            const upper = nums ? parseInt(nums[1]) : 0; // take second number
+            table.push({ upper, base: parseFloat(base) });
+        }
     }
-  }
+
+    return table;
+}
 
   function parseCharges(text) {
     const lines = text.trim().split('\n').slice(1);
@@ -473,6 +492,21 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     }
     return { value: 0, label: 'Not found' };
   }
+
+
+function getEnergySlab(totalUnits) {
+    for (let row of fixedChargeTable) {
+      if (totalUnits > row.min && totalUnits <= row.max) {
+        return { value: phaseType === 'three' ? row.three : row.single, label: row.label };
+      }
+    }
+    return { value: 0, label: 'Not found' };
+  }
+
+
+
+
+
 
   function getMeterRent(connectionType, phaseType) {
     for (let row of meterChargeTable) {
@@ -528,11 +562,84 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     return parts.map((line, i) => i < parts.length - 1 ? `${line} +` : line).join('<br>') || '0 units billed';
   }
 
-  function calculateTODCharge(day, peak, offpeak) {
+  
+  function loadCSVPromise(url) {
+    return new Promise((resolve) => {
+        loadCSV(url, resolve);
+    });
+}
+  
+
+function getTodBaseRate(totalImport) {
+    if (!cachedTodBaseTable) return null;
+    for (let row of cachedTodBaseTable) {
+        if (totalImport <= row.upper) {
+            return { base: row.base, upper: row.upper };
+        }
+    }
+    return null; // no match found
+}
+  
+  
+  function calculateTODCharge(day, peak, offpeak, NET) {
+
+     const todBaseRate = getTodBaseRate(NET).base;
+    console.log(todBaseRate);
+        
     return todBaseRate * ((day * todRates.nl) + (peak * todRates.pk) + (offpeak * todRates.op));
   }
 
-  function getTODCalculationString(day, peak, offpeak) {
+
+
+  function getTODCalculationString(day, peak, offpeak,NET) {
+
+   const todBaseRate = getTodBaseRate(NET).base;
+    console.log(todBaseRate);
+
+    let parts = [];
+    if (day) parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
+    if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
+    if (peak) parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+    for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
+    return parts.join('<br>') || '0 units billed';
+
+  }
+
+
+function calculateTODChargeCon(day, peak, offpeak, NET) {
+
+  if (NET < 500) {
+  ['nl', 'pk', 'op'].forEach(key => {
+    if (todRates.hasOwnProperty(key)) {
+      todRates[key] = 1;
+    }
+  });
+} else {
+  // leave todRates unchanged
+}
+     const todBaseRate = getTodBaseRate(NET).base;
+    console.log(todBaseRate);
+        
+    return todBaseRate * ((day * todRates.nl) + (peak * todRates.pk) + (offpeak * todRates.op));
+  }
+
+
+
+  function getTODCalculationStringCon(day, peak, offpeak, NET) {
+
+    if (NET < 500) {
+  ['nl', 'pk', 'op'].forEach(key => {
+    if (todRates.hasOwnProperty(key)) {
+      todRates[key] = 1;
+    }
+  });
+} else {
+  // leave todRates unchanged
+}
+
+   const todBaseRate = getTodBaseRate(NET).base;
+    console.log(todBaseRate);
+
     let parts = [];
     if (day) parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
     if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
@@ -540,10 +647,12 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
     return parts.join('<br>') || '0 units billed';
   }
+
   
 function getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank) {
   
   let remainingExport = exportUnits + Bank;
+  let NET = Math.max(0,(todDay + todOffpeak + todPeak - exportUnits-Bank));  
 
   let adjDay = todDay;
   let adjOffpeak = todOffpeak;
@@ -568,8 +677,8 @@ function getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank) 
     remainingExport  -= useFromImport;
   }
   // Final calculation
-  const energyCharge = calculateTODCharge(adjDay, adjPeak, adjOffpeak);
-  const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak);
+  const energyCharge = calculateTODCharge(adjDay, adjPeak, adjOffpeak, NET);
+  const EChargeString = getTODCalculationString(adjDay, adjPeak, adjOffpeak, NET);  
 
 
 console.log("adjDay:", adjDay);
@@ -588,19 +697,25 @@ console.log("todRates:", todRates);
   };
 }
 
-  
+let cachedTodBaseTable = null; // will hold the entire parsed table
+let cachedTodBaseRate = null;  // will hold the final rate when calculated later
 
-  async function setupBilling(importUnits) { 
+   async function setupBilling(importUnits) { 
 
-    await Promise.all([
-     loadCSV('fixed_charge.csv', parseFixedCharges),
+   await Promise.all([
+    loadCSV('fixed_charge.csv', parseFixedCharges),
     loadCSV('meter_charges.csv', parseMeterCharges),
     loadCSV('other_charges.csv', parseCharges),
-    loadCSV('tariff_tod_base.csv', parseTODTariff),
     loadCSV('tariff_tod.csv', parseTODRates),
-    loadCSV('tariff_domestic_telescopic.csv', parseSlabs)]);
+    loadCSV('tariff_domestic_telescopic.csv', parseSlabs),
+    loadCSV('tariff_tod_base.csv', function(text) {
+    cachedTodBaseTable = parseTODTariff(text);
+    console.log("TOD Base Table Cached:", cachedTodBaseTable);
+    })
+]);
+   
 
-  if (importUnits >= 250) {
+  if (importUnits > 250) {
     document.getElementById('todFields').classList.remove('hidden');
     
   } else {
@@ -671,6 +786,9 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const { value: meterCharge } = meterInfo;
   const { value: fixedCharge, label: fixedLabel } = fixedInfo;
 
+  
+
+
   // Other charges (duty, surcharge)
   const { duty, surcharge } = getOtherCharges(connectionType);
 
@@ -680,8 +798,9 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   let energyCharge = 0, EChargeString = "";
   let adjDay = 0, adjOffpeak = 0, adjPeak = 0;
   let dayTotal = 0;
-
-  if (netUnits >= 250) {
+  
+  
+  if (netUnits > 250) {
     // Non-telescopic (TOD) billing
     const energyResult = getEnergy(todDay, todOffpeak, todPeak, importUnits, exportUnits, Bank);
     energyCharge = energyResult.energyCharge;
@@ -689,6 +808,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
     adjDay = energyResult.adjDay;
     adjOffpeak = energyResult.adjOffpeak;
     adjPeak = energyResult.adjPeak;
+
   } else {
     // Telescopic billing
     energyCharge = calculateDomesticCharge(netUnits);
@@ -762,6 +882,9 @@ document.getElementById('billForm').addEventListener('submit', async function (e
     dayTotal = todDay + ownSolarDay;
   }
 
+  const ProsESlab = getTodBaseRate(netUnits);
+   console.log("ProsESlab", ProsESlab);
+
   // ---------------------------
   // 9. Consumer Energy Calculation
   // ---------------------------
@@ -773,9 +896,15 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   }
 
   if (billmethCons === "non-telescopic") {
-    consumerEnergy  = calculateTODCharge(dayTotal, todPeak, todOffpeak);
-    consumerEString = getTODCalculationString(dayTotal, todPeak, todOffpeak);
-  }
+    let NET = dayTotal+ todPeak+ todOffpeak;
+    consumerEnergy  = calculateTODChargeCon(dayTotal, todPeak, todOffpeak, NET);
+    consumerEString = getTODCalculationStringCon(dayTotal, todPeak, todOffpeak, NET);     
+     }
+     
+    let NETCons = dayTotal+ todPeak+ todOffpeak;
+    const ConsESlab = getTodBaseRate(NETCons);
+     console.log("ConsESlab", ConsESlab);
+   console.log("ConsESlab", ConsESlab);
 
   // Duty & Surcharge
   const consumerdutyAmount      = consumerEnergy * duty / 100;
@@ -897,13 +1026,19 @@ resultDiv.innerHTML = `
     <br>
     <div class="avoid-page-break">
     Energy Charge: <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: gray;">${EChargeString}</span><br><br>
+    <span style="font-size: smaller; color: gray;">${EChargeString}<br>
+      <br> BIlling: ${billmethPros} ${netUnits} units <br>
+      ${billmethPros === "non-telescopic" 
+      ? `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base} <br>
+         TOD Rates; NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}` 
+      : ``}
+      </span><br><br>
     </div>
 
     <div class="avoid-page-break">
     Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
-        (${fixedChargeStr}, ${fixedLabel} slab)
+        (${fixedChargeStr}, ${fixedLabel} slab)        
       </span><br>
       
     Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong> 
@@ -949,8 +1084,14 @@ resultDiv.innerHTML = `
     <span style="font-size: smaller; color: gray;">
       ${userChoice === "skipped" 
         ? 'TOD readings to be provided' 
-        : consumerEString}
+        : consumerEString} <br>
+        <br> BIlling: ${billmethCons} ${consumerImport} units <br>
+        ${billmethCons === "non-telescopic" 
+      ? `Slab: 0 - ${ConsESlab.upper}, Rate: ${ConsESlab.base} <br>
+         TOD Rates; NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}` 
+      : ``}
     </span><br><br>
+
         
     Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong> 
       <span style="font-size: smaller;color: gray;">
