@@ -76,6 +76,7 @@ button {
 @media print {
   .no-print {
     display: none !important;
+    margin-right: 5px; /* Reduce gap */
   }
 }
 
@@ -180,10 +181,13 @@ input, select, button, label {
 }
 
 /* ===== 8. Global Width & Overflow Fix ===== */
-body, html, #pdfContent {
-  width: 100% !important;
-  max-width: none !important;
-  overflow-x: visible !important;
+html, body, #pdfContent {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important; /* hides horizontal overflow */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 </style>
 </head>
@@ -191,6 +195,9 @@ body, html, #pdfContent {
 
 
 <body>
+
+      <!-- Hidden field for last update -->
+      <input type="hidden" id="lastUpdated" value="15 Aug 2025">
 
 
     <!-- ===== Main PDF Content ===== -->
@@ -260,12 +267,11 @@ body, html, #pdfContent {
       </div>
 
       <!-- Submit Button -->
-      <button type="submit" class="no-print" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px;">
+       <div style="display: flex; gap: 5px;">
+      <button type="submit" class="no-print" style="background-color: #007BFF; color: white; border: none; padding: 8px 16px; border-radius: 4px; margin-right: 5px;">
         Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
-      </button>
-
-      <!-- Hidden field for last update -->
-      <input type="hidden" id="lastUpdated" value="14 Aug 2025">
+      </button>      
+      </div>     
 
     </form>
     <!-- ===== End of Bill Input Form ===== -->
@@ -280,7 +286,7 @@ body, html, #pdfContent {
     <button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
     
     <!-- Page Break for PDF -->
-     <div class="pdf-container" style="margin-top: 20px;">
+     <div class="pdf-container" style="margin-top: 10px;margin-bottom: 15px;">
     <span style="font-size: 0.9em; color: blue;">
         Latest KSEB Tariff Circular Used for Calculations:
     </span>
@@ -883,6 +889,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   }
 
   const ProsESlab = getTodBaseRate(netUnits);
+  if (ProsESlab.upper == Infinity) { slabEPros = "Above 500";}
    console.log("ProsESlab", ProsESlab);
 
   // ---------------------------
@@ -903,6 +910,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
      
     let NETCons = dayTotal+ todPeak+ todOffpeak;
     const ConsESlab = getTodBaseRate(NETCons);
+    if (ConsESlab.upper == Infinity) { slabECons = "Above 500";}
      console.log("ConsESlab", ConsESlab);
    console.log("ConsESlab", ConsESlab);
 
@@ -924,11 +932,13 @@ resultDiv.innerHTML = `
 <div id="pdfContent">
 
      <!-- Title -->
-    <h3>KSEB Prosumer Bill Calculator </h3>
+    <h3 style="color: blue;">KSEB Prosumer Bill Calculator </h3>
     
     <!-- Top Info Bar: Timestamp & Last Update -->
+    <span style="font-size: smaller; color: purple;">
     Date: ${now.toLocaleDateString()} | Time: ${now.toLocaleTimeString()} <br>
     Software Last Updated: ${lastUpdatedValue}
+    </span>
     <br><br>
     <!-- ===== Input Summary ===== -->
     <h3>Input Values</h3>
@@ -1005,17 +1015,16 @@ resultDiv.innerHTML = `
     
   <!-- ===== Prosumer Bill ===== -->
   <div class="pdf-page-break"> </div>
-     <h3>Prosumer Bill</h3>
+     <h3 style="color: blue;">Prosumer Bill</h3>
      <br>
-    Billing Type: <strong>${connectionType}</strong>, 
-    ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}, 
-    <strong>${billmethPros}</strong><br>
-
-    Own solar consumption during Day [OC]: 
+    Billing Type: <strong>${connectionType}, 
+    ${importUnits >= 250 ? 'TOD' : 'Non-TOD'} </strong>
+    
+    <br> Own solar consumption during Day [OC]: 
       <strong>${ownSolarDay} units</strong><br>
 
     Units Billed (N-B): <strong>${netUnits}</strong> 
-      <span style="font-size: smaller; color: gray;">
+      <span style="font-size: smaller; color: red;">
         (${netImpUnits} - ${Bank} = ${netUnits})
       </span><br>
 
@@ -1024,30 +1033,40 @@ resultDiv.innerHTML = `
       : ``}
 
     <br>
-    <div class="avoid-page-break">
-    Energy Charge: <strong>₹ ${energyCharge.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: gray;">${EChargeString}<br>
-      <br> BIlling: ${billmethPros} ${netUnits} units <br>
-      ${billmethPros === "non-telescopic" 
-      ? `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base} <br>
-         TOD Rates; NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}` 
-      : ``}
-      </span><br><br>
-    </div>
 
+Energy Charge: 
+<strong>₹ ${energyCharge.toFixed(2)}</strong><br>
+
+<span style="font-size: smaller; color: red;">
+  ${EChargeString}
+</span><br>
+
+<span style="font-size: smaller; color: green;">
+  Billing: ${billmethPros} for ${netUnits} units <br>
+  ${
+    billmethPros === "non-telescopic"
+      ? (
+          ProsESlab.upper === Infinity
+            ? `Slab: ${slabEPros}, Rate: ${ProsESlab.base}`
+            : `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base}`
+        ) + `<br>TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}`
+      : ""
+    }
+</span>
+  
     <div class="avoid-page-break">
-    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+     <br> Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong> 
+      <span style="font-size: smaller;color: red;">
         (${fixedChargeStr}, ${fixedLabel} slab)        
       </span><br>
       
     Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+      <span style="font-size: smaller;color: red;">
         (${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})
       </span><br>
 
     Fuel Surcharge (${surcharge}/unit): <strong>₹ ${surchargeAmount.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+      <span style="font-size: smaller;color: red;">
         (${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})
       </span><br><br>
       </div>
@@ -1062,13 +1081,13 @@ resultDiv.innerHTML = `
   <div class="pdf-page-break"> </div>
     <!-- ===== Consumer Bill ===== -->
   <div class="avoid-page-break">
-      <h3>As a Consumer (Without Export)</h3>
+      <h3 style="color: blue;">As a Consumer (Without Export)</h3>
       <br>
-    Billing Type: <strong>${connectionType}</strong>, 
-    ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}, 
-    <strong>${billmethCons}</strong><br><br>
+      Billing Type: <strong>${connectionType}, 
+    ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'} </strong>
+    <br><br>
 
-    Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = 
+      Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = 
       <strong>${consumerImport}</strong><br>
 
     ${billmethCons === "non-telescopic" 
@@ -1079,32 +1098,42 @@ resultDiv.innerHTML = `
       : ``}
 
     <br>
-    Energy Charge: 
-      <strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
-    <span style="font-size: smaller; color: gray;">
-      ${userChoice === "skipped" 
-        ? 'TOD readings to be provided' 
-        : consumerEString} <br>
-        <br> BIlling: ${billmethCons} ${consumerImport} units <br>
-        ${billmethCons === "non-telescopic" 
-      ? `Slab: 0 - ${ConsESlab.upper}, Rate: ${ConsESlab.base} <br>
-         TOD Rates; NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}` 
-      : ``}
-    </span><br><br>
+Energy Charge:
+<strong>${userChoice === "skipped" ? 'NA' : consumerEnergy.toFixed(2)}</strong><br>
 
-        
+<span style="font-size: smaller; color: red;">
+  ${userChoice === "skipped" ? 'TOD readings to be provided' : consumerEString}
+</span><br>
+
+<span style="font-size: smaller; color: green;">
+  Billing: ${billmethCons} for ${consumerImport} units <br>
+  ${
+    billmethCons === "non-telescopic"
+      ? (
+          ConsESlab.upper === Infinity
+            ? `Slab: ${slabECons}, Rate: ${ConsESlab.base} <br>
+               TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}`
+            : `Slab: 0 - ${ConsESlab.upper}, Rate: ${ConsESlab.base} <br>
+               TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}
+               <br> Different TOD rates only above 500 units`
+        )
+      : ""
+  }
+</span>
+<br><br>
+
     Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+      <span style="font-size: smaller;color: red;">
         (${fixedChargeStr}, ${fixedLabel} slab)
       </span><br>
 
     Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+      <span style="font-size: smaller;color: red;">
         (${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})
       </span><br>
 
     Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong> 
-      <span style="font-size: smaller;color: gray;">
+      <span style="font-size: smaller;color: red;">
         (${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})
       </span><br><br>    
 
