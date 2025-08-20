@@ -297,7 +297,7 @@ body,
 <div id="debugPanel" class="debug hidden"></div>
 
 <!-- PDF Download Button -->
-<button id="downloadFullPDF" class="no-print">Download Full Page as PDF</button>
+<button id="downloadFullPDF" class="no-print">Download Calculations as PDF</button>
 
 <!-- Latest Tariff Circular -->
 <div class="pdf-container" style="margin-top: 10px; margin-bottom: 15px;">
@@ -324,7 +324,7 @@ body,
 <script>
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate = "19 Aug 2025"; // Last Software update Date
+  const updatedDate = "20 Aug 2025"; // Last Software update Date
   let NonTelStartUnit = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
@@ -537,7 +537,7 @@ document.addEventListener('DOMContentLoaded', function () {
      ------------------------------------------------------ */
   function getFixedCharge(phaseType, totalUnits) {
     for (let row of fixedChargeTable) {
-      if (totalUnits > row.min && totalUnits <= row.max) {
+      if (totalUnits >= row.min && totalUnits <= row.max) {
         return { value: phaseType === "three" ? row.three : row.single, label: row.label };
       }
     }
@@ -1273,8 +1273,8 @@ resultDiv.innerHTML = `
 
   <!-- ===== Summary of I/E/OC/B ===== -->
   <br>
-  Units Imported (I): <strong>${importUnits}</strong><br>
-  Units Exported (E): <strong>${exportUnits}</strong><br><br>
+  Units Imported (I): <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
+  Units Exported (E): <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
   Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
   Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
   Net units Imported [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
@@ -1332,7 +1332,7 @@ ${ TODAvailability === "yes"
   <!-- ===== Consumer Section ===== -->
   <div class="pdf-page-break"></div>
   <div class="avoid-page-break">
-    <h3 style="color: blue;">As a Consumer (Without Export)</h3><br>
+    <h3 style="color: blue;">Predicted Bill: If You Were a Consumer </h3><br>
     Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
     Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
