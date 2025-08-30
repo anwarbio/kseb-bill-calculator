@@ -396,68 +396,81 @@ body,
 </div>
 
   
-  <!-- TOD Input Fields (visible only when TOD is enabled) -->
-<div id="todFields" class="hidden">
-  <div style="display:flex; font-weight:bold; margin-bottom:5px;">
-    <div style="flex:1;"><b>Units Import [I] / ഇംപോർട്ട്</b></div>
-    <div style="flex:1;"><b>Units Export [E] / എക്സ്‌പോർട്ട്</b></div>
+<!-- TOD Input Fields (visible only when TOD is enabled) -->
+<div id="todFields" class="hidden" 
+     style="padding:10px; border:1px solid #ccc; border-radius:6px; margin-top:8px; background-color:#e6f2ff;">
+
+  <div style="display:flex; font-weight:bold; margin-bottom:8px;">
+    <div style="flex:1; text-align:center;"><b>Units Import [I] / ഇംപോർട്ട്</b></div>
+    <div style="flex:1; text-align:center;"><b>Units Export [E] / എക്സ്‌പോർട്ട്</b></div>
   </div>
 
   <!-- NL Row -->  
-     <div style="display:flex; gap:8px;font-size:small;">
-    <input type="number" id="todDay"   placeholder=" NL/നോർമൽ "  style="flex:1;">
-    <input type="number" id="EtodDay"  placeholder=" NL/നോർമൽ "  style="flex:1;">
+  <div style="display:flex; gap:10px; font-size:small; margin-bottom:6px;">
+    <input type="number" id="todDay" placeholder="NL/നോർമൽ"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
+    <input type="number" id="EtodDay" placeholder="NL/നോർമൽ"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
   </div>
 
   <!-- OP Row -->
-    <div style="display:flex; gap:8px;">
-    <input type="number" id="todOffpeak"   placeholder="OP/ഓഫ്-പീക്ക്" style="flex:1;">
-    <input type="number" id="EtodOffpeak"  placeholder="OP/ഓഫ്-പീക്ക്" style="flex:1;">
+  <div style="display:flex; gap:10px; margin-bottom:6px;">
+    <input type="number" id="todOffpeak" placeholder="OP/ഓഫ്-പീക്ക്"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
+    <input type="number" id="EtodOffpeak" placeholder="OP/ഓഫ്-പീക്ക്"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
   </div>
 
   <!-- PK Row --> 
-  <div style="display:flex; gap:8px;">
-    <input type="number" id="todPeak"   placeholder="PK/പീക്ക് ടൈം" style="flex:1;">
-    <input type="number" id="EtodPeak"  placeholder="PK/പീക്ക് ടൈം" style="flex:1;">
+  <div style="display:flex; gap:10px;">
+    <input type="number" id="todPeak" placeholder="PK/പീക്ക് ടൈം"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
+    <input type="number" id="EtodPeak" placeholder="PK/പീക്ക് ടൈം"  
+           style="flex:1; padding:6px; border:1px solid #aaa; border-radius:4px;">
   </div>
 </div>
 
+
 <!-- Solar Generation -->
- <div id="solarField">
-   <div class="form-group">       
-  <label style="display:flex; flex-direction:column; justify-content:center;">    
-    <b>Total Solar Energy Generated [GM] /<br>മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b></label>
-  <input type="number" id="SolarInput" style="width:100px;">
+<div id="solarField" 
+     style="padding:12px; border:1px solid #ccc; border-radius:6px; margin:12px 0; background-color:#e6f2ff;">
+  <div class="form-group" style="margin:0;">
+    <label style="display:flex; flex-direction:column; justify-content:center; margin-bottom:6px;">    
+      <b>Total Solar Energy Generated [GM] /<br>മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b>
+    </label>
+    <input type="number" id="SolarInput" style="width:120px; padding:6px; border:1px solid #aaa; border-radius:4px;">
   </div>
-  </div>
+</div>
 
 <!-- TOD Row -->
-<div id="solarFieldTOD" style="display:none; margin-top:10px;">
-  <strong>Solar Generation / ഊർജ ഉൽപാദനം</strong>
-  <div style="display:flex; flex-wrap:nowrap; gap:8px; margin-top:5px; align-items:center;">
+<div id="solarFieldTOD" style="display:none; padding:12px; border:1px solid #ccc; border-radius:6px; margin:12px 0; background-color:#e6f2ff;">
+  <strong style="display:block; margin-bottom:8px;">Solar Generation / ഊർജ ഉൽപാദനം</strong>
+  <div style="display:flex; flex-wrap:nowrap; gap:8px; align-items:center;">
     
     <div style="flex:1; display:flex; align-items:center; gap:4px;">
       <label for="Gen_NL">NL/നോർമൽ:</label>
-      <input type="number" min="0" step="1" id="Gen_NL" class="tod wheel" style="width:100%; box-sizing:border-box;">
+      <input type="number" min="0" step="1" id="Gen_NL" class="tod wheel" 
+             style="width:100%; padding:6px; box-sizing:border-box; border:1px solid #aaa; border-radius:4px;">
     </div>
 
     <div style="flex:1; display:flex; align-items:center; gap:4px;">
       <label for="Gen_OP">OP/ഓഫ്-പീക്ക്:</label>
-      <input type="number" min="0" step="1" id="Gen_OP" class="tod wheel" style="width:100%; box-sizing:border-box;">
+      <input type="number" min="0" step="1" id="Gen_OP" class="tod wheel" 
+             style="width:100%; padding:6px; box-sizing:border-box; border:1px solid #aaa; border-radius:4px;">
     </div>
 
     <div style="flex:1; display:flex; align-items:center; gap:4px;">
       <label for="Gen_PK">PK/പീക്ക് ടൈം:</label>
-      <input type="number" min="0" step="1" id="Gen_PK" class="tod wheel" style="width:100%; box-sizing:border-box;">
+      <input type="number" min="0" step="1" id="Gen_PK" class="tod wheel" 
+             style="width:100%; padding:6px; box-sizing:border-box; border:1px solid #aaa; border-radius:4px;">
     </div>
 
   </div>
 </div>
 
-    
 
 <!-- Are you wheeling? -->
- <div class="form-group">
+ <div class="form-group" style = "background-color:#ffe6cc;">
 <label style="display:flex; flex-direction:column; justify-content:center;" for="isWheeling">
     <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
 <select id="isWheeling" name="isWheeling" style="width:120px;" required>
@@ -469,20 +482,36 @@ body,
 <!-- Wheeling-related fields (hidden by default) -->
 <div id="wheelingFields" style="display:none; margin-top:15px;">
 
-  <!-- Wheeled location category -->
-  <div class="form-group" style="margin-bottom:10px;">
-    <label for="wheelingCategory" style="font-weight:bold;">
-      <b>Wheeled location Connection Type / വീലിംഗ് വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം<b>
-    </label>
-    <select id="wheelingCategory" name="wheelingCategory" style="width:500px;">
-       <option value="LT1">LT1</option>
-      <option value="LT7A">LT7A</option>
-      <option value="LT7B">LT7B</option>
-    </select>
-  </div>
+<!-- Wheeled location category -->
+<div class="form-group" 
+     style="margin-bottom:10px; padding:10px; border-radius:6px;background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
 
-  <!-- TOD Availability -->
-   <div class="form-group" style="margin-bottom:10px;">
+  <label for="wheelingCategory" 
+         style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
+    Wheeled location Connection Type / വീലിംഗ് വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം
+  </label>
+
+  <select id="wheelingCategory" name="wheelingCategory" 
+          style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
+    <option value="LT1">LT1</option>
+    <option value="LT7A">LT7A</option>
+    <option value="LT7B">LT7B</option>
+  </select>
+</div>
+
+<!-- Responsive font size for smaller screens -->
+<style>
+@media screen and (max-width: 480px) {
+  #wheelingCategory + label,
+  .form-group label {
+    font-size: 12px !important;
+  }
+}
+</style>
+
+
+  <!-- Wheeling TOD Availability -->
+   <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
   <label for="TODAvailabilityWheel" style="margin-bottom:10px;">
     <b>Is TOD Bill Available for Wheeled Location? / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
     </label>
@@ -492,8 +521,8 @@ body,
   </select>
   </div>
 
-  <!-- TOD Row -->
-<div id="row-wheeling-tod" style="display:none; margin-top:10px;">
+  <!-- Wheeling TOD Row -->
+<div id="row-wheeling-tod" style="display:none; margin-top:10px;background-color:#ffe6cc;">
   <strong>Wheeled Site TOD (units) / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി</strong>
   <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px; align-items:center;">
     <div style="display:flex; align-items:center; gap:4px;">
@@ -515,7 +544,7 @@ body,
   <!-- Total units consumed at wheeled location -->
   
   <div id="row-wheeling-total" style="margin-top:10px;">
-    <div class="form-group" style="margin-bottom:10px;">
+    <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
     <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
     <input type="number" id="wheeledConsumedUnits" name="wheeledConsumedUnits" min="0" step="1">
   </div>
@@ -523,34 +552,42 @@ body,
 
 </div>
 
-<!-- Calculate and Reset Buttons (same row) -->
-<div class="form-group" style="width: 100%; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+<!-- Calculate and Reset Buttons (same row, responsive) -->
+<div class="form-group" 
+     style="width: 100%; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; padding: 0 10px; box-sizing: border-box;">
+
     <button type="submit" class="no-print"
         style="
             background-color: #2403f7; 
             color: white; 
             border: none; 
-            padding: 15px 30px; 
+            padding: 12px 20px; 
             border-radius: 4px; 
             font-size: 16px;
             cursor: pointer;
+            flex: 1 1 150px; 
+            max-width: 250px;
         ">
        Calculate / കാൽക്കുലേറ്റ്
     </button>
 
-<button type="button" class="no-print"
-    style="
-        background-color: #a36874; 
-        color: white; 
-        border: none; 
-        padding: 15px 30px; 
-        border-radius: 4px; 
-        font-size: 16px;
-        cursor: pointer;
-    "
-    onclick="window.location.reload();">
-   Reset / റീസെറ്റ്
-</button>
+    <button type="button" class="no-print"
+        style="
+            background-color: #a36874; 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 4px; 
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1 1 150px; 
+            max-width: 250px;
+        "
+        onclick="window.location.reload();">
+       Reset / റീസെറ്റ്
+    </button>
+</div>
+
 </div>
 
 </form>
@@ -562,56 +599,78 @@ body,
     <div class="result" id="result" style="display:none;"></div>
 </div>
 
+<!-- pdf inputs for naming -->
 
-<!-- PDF Naming Inputs in One Row (compact spacing) -->
-<div id="pdfNameInputs" style="margin:0.25rem 0; display:none; align-items:center; gap:1rem; flex-wrap:wrap;">
+<div style="width:100%; padding:0 20px; box-sizing:border-box;">  
+  <div id="pdfNameInputs" 
+       style="
+          display:none;  /* <-- hide initially */
+          flex-wrap: nowrap; 
+          align-items:center; 
+          gap:1rem; 
+          width:100%;
+          max-width: 900px; 
+          margin: 0 auto;
+       ">
 
-  <div style="display:flex; flex-direction:column; margin:0;">
-    <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
-    <input type="text" id="consumerName" style="width:150px; margin:0;">
+    <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+      <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
+      <input type="text" id="consumerName" style="width:110px; margin:0; box-sizing:border-box;">
+    </div>
+
+    <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+      <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
+      <select id="billMonth" style="width:100px; margin:0; box-sizing:border-box;">
+        <option value="01">January</option>
+        <option value="02">February</option>
+        <option value="03">March</option>
+        <option value="04">April</option>
+        <option value="05">May</option>
+        <option value="06">June</option>
+        <option value="07">July</option>
+        <option value="08">August</option>
+        <option value="09">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+    </div>
+
+    <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+      <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
+      <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:80px; margin:0; box-sizing:border-box;">
+    </div>
+
   </div>
 
-  <div style="display:flex; flex-direction:column; margin:0;">
-    <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
-    <select id="billMonth" style="width:120px; margin:0;">
-      <option value="01">January</option>
-      <option value="02">February</option>
-      <option value="03">March</option>
-      <option value="04">April</option>
-      <option value="05">May</option>
-      <option value="06">June</option>
-      <option value="07">July</option>
-      <option value="08">August</option>
-      <option value="09">September</option>
-      <option value="10">October</option>
-      <option value="11">November</option>
-      <option value="12">December</option>
-    </select>
+  <!-- Helper text -->
+  <div style="font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
+    Please fill in details for custom naming the PDF
   </div>
-
-  <div style="display:flex; flex-direction:column; margin:0;">
-    <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
-    <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:100px; margin:0;">
-  </div>
-
 </div>
 
-<!-- Download PDF Button (separate row) -->
-<div class="form-group" style="width: 100%; display: flex; justify-content: center; margin: top 10px;">
+
+<!-- Download PDF Button (separate row, responsive) -->
+<div class="form-group" 
+     style="width: 100%; display: flex; justify-content: center; margin-top:10px; padding: 0 10px; box-sizing: border-box;">
+
     <button type="button" id="downloadFullPDF" class="no-print"
         style="
             background-color: #06412c; 
             color: white; 
             border: none; 
-            padding: 15px 30px; 
+            padding: 12px 20px; 
             border-radius: 4px; 
             font-size: 16px;
             cursor: pointer;
-            display: none;   /* <-- hides it initially */
+            display: none;   /* hides it initially */
+            flex: 1 1 150px; 
+            max-width: 250px;
         ">
         Download as PDF / ഡൌൺലോഡ് PDF
     </button>
 </div>
+
 
 <!-- Latest Tariff Circular -->
 <div class="form-group" style="width: 100%; display: flex; justify-content: center; margin-top:0; margin-bottom:2;">
@@ -2280,7 +2339,8 @@ ${ TODAvailability === "yes"
      downloadFullPDF & related input fiels hidden initially
      ------------------------------------------------------ */
 document.getElementById("pdfNameInputs").style.display = "flex";
-document.getElementById("downloadFullPDF").style.display = "block";
+document.getElementById("downloadFullPDF").style.display = "inline-block";
+
 });
 
 });
