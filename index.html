@@ -16,14 +16,44 @@
    ====================================================== */
 
 /* ===== 1. Base Layout & Typography ==================== */
-body {
-  font-family: 'Noto Sans Malayalam', Arial, sans-serif;
-  margin: 1rem;
-  background: #f7f7f7;
+body, input, select, button, label, h1, h2, h3, h4, h5, h6, div, span {
+  font-family: Arial, Helvetica, "Noto Sans Malayalam", "Kartika", sans-serif;
+  font-size: 14px;
+  color: #222;
 }
 
-h1  { color: #1e88e5; font-size: 1.5rem; }
-h3  { margin: 0.1rem 0; }
+h1  { color: #5508f0; font-size: 1.5rem;
+     text-align: center;
+    font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
+    font-size: 20px; /* change size as you like */
+    font-weight: bold; /* optional */ }
+
+h2 {
+    color: blue; /* text color */
+    font-size: 16px; /* adjust size as needed */
+    text-align: left; /* optional: center alignment */
+    font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
+    font-weight: bold; /* optional */
+    margin: 0.5rem 0;
+    display: inline-block;          /* makes underline match text width */
+    border-bottom: 3px solid blue;  /* underline */
+    padding-bottom: 2px;
+    }
+
+
+h3 {
+    color: blue; /* dark gray for subheadings */
+    font-size: 16px; /* slightly smaller than h2 */
+    text-align: left; /* left alignment */
+    font-family: 'Noto Sans Malayalam', 'Noto Sans', 'Arial', sans-serif;
+    font-weight: bold; /* optional */
+    margin: 0.25rem 0; /* spacing above and below */
+    }
+
+.no-underline {
+    border-bottom: none !important;
+}
+
 hr  { margin: 0.1rem 0; }
 
 @media (min-width: 600px) {
@@ -80,13 +110,91 @@ label {
   box-sizing: border-box;
 }
 
+/* new start */
+
+/* ===== Grid Placement Helpers ===== */
+
+/* Make a field span the entire row (both columns) */
+.full-row {
+  grid-column: span 2;
+}
+
+/* Force a field into the left column only */
+.left-col {
+  grid-column: 1;
+}
+
+/* Force a field into the right column only */
+.right-col {
+  grid-column: 2;
+}
+
+.form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr); /* fixed 2 columns */
+      gap: 12px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+
+.form-group.full-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px; /* space between label and input/select */
+}
+
+.form-group.full-row label {
+  flex: none;       /* don't stretch label */
+  width: 220px;     /* fixed width for alignment */
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3; /* allows multi-line Malayalam text to wrap neatly */
+}
+
+.form-group.full-row input,
+.form-group.full-row select {
+  flex: none;       /* input/select width controlled by inline style */
+}
+
+.form-group {
+  display: flex;
+  flex-wrap: wrap;          /* allow items to wrap on small screens */
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+/* Label styling */
+.form-group label {
+  flex: 1 1 200px;          /* allow label to shrink on small screens */
+  min-width: 120px;         /* don't shrink too much */
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;         /* better for multi-line Malayalam text */
+}
+
+/* Input and select styling */
+.form-group input,
+.form-group select {
+  flex: 1 1 100px;          /* allow inputs to shrink but fill remaining space */
+  max-width: 100%;           /* never overflow container */
+  box-sizing: border-box;
+}
+
+/* new end * /
+
 /* ===== 3. Results Output Box =========================== */
 .result {
   background: #e3f2fd;
   padding: 1rem;
   margin-top: 1rem;
-  border-left: 5px solid #1e88e5;
   word-wrap: break-word;
+  page-break-inside: avoid; /* <-- add this */
 }
 
 .result h3 {
@@ -124,19 +232,6 @@ label {
   margin-top: 2rem;
 }
 
-/* ===== 7. PDF & Print Adjustments ===================== */
-#pdfContent {
-  transform: scale(0.94);
-  transform-origin: top left;
-  width: 100%;
-}
-
-.result,
-.input-section {
-  zoom: 0.85;
-  transform-origin: top left;
-}
-
 /* -- Force page break in PDF -- */
 .pdf-page-break {
   page-break-before: always !important;
@@ -161,23 +256,40 @@ label {
   overflow: visible !important;
 }
 
-/* -- Print-only layout overrides -- */
-@media print {
-  body,
-  html,
+/* ===== 7. PDF & Print Adjustments ===================== */
+
+/* --- Mobile screen preview scaling only --- */
+@media screen and (max-width: 768px) {
   #pdfContent {
-    width: 90% !important;
+    transform: scale(0.94);
+    transform-origin: top left;
+  }
+}
+
+/* === Print/PDF Styles for All Devices === */
+@media print {
+  #pdfContent {
+    width: 100% !important;
+    font-size: 12px !important;
+    transform: none !important;
   }
 
+  /* hide interactive elements */
   #billForm,
   #downloadFullPDF,
   .timestamp,
   #debugPanel {
-    display: none;
+    display: none !important;
   }
 
   .result { display: block !important; }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
+
 
 /* ===== 8. Global Width & Overflow Fix ================= */
 html,
@@ -189,6 +301,16 @@ body,
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+
+#pdfNameInputs {
+  margin: 2px 0 !important;   /* minimal vertical spacing */
+  padding: 0 !important;      /* remove gray padding box */
+}
+
+#downloadFullPDF {
+  margin-top: 4px !important; /* keep button close but not touching */
 }
 
 </style>
@@ -213,122 +335,342 @@ body,
 <form id="billForm">
 
   <!-- Connection Type -->
-  <label for="connectionType">Connection Type / കണക്ഷൻ തരം:</label>
-  <select id="connectionType" title="Select your connection type">
-    <option value="LT1">LT-1 Domestic / ഡൊമസ്റ്റിക്</option>
+<div class="form-group">
+  <label for="connectionType"><b>Connection Type / കണക്ഷൻ തരം</b></label>
+  <select id="connectionType" style="width:100px;" title="Select your connection type">
+    <option value="LT1">LT-1 Domestic</option>
   </select>
+</div>
 
-  <!-- Phase Type -->
-  <label for="phaseType">Phase Type / ഫേസ് തരം:</label>
-  <select id="phaseType" title="Select your phase type">
+<!-- Phase Type -->
+<div class="form-group">
+  <label for="phaseType"><b>Phase Type / ഫേസ് തരം</b></label>
+  <select id="phaseType" title="Select your phase type" style="width:100px;">
     <option value="single">Single Phase / സിംഗിൾ ഫേസ്</option>
     <option value="three">Three Phase / ത്രിഫേസ്</option>
   </select>
+</div>
 
-  <!-- Previous Bank Balance -->
-  <label for="Bank">Previous Bank Balance Units:</label>
-  <input type="number" id="Bank" value="0" placeholder="e.g. 10">
+<!-- Meter Owner Selection -->
+<div class="form-group">
+  <label for="meterOwner"><b>Meter Owner / മീറ്റർ ഉടമ</b></label>
+  <select id="meterOwner" name="meterOwner" style="width:100px;" required>
+    <option value="kseb">KSEB / കെഎസ്ഇബി</option>
+    <option value="prosumer">Prosumer / പ്രോസ്യൂമർ</option>
+  </select>
+</div>
 
-  <!-- TOD Availability -->
-  <label for="TODAvailability">Is TOD Bill Available? / ടിതിഒഡി ബിൽ ലഭ്യമാണോ?</label>
-  <select id="TODAvailability" title="Select yes if TOD bill is available">
+<!-- Previous Bank Balance -->
+<div class="form-group">
+  <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
+  <input type="number" id="Bank" value="0" placeholder="e.g. 10" style="width:100px;">
+</div>
+
+<!-- TOD Availability -->
+<div class="form-group">
+  <label for="TODAvailability"><b>Is TOD Bill Available? / ടിഒഡി ബിൽ ലഭ്യമാണോ?</b></label>
+  <select id="TODAvailability" title="Select yes if TOD bill is available" style="width:100px;">
     <option value="No">No / ഇല്ല</option>
     <option value="Yes">Yes / ഉണ്ട്</option>
   </select>
+</div>
 
-  <!-- Import Units (hidden when TOD is enabled) -->
-  <div id="importField">
-    <label>Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്:</label>
-    <input type="number" id="importUnits"  placeholder="Units imported from grid e.g. 100">
+  <!-- Import Units -->
+<div id="importField">
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0;">
+      <b>Units Imported from Grid [I] /<br>ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</b>
+    </label>
+    <input type="number" id="importUnits" style="width:80px; height:30px;">
   </div>
+</div>
 
-  <!-- Export Units (hidden when TOD is enabled) -->
-    <div id="exportField">
-  <label>Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ:</label>
-  <input type="number" id="exportUnits" placeholder="Units exported to grid e.g. 100">
-   </div>
+<!-- Export Units -->
+<div id="exportField">
+  <div class="form-group" style="display:flex; align-items:center; gap:10px;">
+    <label style="margin:0;">
+      <b>Units Exported to Grid [E] /<br>ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ</b>
+    </label>
+    <input type="number" id="exportUnits" style="width:80px; height:30px;">
+  </div>
+</div>
 
-  <!-- Solar Generation -->
-  <label>Total Solar Energy Generation [GM] / മൊത്തം സോളാർ ഊർജ ഉൽപാദനം:</label>
-  <input type="number" id="Solar" value="0" placeholder="Units of solar generated e.g. 100">
-
+  
   <!-- TOD Input Fields (visible only when TOD is enabled) -->
-
 <div id="todFields" class="hidden">
   <div style="display:flex; font-weight:bold; margin-bottom:5px;">
-    <div style="flex:1;">Units Imported from Grid [I] / ഗ്രിഡിൽ നിന്നുള്ള ഇംപോർട്ട്</div>
-    <div style="flex:1;">Units Exported to Grid [E] / ഗ്രിഡിലേക്ക് അയച്ച യൂണിറ്റുകൾ</div>
+    <div style="flex:1;"><b>Units Import [I] / ഇംപോർട്ട്</b></div>
+    <div style="flex:1;"><b>Units Export [E] / എക്സ്‌പോർട്ട്</b></div>
   </div>
 
   <!-- NL Row -->  
-     <div style="display:flex; gap:8px;">
-    <input type="number" id="todDay"   placeholder="Import NL / ദിന സമയ ഉപഭോഗം"  style="flex:1;">
-    <input type="number" id="EtodDay"  placeholder="Export NL/ ദിന സമയ എക്സ്പോർട്"  style="flex:1;">
+     <div style="display:flex; gap:8px;font-size:small;">
+    <input type="number" id="todDay"   placeholder=" NL/നോർമൽ "  style="flex:1;">
+    <input type="number" id="EtodDay"  placeholder=" NL/നോർമൽ "  style="flex:1;">
   </div>
 
   <!-- OP Row -->
     <div style="display:flex; gap:8px;">
-    <input type="number" id="todOffpeak"   placeholder="Import OP / ഓഫ്-പീക്ക് ഉപഭോഗം" style="flex:1;">
-    <input type="number" id="EtodOffpeak"  placeholder="Export OP / ഓഫ്-പീക്ക് എക്സ്പോർട്" style="flex:1;">
+    <input type="number" id="todOffpeak"   placeholder="OP/ഓഫ്-പീക്ക്" style="flex:1;">
+    <input type="number" id="EtodOffpeak"  placeholder="OP/ഓഫ്-പീക്ക്" style="flex:1;">
   </div>
 
   <!-- PK Row --> 
   <div style="display:flex; gap:8px;">
-    <input type="number" id="todPeak"   placeholder="Import PK / പീക്ക് ടൈം ഉപഭോഗം" style="flex:1;">
-    <input type="number" id="EtodPeak"  placeholder="Export PK / പീക്ക് ടൈം എക്സ്പോർട്" style="flex:1;">
+    <input type="number" id="todPeak"   placeholder="PK/പീക്ക് ടൈം" style="flex:1;">
+    <input type="number" id="EtodPeak"  placeholder="PK/പീക്ക് ടൈം" style="flex:1;">
   </div>
 </div>
 
-  <!-- Submit Button -->
-  <div style="display: flex; gap: 5px;">
-    <button type="submit" class="no-print"
-      style="background-color:#007BFF; color:white; border:none; padding:8px 16px; border-radius:4px;">
-      Calculate / കാൽക്കുലേറ്റ് ചെയ്യുക
-    </button>
+<!-- Solar Generation -->
+ <div id="solarField">
+   <div class="form-group">       
+  <label style="display:flex; flex-direction:column; justify-content:center;">    
+    <b>Total Solar Energy Generated [GM] /<br>മൊത്തം സോളാർ ഊർജ ഉൽപാദനം</b></label>
+  <input type="number" id="SolarInput" style="width:100px;">
+  </div>
   </div>
 
+<!-- TOD Row -->
+<div id="solarFieldTOD" style="display:none; margin-top:10px;">
+  <strong>Solar Generation / ഊർജ ഉൽപാദനം</strong>
+  <div style="display:flex; flex-wrap:nowrap; gap:8px; margin-top:5px; align-items:center;">
+    
+    <div style="flex:1; display:flex; align-items:center; gap:4px;">
+      <label for="Gen_NL">NL/നോർമൽ:</label>
+      <input type="number" min="0" step="1" id="Gen_NL" class="tod wheel" style="width:100%; box-sizing:border-box;">
+    </div>
+
+    <div style="flex:1; display:flex; align-items:center; gap:4px;">
+      <label for="Gen_OP">OP/ഓഫ്-പീക്ക്:</label>
+      <input type="number" min="0" step="1" id="Gen_OP" class="tod wheel" style="width:100%; box-sizing:border-box;">
+    </div>
+
+    <div style="flex:1; display:flex; align-items:center; gap:4px;">
+      <label for="Gen_PK">PK/പീക്ക് ടൈം:</label>
+      <input type="number" min="0" step="1" id="Gen_PK" class="tod wheel" style="width:100%; box-sizing:border-box;">
+    </div>
+
+  </div>
+</div>
+
+    
+
+<!-- Are you wheeling? -->
+ <div class="form-group">
+<label style="display:flex; flex-direction:column; justify-content:center;" for="isWheeling">
+    <b>Are you wheeling / നിങ്ങൾ വീലിംഗ് ചെയ്യുന്നുണ്ടോ ?</b></label>
+<select id="isWheeling" name="isWheeling" style="width:120px;" required>
+  <option value="No" selected>No</option>
+  <option value="Yes">Yes</option>
+</select>
+</div>
+
+<!-- Wheeling-related fields (hidden by default) -->
+<div id="wheelingFields" style="display:none; margin-top:15px;">
+
+  <!-- Wheeled location category -->
+  <div class="form-group" style="margin-bottom:10px;">
+    <label for="wheelingCategory" style="font-weight:bold;">
+      <b>Wheeled location Connection Type / വീലിംഗ് വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം<b>
+    </label>
+    <select id="wheelingCategory" name="wheelingCategory" style="width:500px;">
+       <option value="LT1">LT1</option>
+      <option value="LT7A">LT7A</option>
+      <option value="LT7B">LT7B</option>
+    </select>
+  </div>
+
+  <!-- TOD Availability -->
+   <div class="form-group" style="margin-bottom:10px;">
+  <label for="TODAvailabilityWheel" style="margin-bottom:10px;">
+    <b>Is TOD Bill Available for Wheeled Location? / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
+    </label>
+  <select id="TODAvailabilityWheel" title="Select yes if TOD bill is available" style="width:120px;">
+    <option value="No">No / ഇല്ല</option>
+    <option value="Yes">Yes / ഉണ്ട്</option>
+  </select>
+  </div>
+
+  <!-- TOD Row -->
+<div id="row-wheeling-tod" style="display:none; margin-top:10px;">
+  <strong>Wheeled Site TOD (units) / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി</strong>
+  <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:5px; align-items:center;">
+    <div style="display:flex; align-items:center; gap:4px;">
+      <label for="wheel_TodNL">NL:</label>
+      <input type="number" min="0" step="1" id="wheel_TodNL" class="tod wheel" style="width:70px;">
+    </div>
+    <div style="display:flex; align-items:center; gap:4px;">
+      <label for="wheel_TodOP">OP:</label>
+      <input type="number" min="0" step="1" id="wheel_TodOP" class="tod wheel" style="width:70px;">
+    </div>
+    <div style="display:flex; align-items:center; gap:4px;">
+      <label for="wheel_TodPK">PK:</label>
+      <input type="number" min="0" step="1" id="wheel_TodPK" class="tod wheel" style="width:70px;">
+    </div>    
+  </div>
+</div>
+
+
+  <!-- Total units consumed at wheeled location -->
+  
+  <div id="row-wheeling-total" style="margin-top:10px;">
+    <div class="form-group" style="margin-bottom:10px;">
+    <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
+    <input type="number" id="wheeledConsumedUnits" name="wheeledConsumedUnits" min="0" step="1">
+  </div>
+  </div>
+
+</div>
+
+<!-- Calculate and Reset Buttons (same row) -->
+<div class="form-group" style="width: 100%; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+    <button type="submit" class="no-print"
+        style="
+            background-color: #2403f7; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 4px; 
+            font-size: 16px;
+            cursor: pointer;
+        ">
+       Calculate / കാൽക്കുലേറ്റ്
+    </button>
+
+<button type="button" class="no-print"
+    style="
+        background-color: #a36874; 
+        color: white; 
+        border: none; 
+        padding: 15px 30px; 
+        border-radius: 4px; 
+        font-size: 16px;
+        cursor: pointer;
+    "
+    onclick="window.location.reload();">
+   Reset / റീസെറ്റ്
+</button>
+</div>
+
 </form>
+
 <!-- ===== End of Bill Input Form ===== -->
 
 <!-- Calculation Result -->
-<div class="result" id="result" style="display:none;"></div>
+<div class="form-group full-row">
+    <div class="result" id="result" style="display:none;"></div>
+</div>
+
+
+<!-- PDF Naming Inputs in One Row (compact spacing) -->
+<div id="pdfNameInputs" style="margin:0.25rem 0; display:none; align-items:center; gap:1rem; flex-wrap:wrap;">
+
+  <div style="display:flex; flex-direction:column; margin:0;">
+    <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
+    <input type="text" id="consumerName" style="width:150px; margin:0;">
+  </div>
+
+  <div style="display:flex; flex-direction:column; margin:0;">
+    <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
+    <select id="billMonth" style="width:120px; margin:0;">
+      <option value="01">January</option>
+      <option value="02">February</option>
+      <option value="03">March</option>
+      <option value="04">April</option>
+      <option value="05">May</option>
+      <option value="06">June</option>
+      <option value="07">July</option>
+      <option value="08">August</option>
+      <option value="09">September</option>
+      <option value="10">October</option>
+      <option value="11">November</option>
+      <option value="12">December</option>
+    </select>
+  </div>
+
+  <div style="display:flex; flex-direction:column; margin:0;">
+    <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
+    <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:100px; margin:0;">
+  </div>
+
+</div>
+
+<!-- Download PDF Button (separate row) -->
+<div class="form-group" style="width: 100%; display: flex; justify-content: center; margin: top 10px;">
+    <button type="button" id="downloadFullPDF" class="no-print"
+        style="
+            background-color: #06412c; 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 4px; 
+            font-size: 16px;
+            cursor: pointer;
+            display: none;   /* <-- hides it initially */
+        ">
+        Download as PDF / ഡൌൺലോഡ് PDF
+    </button>
+</div>
+
+<!-- Latest Tariff Circular -->
+<div class="form-group" style="width: 100%; display: flex; justify-content: center; margin-top:0; margin-bottom:2;">
+    <div class="pdf-container" style="margin-top: 2px; margin-bottom: 0;">
+        <span style="font-size:0.9em; color:blue;">
+            Latest KSEB Tariff Circular Used for Calculations:
+        </span>
+        <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">
+            📄 View Circular
+        </a>
+    </div>
+</div>
 
 <!-- Debug Panel (hidden by default) -->
 <div id="debugPanel" class="debug hidden"></div>
 
-<!-- PDF Download Button -->
-<button id="downloadFullPDF" class="no-print">Download Calculations as PDF</button>
 
-<!-- Latest Tariff Circular -->
-<div class="pdf-container" style="margin-top: 10px; margin-bottom: 15px;">
-  <span style="font-size:0.9em; color:blue;">
-    Latest KSEB Tariff Circular Used for Calculations:
-  </span>
-  <a href="Tariff Revision Circular 2025-2027-17429697391004759589.pdf" target="_blank">
-    📄 View Circular
-  </a>
-</div>
-
-<!-- ===== Custom Alert Box ===== -->
 <div id="customAlert"
-     style="display:none; position:fixed; top:30%; left:50%; transform:translate(-50%,-50%);
-            background:#fff; border:2px solid red; padding:20px; z-index:1000; box-shadow:0 0 10px #000; color:red;">
+     style="display:none;
+            position:fixed;
+            top:100px;
+            left:100px;
+            background:#fff;
+            border:2px solid red;
+            padding:20px;
+            max-width:90%;
+            width:300px;
+            z-index:1000;
+            box-shadow:0 0 10px #000;
+            color:red;
+            text-align:center;
+            border-radius:8px;
+            cursor:move;">
   <h3 style="margin-top:0;">Alert!</h3>
-  <div id="customAlertMessage"></div>
-  <button onclick="document.getElementById('customAlert').style.display='none'">Close</button>
+  <div id="customAlertMessage" style="margin:10px 0;"></div>
+  <button onclick="document.getElementById('customAlert').style.display='none'"
+          style="padding:10px 20px; background:red; color:white; border:none; border-radius:4px; cursor:pointer;">
+    Close
+  </button>
 </div>
-<!-- ===== End of Main PDF Content ===== -->
 
-  
+
+<!-- ===== End of Main PDF Content ===== -->
 
 <script>
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate = "20 Aug 2025"; // Last Software update Date
-  let NonTelStartUnit = 250; // Units above 250 are taiken for non-Telescopic Billing
-  let ConTODStartUnit = 500; // Units above 500 then TOD rates apply for consumer
+  const updatedDate    = "30 Aug 2025"; // Last Software update Date
+  let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
+  let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
-  
+  let DistLoss         = 4.99; // Distribution loss for wheeling is 4.99%
+  let wheelingRate     = 0.64; // Wheeling charge is Rs0.64/unit
+  const CTodRStart     = 500; // threshold after which TOD rates apply for consumer non-telectopic LT1
+
+  let LT7A_tariff      = "tariff_LT-7A.csv"
+  let LT7B_tariff      = "tariff_LT-7B.csv"
+  let LT1_tariff       = "tariff_domestic_nontelescopic.csv"
+ 
   let slabs = [], chargesTable = [], todRates = {};
   let fixedChargeTable = [], meterChargeTable = [];
   let userChoice = "";
@@ -357,8 +699,28 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('lastUpdatedDisplay').textContent =
     `Software Last Updated: ${lastUpdatedValue}`;
 
+/* ------------------------------------------------------
+     2. Wheeling Toggle
+     ------------------------------------------------------ */
+// Main wheeling toggle for dropdown
+  document.getElementById("isWheeling").addEventListener("change", function () {
+  document.getElementById("wheelingFields").style.display =
+    (this.value === "Yes") ? "block" : "none";
+});
+
+// TOD toggle inside wheelingFields
+document.getElementById("TODAvailabilityWheel").addEventListener("change", function () {
+  if (this.value === "Yes") {
+    document.getElementById("row-wheeling-tod").style.display = "block";
+    document.getElementById("row-wheeling-total").style.display = "none";
+  } else {
+    document.getElementById("row-wheeling-tod").style.display = "none";
+    document.getElementById("row-wheeling-total").style.display = "block";
+  }
+});
+
   /* ------------------------------------------------------
-     2. TOD Availability Toggle (controls which fields show)
+     3. TOD Availability Toggle (controls which fields show)
      ------------------------------------------------------ */
   const todDropdown      = document.getElementById('TODAvailability');
   const todSection       = document.getElementById('todFields');
@@ -366,6 +728,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const importUnitsInput = document.getElementById('importUnits');
   const exportField      = document.getElementById('exportField')
   const exportUnitsInput = document.getElementById('exportUnits');
+  const SolarInput      = document.getElementById('SolarInput');
 
   // Show/hide TOD / Import fields based on dropdown value
   function handleTODToggle() {
@@ -373,29 +736,71 @@ document.addEventListener('DOMContentLoaded', function () {
       todSection.classList.remove('hidden');
       importField.classList.add('hidden');
       exportField.classList.add('hidden');
-      importUnitsInput.removeAttribute('required')
+      solarField.classList.add('hidden');
+      document.getElementById("solarFieldTOD").style.display = "block";
+      importUnitsInput.removeAttribute('required');      
       exportUnitsInput.removeAttribute('required');
+      SolarInput.removeAttribute('required');
     } else {
       todSection.classList.add('hidden');
       importField.classList.remove('hidden');
       exportField.classList.remove('hidden');
+      document.getElementById("solarFieldTOD").style.display = "none";
       importUnitsInput.setAttribute('required', '')
       exportUnitsInput.setAttribute('required', '');
+      SolarInput.setAttribute('required', '');
     }
   }
   todDropdown.addEventListener('change', handleTODToggle);
   handleTODToggle();  // run on page load
 
   /* ------------------------------------------------------
-     3. Custom Alert Utility (for messages that don't need Yes/No)
+     4. Custom Alert Utility (for messages that don't need Yes/No)
      ------------------------------------------------------ */
   function showCustomAlert(message) {
     document.getElementById("customAlertMessage").innerHTML = message;
     document.getElementById("customAlert").style.display = "block";
   }
 
+
+/* ------------------------------------------------------
+     5. Draggable alert
+     ------------------------------------------------------ */
+dragElement(document.getElementById("customAlert"));
+
+function dragElement(el) {
+  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  el.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    el.style.top = (el.offsetTop - pos2) + "px";
+    el.style.left = (el.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
   /* ------------------------------------------------------
-     4. Custom Yes/No Prompt Utility (returns a Promise<boolean>)
+     5. Custom Yes/No Prompt Utility (returns a Promise<boolean>)
      ------------------------------------------------------ */
   function showYesNoPrompt(message) {
     return new Promise((resolve) => {
@@ -423,40 +828,69 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ------------------------------------------------------
-     5. PDF Download Handler
+     6. Auto select month and year based on tadays date for pdf labeling
      ------------------------------------------------------ */
-  document.getElementById('downloadFullPDF').addEventListener('click', () => {
-    // Hide all .no-print elements
-    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+  window.addEventListener("DOMContentLoaded", () => {
+  const today = new Date();
 
-    const element = document.getElementById('pdfContent');
-    const opt = {
-      margin: 0.3,
-      filename: `KSEB_Bill_${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 3,
-        scrollY: 0,
-        useCORS: true,
-        windowWidth:  element.scrollWidth,
-        windowHeight: element.scrollHeight
-      },
-      jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
-      pagebreak: {
-        mode: ['css', 'legacy'],
-        before: '.pdf-page-break',   // Force new page before this element
-        avoid:  '.avoid-page-break'  // Prevent page break inside these elements
-      }
-    };
+  // --- set billMonth ---
+  const currentMonth = String(today.getMonth() + 1).padStart(2, "0"); // e.g. "09"
+  const billMonthSelect = document.getElementById("billMonth");
+  if (billMonthSelect) {
+    billMonthSelect.value = currentMonth; // auto-select matching option
+  }
 
-    html2pdf().set(opt).from(element).save().then(() => {
-      // Restore no-print elements after PDF is generated
-      document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-    });
-  });
+  // --- set billYear ---
+  const currentYear = today.getFullYear();
+  const billYearInput = document.getElementById("billYear");
+  if (billYearInput) {
+    billYearInput.value = currentYear;
+  }
+});
 
   /* ------------------------------------------------------
-     6. CSV Loading and Parsing Helper Functions
+     6. PDF Download Handler
+     ------------------------------------------------------ */
+document.getElementById('downloadFullPDF').addEventListener('click', () => {
+  // Hide all .no-print elements
+  document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+  // Get user inputs
+  const name = document.getElementById("consumerName")?.value.trim() || "Prosumer";
+  const month = document.getElementById("billMonth")?.options[
+    document.getElementById("billMonth").selectedIndex
+  ]?.text || "Month";
+  const year = document.getElementById("billYear")?.value || new Date().getFullYear();
+
+  // Filename: Year_Month_Bill_Name.pdf
+  const fileName = `${year}_${month}_Bill_${name}.pdf`;
+
+  const element = document.getElementById('pdfContent');
+  const opt = {
+    margin: 0.3,
+    filename: fileName,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,          // High-quality capture (2x is usually enough)
+      scrollY: 0,
+      useCORS: true
+    },
+    jsPDF:  { unit: 'in', format: 'a4', orientation: 'portrait' },
+    pagebreak: {
+      mode: ['css', 'legacy'],
+      before: '.pdf-page-break',
+      avoid:  '.avoid-page-break'
+    }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Restore no-print elements after PDF is generated
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+  });
+});
+
+  /* ------------------------------------------------------
+     7. CSV Loading and Parsing Helper Functions
      ------------------------------------------------------ */
 
    // Generic CSV loader
@@ -466,6 +900,11 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(text => { parser(text); debugLog.push(`[LOADED] ${file}`); })
       .catch(err  => { console.error(`[CSV ERROR] ${file}:`, err);
                        debugLog.push(`[ERROR] ${err}`); });
+  }
+
+ //  CSV loader with promise
+  function loadCSVAsync(file) {
+  return fetch(file).then(response => response.text());
   }
 
   // Domestic Slabs (0–250, 250–500 etc.)
@@ -533,7 +972,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ------------------------------------------------------
-     7. Utility Functions (Fixed Charge / Meter / Other)
+     8. Utility Functions (Fixed Charge / Meter / Other)
      ------------------------------------------------------ */
   function getFixedCharge(phaseType, totalUnits) {
     for (let row of fixedChargeTable) {
@@ -550,15 +989,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-  function getMeterRent(connectionType, phaseType) {
-    for (let row of meterChargeTable) {
-      if (row.label === connectionType) {
-        return { value: phaseType === "three" ? row.three : row.single,
-                 label: `${row.label}-${phaseType}` };
-      }
-    }
-    return { value: 0, label: "Not found" };
+function getMeterRent(connectionType, phaseType, customer, meterOwner) {
+  // If meter owner is Prosumer → rent = 0
+  if (meterOwner.toLowerCase() === "prosumer") {
+    return { value: 0, label: "owned by prosumer" };
   }
+
+  // Normalize customer string (case-insensitive, ignore spaces/underscores)
+  const normalizedCustomer = customer.replace(/\s+/g, "_").toLowerCase();
+
+  // Look up in table by matching customer type (LT1_Prosumer or Consumer)
+  for (let row of meterChargeTable) {
+    const rowLabel = row.label.replace(/\s+/g, "_").toLowerCase();
+    if (rowLabel === normalizedCustomer) {
+      return {
+        value: phaseType.toLowerCase() === "three" ? row.three : row.single,
+        label: `${row.label}-${phaseType}`
+      };
+    }
+  }
+
+  // Fallback if not found
+  return { value: 0, label: "Not found" };
+}
+
+
 
   function getOtherCharges(connectionType) {
     for (let row of chargesTable) {
@@ -570,7 +1025,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ------------------------------------------------------
-     8. Billing Type (Prosumer / Consumer Mode)
+     9. Billing Type (Prosumer / Consumer Mode)
      ------------------------------------------------------ */
   function getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank) {
     const netUnits = importUnits - exportUnits - Bank;
@@ -584,7 +1039,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 /* ------------------------------------------------------
-   9. Domestic Energy Charge (Telescopic Slab Calculation)
+   10. Domestic Energy Charge (Telescopic Slab Calculation)
    ------------------------------------------------------ */
 function calculateDomesticCharge(units) {
   /*
@@ -614,7 +1069,7 @@ function calculateDomesticChargeString(units) {
     if (units <= 0) break;
     const slabUnits = Math.min(units, slab.limit - prevLimit);
     const charge   = slabUnits * slab.rate;
-    parts.push(`${slabUnits} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
+    parts.push(`${slabUnits.toFixed(2)} units * ₹${slab.rate.toFixed(2)} = ₹${charge.toFixed(2)}`);
     units -= slabUnits;
     prevLimit = slab.limit;
   }
@@ -625,9 +1080,9 @@ function calculateDomesticChargeString(units) {
 }
 
 /* ------------------------------------------------------
-   10. TOD Tariff Lookup (returns { upper, base })
+   11. TOD Tariff Lookup (returns { upper, base })
    ------------------------------------------------------ */
-function getTodBaseRate(totalImport) {
+function getTodBaseRate(totalImport,cachedTodBaseTable) {
   /*
     Loops through cachedTodBaseTable and returns the first
     matching slab object for which totalImport <= upper.
@@ -644,59 +1099,77 @@ function getTodBaseRate(totalImport) {
 }
 
 /* ------------------------------------------------------
-   11. TOD Energy Charge (Prosumer Mode & Consumer Mode)
+   12. TOD Energy Charge (Prosumer Mode & Consumer Mode)
    ------------------------------------------------------ */
 function calculateTODCharge(day, peak, offpeak, NET, isConsumer) {
+  const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
 
- const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
+  // Create a safe copy of todRates
+  const localTodRates = { ...todRates };
 
-if (NET <= threshold) {
-    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+  // If below threshold, override rates ONLY in the local copy
+  if (NET <= threshold) {
+    ['nl', 'pk', 'op'].forEach(key => {
+      if (localTodRates.hasOwnProperty(key)) localTodRates[key] = 1;
+    });
   }
-    /*
+
+  /*
     NET = (day + offpeak + peak) after export adjustments.
     Base rate depends on NET (from getTodBaseRate).
     Multipliers = todRates.nl / todRates.pk / todRates.op
   */
-  const todBaseRate = getTodBaseRate(NET).base;
+  const todBaseRate = getTodBaseRate(NET, cachedTodBaseTable).base;
 
-  return todBaseRate * (
-      (day     * todRates.nl) +
-      (peak    * todRates.pk) +
-      (offpeak * todRates.op)
+  const charge = todBaseRate * (
+    (day     * localTodRates.nl) +
+    (peak    * localTodRates.pk) +
+    (offpeak * localTodRates.op)
   );
+
+  console.log("calculateTODCharge -> base:", todBaseRate,
+              " day:", day, " pk:", peak, " op:", offpeak,
+              " rates:", localTodRates, " charge:", charge.toFixed(2));
+
+  return charge;
 }
 
 
+
 /* ------------------------------------------------------
-   12. Detailed breakdown string for Consumer mode
+   13. Detailed breakdown string for Consumer mode
    ------------------------------------------------------ */
 
 function getTODCalculationString(day, peak, offpeak, NET, isConsumer) {
-
   const threshold = isConsumer ? ConTODStartUnit : ProsTODStartUnit;
 
+  // clone todRates so we don’t overwrite the global object
+  let localTodRates = { ...todRates };
+
   if (NET <= threshold) {
-    ['nl', 'pk', 'op'].forEach(key => { if (todRates.hasOwnProperty(key)) todRates[key] = 1; });
+    ['nl', 'pk', 'op'].forEach(key => { 
+      if (localTodRates.hasOwnProperty(key)) localTodRates[key] = 1; 
+    });
   }
 
-  const todBaseRate = getTodBaseRate(NET).base;
+  const todBaseRate = getTodBaseRate(NET, cachedTodBaseTable).base;
   let parts = [];
 
-  if (day)     parts.push(`NL: ${day} × ₹${todBaseRate} × ${todRates.nl} = ₹${(day * todBaseRate * todRates.nl).toFixed(2)}`);
-  if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${todRates.op} = ₹${(offpeak * todBaseRate * todRates.op).toFixed(2)}`);
-  if (peak)    parts.push(`PK: ${peak} × ₹${todBaseRate} × ${todRates.pk} = ₹${(peak * todBaseRate * todRates.pk).toFixed(2)}`);
+  if (day)     parts.push(`NL: ${day} × ₹${todBaseRate} × ${localTodRates.nl} = ₹${(day * todBaseRate * localTodRates.nl).toFixed(2)}`);
+  if (offpeak) parts.push(`OP: ${offpeak} × ₹${todBaseRate} × ${localTodRates.op} = ₹${(offpeak * todBaseRate * localTodRates.op).toFixed(2)}`);
+  if (peak)    parts.push(`PK: ${peak} × ₹${todBaseRate} × ${localTodRates.pk} = ₹${(peak * todBaseRate * localTodRates.pk).toFixed(2)}`);
 
-    // Add "+" symbol between parts
   if (parts.length > 1) {
     for (let i = 0; i < parts.length - 1; i++) parts[i] += ' +';
   }
+
+  console.log("getTODCalculationString TOD Rates = ", localTodRates);
 
   return parts.join('<br>') || '0 units billed';
 }
 
 /* ------------------------------------------------------
-   13. Net Units import calculation for Prosumer
+   14. Net Units import calculation for Prosumer
    ------------------------------------------------------ */
 /**
  * Calculates Actual Import, Net Import, Adjusted Import (after using bank),
@@ -762,7 +1235,7 @@ function getNetImportTOD(importTOD, exportTOD, bank) {
 
 
 /* ------------------------------------------------------
-   14. Net Energy Adjustments (Export / Bank Set-off)
+   15. Net Energy Adjustments (Export / Bank Set-off)
    ------------------------------------------------------ */
 function getEnergy(importTOD, exportTOD, Bank) {
   /*
@@ -799,13 +1272,93 @@ function getEnergy(importTOD, exportTOD, Bank) {
 }
 
 /* ------------------------------------------------------
-   14. Slab Label for upper limit to change from infinity to above 500
+   16. Slab Label for upper limit to change from infinity to above 500
    ------------------------------------------------------ */
 
-function getSlabLabel(totalUnits) {
-  const slab = getTodBaseRate(totalUnits);
+function getSlabLabel(totalUnits,cachedTodBaseTable) {
+  const slab = getTodBaseRate(totalUnits,cachedTodBaseTable);
   const label = (slab.upper === Infinity) ? "Above 500" : slab.upper;
   return { slabObj: slab, label: label };
+}
+
+/* ------------------------------------------------------
+   17. Round 2 two decimal points
+   ------------------------------------------------------ */
+
+function round2(num) {
+  return Math.round(num * 100) / 100;
+}
+
+/* ------------------------------------------------------
+   18. Wheeled Energy Cost calculation
+   ------------------------------------------------------ */
+
+// 1. Cache the correct CSV file only once
+async function cacheWheelingTariff(wheelingCategory) {
+  
+  // Explicit mapping with if/switch
+  switch (wheelingCategory) {
+    case "LT7A":
+      file = LT7A_tariff;
+      break;
+    case "LT7B":
+      file = LT7B_tariff;
+      break;
+    case "LT1":
+      file = LT1_tariff;
+      break;
+    default:
+      console.warn(`⚠ No CSV file defined for category: ${wheelingCategory}`);
+      return;
+  }
+
+  // For LT-VIIA, LT-VIIB, etc. load CSV dynamically
+  if (file) {
+    const text = await loadCSVAsync(file);
+    cachedWheeledRateTable = parseTODTariff(text);
+    console.log(`Cached Wheeled ${wheelingCategory} RateTable:`, cachedWheeledRateTable);
+  }
+  
+}
+
+
+// 2. Use cached table to calculate energy charge
+function WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, todNL=0, todPK=0, todOP=0) {
+  let WheelEnergy = 0;
+  let WheelEString = "";
+  let billmethWheel = "";
+  let slabupperlabel;
+  let slabRange = "";
+
+  if (wheelingCategory === "LT1") {
+    isConsumer = true;
+    billmethWheel = getBillingTypeConsumer(wheeledConsumedUnits, 0, 0, 0).billtype;
+    console.log("▶ billmethWheel =", billmethWheel);
+
+    if (billmethWheel === "telescopic") {
+      WheelEnergy  = calculateDomesticCharge(wheeledConsumedUnits);
+      WheelEString = calculateDomesticChargeString(wheeledConsumedUnits);
+
+    } else if (billmethWheel === "non-telescopic") {
+      WheelEnergy  = calculateTODCharge(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
+      WheelEString = getTODCalculationString(todNL, todPK, todOP, wheeledConsumedUnits, isConsumer);
+      slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+      slabRange = "0 - " + slabupperlabel;
+    }
+  } else {
+    if (!cachedWheeledRateTable) {
+      console.warn("⚠ cachedWheeledRateTable is empty! Did you forget to call cacheWheelingTariff()?");
+      return { WheelEnergy: "NA", WheelEString: "No cached tariff table", billmethWheel: "" };
+    }
+
+    const wheelBaseRate = getTodBaseRate(wheeledConsumedUnits, cachedWheeledRateTable).base;
+    WheelEnergy = wheeledConsumedUnits * wheelBaseRate;
+    WheelEString = `${wheeledConsumedUnits.toFixed(2)} units × ₹${wheelBaseRate.toFixed(2)} = ₹${WheelEnergy.toFixed(2)}`;
+    slabupperlabel = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable).label;
+    slabRange = "0 - " + slabupperlabel;
+  }
+
+  return { WheelEnergy, WheelEString, billmethWheel, slabRange };
 }
 
 
@@ -825,20 +1378,25 @@ function renderProsumerBillingBlock(billmethPros, netUnits, ProsESlab, slabEPros
       ? `Slab: ${slabEPros}, Rate: ${ProsESlab.base}`
       : `Slab: 0 - ${ProsESlab.upper}, Rate: ${ProsESlab.base}`;
 
+  console.log("CProsumerBillingBlock TOD Rates = ", todRates);
+
   return `
     <span style="font-size: smaller; color: green;">
       Billing: ${billmethPros} for ${netUnits} units <br>
       ${slabText} <br>
-      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl} <br>
+      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
     </span>
   `;
-}
+  }
 
 // -- Render Consumer Billing Block -----------------------------------------
-const CTodRStart = 500; // threshold after which TOD multipliers differ
 
 function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, slabECons, todRates) {
-  if (billmethCons !== "non-telescopic") return "";
+  
+  if (billmethCons !== "non-telescopic") 
+  return `
+  <span style="font-size: smaller; color: green;">
+      Billing: ${billmethCons} for ${consumerImport} units <br> </span>`;
 
   const slabText =
     (ConsESlab.upper === Infinity)
@@ -850,16 +1408,63 @@ function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, sla
     (ConsESlab.upper <= CTodRStart)
       ? `<br>Different TOD rates only above ${CTodRStart} units`
       : "";
-
+    console.log("consumerBillingBlock TOD Rates = ", todRates);
   return `
     <span style="font-size: smaller; color: green;">
       Billing: ${billmethCons} for ${consumerImport} units <br>
       ${slabText} <br>
-      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.nl}
+      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk}
       ${diffTodNote}
     </span>
   `;
+  
 }
+
+// -- Render Wheeled Billing Block -----------------------------------------
+
+function renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits, ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) {
+  
+  console.log("renderWheeledBillingBlock inputs:", {
+    billmethWheel, 
+    wheeledConsumedUnits,
+    ConsESlabWheelB4, 
+    slabEConsWheelB4, 
+    todRates,
+     wheelingCategory,
+  });
+  
+  
+  const slabText =
+    (ConsESlabWheelB4.upper === Infinity)
+      ? `Slab: ${slabEConsWheelB4}, Rate: ${ConsESlabWheelB4.base}`
+      : `Slab: 0 - ${ConsESlabWheelB4.upper}, Rate: ${ConsESlabWheelB4.base}`; 
+ 
+  if (wheelingCategory === "LT1") {
+
+  if (billmethWheel !== "non-telescopic") return `
+  <span style="font-size: smaller; color: green;">
+      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br> </span>`;
+
+  return `
+    <span style="font-size: smaller; color: green;">
+      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+      ${slabText} <br>
+      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
+    </span>
+  `;
+  }
+
+if (wheelingCategory === "LT7A" || wheelingCategory === "LT7B"){
+  return `
+    <span style="font-size: smaller; color: green;">
+      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+      ${slabText} <br>      
+    </span>
+  `;
+
+}
+}
+
 
 // -- Render TOD import breakdowwn Block -----------------------------------------
 /**
@@ -935,9 +1540,11 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   // ---------------------------
   const connectionType   = document.getElementById('connectionType').value;
   const phaseType        = document.getElementById('phaseType').value;
+  const meterOwner       = document.getElementById("meterOwner").value;
+ 
   const exportUnitsInput = parseFloat(document.getElementById('exportUnits').value) || 0;
   const importUnitsInput = parseFloat(document.getElementById('importUnits').value) || 0;
-  const Solar            = parseFloat(document.getElementById('Solar').value) || 0;
+  const SolarTotalInput  = parseFloat(document.getElementById('SolarInput').value) || 0;
   const Bank             = parseFloat(document.getElementById('Bank').value) || 0;
   const TODAvailability  = document.getElementById('TODAvailability').value.trim().toLowerCase();
 
@@ -951,11 +1558,67 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const EtodOffpeak = Number(document.getElementById('EtodOffpeak').value || 0);
   const EtodPeak    = Number(document.getElementById('EtodPeak').value || 0);
 
+// Solar generation inputs
+
+   let SolarGen_NL = 0;
+   let SolarGen_PK = 0;  
+   let SolarGen_OP  = 0;  
+   let Solar = 0;
+
+  if (TODAvailability === "yes") {
+
+    // Assign values to existing variables, not redeclare them
+    SolarGen_NL = Number(document.getElementById("Gen_NL")?.value || 0);
+    SolarGen_PK = Number(document.getElementById("Gen_PK")?.value || 0);
+    SolarGen_OP = Number(document.getElementById("Gen_OP")?.value || 0);
+
+    // Optional: calculate total units
+    Solar = SolarGen_NL + SolarGen_PK + SolarGen_OP;
+    } else {
+    Solar = SolarTotalInput;    
+  }
+  
+
+  // ---------------------------
+  // Wheeling related inputs
+  // ---------------------------
+    const isWheeling        = document.getElementById("isWheeling")?.value || "No"; // Check TOD availability for wheeled location    
+    const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No"; // Check TOD availability for wheeled location
+
+    const wheelingCategory = isWheeling === "Yes" 
+    ? document.getElementById("wheelingCategory")?.value || ""
+    : "";
+    
+    // Values depending on selection
+   let wheeledConsumedUnits = 0;
+   let wheelTodNL = 0;  
+   let wheelTodPK = 0;  
+   let wheelTodOP = 0;
+
+if (isWheeling === "Yes") {
+  if (TODAvailableWheel === "Yes") {
+    // Assign values to existing variables, not redeclare them
+    wheelTodNL = Number(document.getElementById("wheel_TodNL")?.value || 0);
+    wheelTodPK = Number(document.getElementById("wheel_TodPK")?.value || 0);
+    wheelTodOP = Number(document.getElementById("wheel_TodOP")?.value || 0);
+
+    // Optional: calculate total units
+    wheeledConsumedUnits = wheelTodNL + wheelTodPK + wheelTodOP;
+  } else {
+    wheeledConsumedUnits = Number(document.getElementById("wheeledConsumedUnits")?.value || 0);
+  }
+}
+
+console.log("wheelTodNL:", wheelTodNL);
+console.log("wheelTodPK:", wheelTodPK);
+console.log("wheelTodOP:", wheelTodOP);
+
+   
   // ---------------------------
   // 2. Determine Import Units
   // ---------------------------
   let importUnits = 0;  let exportUnits = 0;   let netUnits = 0;   let newBank = 0; //  declare the variables
-  let netImpUnits = 0; 
+  let netImpUnits = 0;  let netExpUnits = 0;
 
   let importTOD = { day:0, offpeak:0, peak:0 };   let exportTOD = { day:0, offpeak:0, peak:0 };
   let ProsNetImportData;   
@@ -980,7 +1643,8 @@ document.getElementById('billForm').addEventListener('submit', async function (e
           adjImport    = ProsNetImportData.adjImport; // net import - bank in any zone 
           netImpUnits  = netImport[0] + netImport[1] + netImport[2];     // N = I - E
           netUnits     = adjImport[0] + adjImport[1] + adjImport[2]; // N - B
-          newBank      = ProsNetImportData.currentBank;   // UB       
+          newBank      = ProsNetImportData.currentBank;   // UB   
+          netExpUnits  =  Math.max(0, exportUnits - importUnits);     
 
 
   } else {
@@ -991,6 +1655,8 @@ document.getElementById('billForm').addEventListener('submit', async function (e
     exportUnits = exportUnitsInput;
     console.log("▶ exportUnitsInput =", exportUnitsInput);
     console.log("▶ exportUnits =", exportUnits);
+    netImpUnits = Math.max(0, importUnits - exportUnits);
+    netExpUnits = Math.max(0, exportUnits - importUnits);
 
     netUnits  = Math.max(0, importUnits - (Bank + exportUnits)); // N - B
     newBank = Math.max(0, Bank + exportUnits - importUnits); 
@@ -1018,7 +1684,7 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const billmethPros = getBillingTypeProsumer(importUnits, exportUnits, Solar, Bank).billtype;
 
   // Fixed & Meter charges
-  const meterInfo      = getMeterRent(connectionType, phaseType);
+  const meterInfo      = getMeterRent(connectionType, phaseType, "LT1_Prosumer", meterOwner);
   const fixedInfo      = getFixedCharge(phaseType, totalUnits);
   const fixedChargeStr = getFixedChargeString(importUnits, ownSolarDay);
   const { value: meterCharge } = meterInfo;
@@ -1060,8 +1726,129 @@ document.getElementById('billForm').addEventListener('submit', async function (e
   const dutyAmount      = energyCharge * duty / 100;
   const surchargeAmount = surcharge * netUnits;
 
+// ---------------------------
+  // 6. Wheeling
+// ---------------------------
+
+    let WheelingCharge = 0; let Avail_4_Wheel = 0; let Avail_4_Wheel_String = ``;
+    let Avail_After_Wheel = 0;  let Avail_After_Wheel_String = ``;
+    let Bank_after_Wheeling = 0; let Bank_after_Wheeling_String = ``; let wheelingUnitsNew;
+    let Int_Avail_4_Wheel; let ConsumptionAfterWheeling =0; 
+    
+    let WheelEnergy_After = 0;    let WheelEString_After = '';    let WheelAfterduty = 0;
+    let WheelAftersurcharge = 0; let WheelResultAfter;  let TotalAfterWheel = 0;
+    let InfoWheel;    let ConsESlabWheel;   let ConsslabEConsWheel;
+
+    let WheelEnergy = 0; let WheelEString = '';  let billmethWheel = ''; let slabRange = '';
+    let WheelB4duty = 0; let WheelB4surcharge=0; let WheelResultBefore;  let TotalB4Wheel = 0;
+    let InfoWheelB4; let ConsESlabWheelB4;   let slabEConsWheelB4; 
+
+
+    if (isWheeling === "Yes") {
+
+    // wheeling Units calculations
+      Avail_4_Wheel               = round2(newBank * (1 - DistLoss/100));
+      Int_Avail_4_Wheel           = Avail_4_Wheel;
+
+       if (Int_Avail_4_Wheel >= wheeledConsumedUnits) {
+       wheelingUnitsNew = wheeledConsumedUnits;
+      } else {
+       wheelingUnitsNew = Int_Avail_4_Wheel;
+        }
+
+
+    // wheeling calculations        
+        Avail_4_Wheel_String        =  `UB:${newBank} × [1 - ${DistLoss/100}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
+        Avail_After_Wheel           = round2(Avail_4_Wheel - wheelingUnitsNew);
+        Avail_After_Wheel_String    = `BW:${Avail_4_Wheel} - W:${wheelingUnitsNew} = ${Avail_After_Wheel}`;
+        Bank_after_Wheeling         = round2(Avail_After_Wheel / (1 - DistLoss/100));
+        Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${DistLoss/100}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
+        WheelingCharge              = round2(wheelingUnitsNew * wheelingRate);
+        ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;  
+        EnergyLostWheeling          = newBank - wheelingUnitsNew - Bank_after_Wheeling;  
+    
+
+ let WheelimportTOD = {day:wheelTodNL, offpeak:wheelTodOP, peak:wheelTodPK };   let WheelexportTOD = { day:0, offpeak:0, peak:0 };
+  let WheeledAdjTodData;    let WheelAdjImport = []; let WheelnetUnits = 0;
+
+if (isWheeling === "Yes") {
+  if (TODAvailableWheel === "Yes") {
+    // Calculated Adj TOD
+         WheeledAdjTodData = getNetImportTOD (WheelimportTOD, WheelexportTOD, wheelingUnitsNew);
+         WheelAdjImport = WheeledAdjTodData.adjImport.map(v =>
+                    Number.isInteger(v) ? v : parseFloat(v.toFixed(2))
+);// net import - bank in any zone 
+         WheelnetUnits = WheelAdjImport[0] + WheelAdjImport[1] + WheelAdjImport[2]; // N - B    
+  } 
+}
+
+
+// wheeling Energy calculations (before wheeling) 
+   
+   console.log("▶ ConsumptionAfterWheeling =", ConsumptionAfterWheeling);
+
+   await cacheWheelingTariff(wheelingCategory);
+
+  WheelResultBefore = WheelingEnergyCharge(wheelingCategory, wheeledConsumedUnits, wheelTodNL, wheelTodPK, wheelTodOP);
+  WheelEnergy = Number(WheelResultBefore.WheelEnergy) || 0;
+  WheelEString = WheelResultBefore.WheelEString;
+  billmethWheel = WheelResultBefore.billmethWheel;
+  slabRange = WheelResultBefore.slabRange;
+
+  WheelB4duty      = WheelEnergy * duty / 100;
+  WheelB4surcharge = surcharge * wheeledConsumedUnits;
+
+  TotalB4Wheel = WheelB4surcharge + WheelB4duty + WheelEnergy;
+
+
+  wheelTodNL, wheelTodPK, wheelTodOP
+console.log("▶ wheelTodNL =", wheelTodNL);
+console.log("▶ wheelTodPK =", wheelTodPK);
+console.log("▶ wheelTodOP =", wheelTodOP);
+
+
+  
+  console.log("▶ WheelEnergy =", WheelEnergy);
+  console.log("▶ WheelEString =",WheelEString);
+  console.log("▶ billmethWheel =",billmethWheel);
+  console.log("▶ slabRange =",slabRange);
+
+  InfoWheelB4 = getSlabLabel(wheeledConsumedUnits,cachedWheeledRateTable);
+  ConsESlabWheelB4 = InfoWheelB4.slabObj;
+  slabEConsWheelB4 = InfoWheelB4.label;
+  console.log("▶ ConsESlabWheelB4 =", ConsESlabWheelB4);
+  console.log("▶ slabEConsWheelB4  =",slabEConsWheelB4);
+
+  WheelResultAfter = WheelingEnergyCharge(wheelingCategory, ConsumptionAfterWheeling, WheelAdjImport[0], WheelAdjImport[2], WheelAdjImport[1]);
+  WheelEnergy_After = Number(WheelResultAfter.WheelEnergy) || 0;
+  WheelEString_After = WheelResultAfter.WheelEString;
+  billmethWheel_After = WheelResultAfter.billmethWheel;
+  slabRange_After = WheelResultAfter.slabRange;
+
+  WheelAfterduty      = WheelEnergy_After * duty / 100;
+  WheelAftersurcharge = surcharge * ConsumptionAfterWheeling;
+
+  TotalAfterWheel = WheelAftersurcharge + WheelAfterduty + WheelEnergy_After;
+
+  console.log("▶ WheelEnergy_After =",WheelEnergy_After);
+  console.log("▶ WheelEString_After =",WheelEString_After);
+  console.log("▶ billmethWheel_After =",billmethWheel_After);
+  console.log("▶ slabRange =",slabRange);
+   
+  //let NETConsWheel = wheelTodNL + wheelTodPK + wheelTodOP;     // total TOD consumption at the wheeled site
+  InfoWheelAfter = getSlabLabel(ConsumptionAfterWheeling,cachedWheeledRateTable);
+  ConsESlabWheel = InfoWheelAfter.slabObj;
+  slabEConsWheel = InfoWheelAfter.label;
+  console.log("▶ ConsESlabWheel =", ConsESlabWheel);
+  console.log("▶ slabEConsWheelr =", slabEConsWheel);
+  }
+
+  
+     
+    // // // // // // // // // // // // // 
+    
   // Total Prosumer Bill
-  const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount;
+  const total = energyCharge + fixedCharge + meterCharge + dutyAmount + surchargeAmount + WheelingCharge;
 
   // ---------------------------
   // 6. Load Tariff Data (Consumer Mode)
@@ -1078,7 +1865,7 @@ let consumerEnergy = 0,
     consumerEString = "";
 
 // Get meter and fixed charge information
-const consumerMeterInfo = getMeterRent(connectionType, phaseType);
+const consumerMeterInfo = getMeterRent(connectionType, phaseType, "Consumer", "KSEB");;
 const consumerFixedInfo = getFixedCharge(phaseType, consumerImport);
 
 consumerMeter = consumerMeterInfo.value;
@@ -1104,12 +1891,16 @@ if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) 
 
   // No TOD values entered
   if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
-    showCustomAlert(`
-      <br>ഉപഭോക്താവായി കണക്കാക്കുന്നതിനായി മൊത്തം യൂണിറ്റുകൾ (I + OC) [${consumerImport} യൂണിറ്റുകൾ]
-      ΤΟD രീതി അനുസരിച്ചു നൽകണം. സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
-    `);
-    return;
-  }
+  const msg = `
+    ഉപഭോക്താവായി കണക്കാക്കുന്നതിനായി മൊത്തം യൂണിറ്റുകൾ (I + OC) 
+    <b>[${consumerImport} യൂണിറ്റുകൾ]</b> ΤΟD രീതി അനുസരിച്ചു നൽകണം.<br><br>
+    സ്വയം ഉപയോഗിച്ച സോളാർ: <b>${ownSolarDay} യൂണിറ്റുകൾ</b>.
+  `;
+
+  showCustomAlert(msg);
+  return; // stops further calculation
+}
+
 
   const sumImport = todDay + todPeak + todOffpeak;
 
@@ -1156,7 +1947,7 @@ if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) 
 // 10. Determine Prosumer slab (based on netUnits)
 // -------------------------------------------
 
-const prosInfo = getSlabLabel(netUnits);
+const prosInfo = getSlabLabel(netUnits,cachedTodBaseTable);
 const ProsESlab = prosInfo.slabObj;
 const slabEPros = prosInfo.label;  // returns a matching slab object {upper, base}
 
@@ -1164,9 +1955,12 @@ const slabEPros = prosInfo.label;  // returns a matching slab object {upper, bas
 // 11. Determine Consumer slab (based on NETCons)
 // -------------------------------------------
 let NETCons = dayTotal + todPeak + todOffpeak;     // total TOD consumption as consumer
-const consInfo = getSlabLabel(NETCons);
+const consInfo = getSlabLabel(NETCons,cachedTodBaseTable);
 const ConsESlab = consInfo.slabObj;
 const slabECons = consInfo.label;
+
+console.log("▶ ConsESlab =",ConsESlab);
+console.log("▶ slabECons =",slabECons);
 
 // -------------------------------------------
 // 12. Duty, Surcharge, and Total Consumer Bill
@@ -1193,7 +1987,8 @@ resultDiv.innerHTML = `
 <div id="pdfContent">
 
   <!-- ===== Title ===== -->
-  <h3 style="color: blue;">KSEB Prosumer Bill Calculator</h3>
+  <h2 style="font-size: larger"class="no-underline">KSEB Prosumer Bill Calculator</h2>
+  <br>
 
   <!-- Timestamp and Revision Note -->
   <span style="font-size: smaller; color: purple;">
@@ -1203,9 +1998,10 @@ resultDiv.innerHTML = `
   <br><br>
 
   <!-- ===== Input Summary ===== -->
-  <h3>Input Values</h3>
+  <h2>INPUT VALUES</h2> <br>
   Connection Type: <strong>${connectionType}</strong>,
-  Phase Type: <strong>${phaseType}</strong><br><br>
+  Phase Type: <strong>${phaseType}</strong><br>
+  Meter Owner: <strong>${meterOwner}</strong><br><br>
 
   Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br><br>
 
@@ -1273,24 +2069,41 @@ resultDiv.innerHTML = `
 
   <!-- ===== Summary of I/E/OC/B ===== -->
   <br>
-  Units Imported (I): <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
-  Units Exported (E): <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
-  Total Solar Energy Generated (GM): <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
+  Units Imported [I]: <strong>${importUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br>
+  Units Exported [E]: <strong>${exportUnits}</strong><span style="font-size: smaller; color: green;"> (As a Prosumer) </span><br><br>
+  Total Solar Energy Generated [GM]: <strong>${isNaN(Solar) ? "NA" : Solar} units</strong><br>
   Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br><br>
   Net units Imported [N] (N = I - E): <strong>${netImpUnits} units</strong><br>
-  Previous banked balance [B]: <strong>${Bank} units</strong><br>
+  Net units Exported [NE] (NE = E - I): <strong>${netExpUnits} units</strong><br>
+  Previous Banked Balance [B]: <strong>${Bank} units</strong><br>
 
+  ${isWheeling.toLowerCase() === "yes" 
+  ? `<br>
+      Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>
+      Wheeled Location Category: <strong>${wheelingCategory}</strong> <br>
+      ${
+        TODAvailableWheel.toLowerCase() === "yes"
+          ? `Wheeled Location TOD; NL: <strong>${wheelTodNL}</strong>,
+             OP: <strong>${wheelTodOP}</strong>,
+             PK: <strong>${wheelTodPK}</strong><br>`
+          : `Wheeled Location Usage: <strong>${wheeledConsumedUnits} Units</strong><br>`
+      }
+    `
+  : ``
+}
+
+  
   <!-- ===== Prosumer Section ===== -->
   <div class="pdf-page-break"></div>
-  <h3 style="color: blue;">Prosumer Bill</h3><br>
+  <h2 style="color: blue;">PROSUMER BILL</h2><br>
   Billing Type: <strong>${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
-  Own solar consumption during Day [OC]: <strong>${ownSolarDay} units</strong><br>  
-  Previous banked balance [B]: <strong>${Bank} units</strong><br>
-  Updated banked balance (UB): <strong>${newBank} units</strong> <br> 
+  Own Solar Consumption During Day [OC]: <strong>${ownSolarDay} units</strong><br>  
+  Previous Banked Balance [B]: <strong>${Bank} units</strong><br>
+  Updated Bank [UB]: <strong>${newBank} units</strong> <br> 
 
   <br>
-  Units Billed (N-B): <strong>${netUnits}</strong> 
+  Units Billed [N-B]: <strong>${netUnits}</strong> 
   <span style="font-size: smaller; color: red;">(${netImpUnits} - ${Bank} => ${netUnits})</span><br>
   
   
@@ -1312,27 +2125,36 @@ ${ TODAvailability === "yes"
 
   <!-- Fixed, Duty, Fuel and Meter Charges -->
   <div class="avoid-page-break">
-    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+    Fixed Charge: <strong>₹ ${fixedCharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br><br>
 
-    Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: red;">(${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})</span><br>
+    Duty (${duty}% of Energy): <strong>₹ ${dutyAmount.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${energyCharge.toFixed(2)} × ${duty}% = ${dutyAmount.toFixed(2)})</span><br><br>
 
     Fuel Surcharge (${surcharge}/unit):
-    <strong>₹ ${surchargeAmount.toFixed(2)}</strong>
+    <strong>₹ ${surchargeAmount.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${netUnits} × ${surcharge} = ${surchargeAmount.toFixed(2)})</span><br><br>
+  
+
+  ${(isWheeling.toLowerCase() === "yes" && Avail_After_Wheel >= 0) 
+  ? `Wheeling Charges (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong><br>
+     <span style="font-size: smaller; color: red;">(W: ${wheelingUnitsNew} × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
+  : ""}
+  
+   ${meterOwner.toLowerCase() === "prosumer" 
+  ? `` 
+  : `Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong> 
+      <span style="font-size: smaller; color: green;">(${phaseType} phase, net meter rent)</span><br><br>`}
   </div>
 
-  Meter Rent: <strong>₹ ${meterCharge.toFixed(2)}</strong> 
-  <span style="font-size: smaller; color: green;">(Optional: ${phaseType} phase net meter rent)</span>
-  <br><br>
-  <b>Total Bill (prosumer): ₹ ${total.toFixed(2)}</b><br>
- 
+  <span style="font-size: larger; font-weight: bold;">TOTAL BILL (prosumer): ₹ ${total.toFixed(2)}</span><br>
 
-  <!-- ===== Consumer Section ===== -->
   <div class="pdf-page-break"></div>
+  
+  <!-- ========================= Consumer Section ======================================== -->  
+  
   <div class="avoid-page-break">
-    <h3 style="color: blue;">Predicted Bill: If You Were a Consumer </h3><br>
+    <h2 style="color: blue;">PREDICTED BILL: if you were a consumer </h2><br>
     Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
     Billed Units [I + OC]: ${importUnits} + ${ownSolarDay} = <strong>${consumerImport}</strong><br>
@@ -1361,26 +2183,104 @@ ${ TODAvailability === "yes"
     <br><br>
 
     <!-- Fixed, Duty, Fuel and Meter Charges (Consumer) -->
-    Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br>
+    Fixed Charge: <strong>₹ ${consumerFixed.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: green;">(${fixedChargeStr}: ${fixedLabel} slab, ${phaseType} phase)</span><br><br>
 
-    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: red;">(${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})</span><br>
+    Duty (${duty}% of Energy): <strong>₹ ${consumerdutyAmount.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${consumerEnergy.toFixed(2)} × ${duty}% = ${consumerdutyAmount.toFixed(2)})</span><br><br>
 
-    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong>
+    Fuel Surcharge (${surcharge}/unit): <strong>₹ ${consumersurchargeAmount.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${consumerImport} × ${surcharge} = ${consumersurchargeAmount.toFixed(2)})</span><br><br>
 
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong>
-    <span style="font-size: smaller; color: green;">(Optional: ${phaseType} phase net meter rent)</span>
+    <span style="font-size: smaller; color: green;">(${phaseType} phase meter rent)</span>
   <br><br>
-    <b>Total Bill (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</b>
-  </div>
+    <span style="font-size: larger; font-weight: bold;">TOTAL BILL (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</span>
+  
 
+<!-- ===== ==================== Wheeling Section =========================================== -->
+  
+  ${isWheeling.toLowerCase() === "yes" 
+  ? `
+    <div class="pdf-page-break"></div>
+    <div class="avoid-page-break">
+
+    <h2 style="color: blue;">WHEELING</h2> <br> 
+    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+  Bank unit calculation </h2> <br>
+     Bank Opening [UB]: ${newBank} units <br>
+     Available for Wheeling [BW]: <strong>${Avail_4_Wheel}</strong> <br>
+     <span style="font-size: smaller; color: red;">${Avail_4_Wheel_String} units </span><br><br>
+
+     Wheeled Site Consumption [WC]: <strong>${wheeledConsumedUnits}</strong> units <br>
+     Wheeled [W]: <strong>${wheelingUnitsNew}</strong> units <br>
+     Balance After Wheeling [AW]:<strong> ${Avail_After_Wheel}</strong> units<br>
+     <span style="font-size: smaller; color: red;">(${Avail_After_Wheel_String})</span><br><br>
+ 
+     <strong>Updated Bank Closing</strong>: <strong>${Bank_after_Wheeling}</strong> units<br>
+     <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>
+     <br>
+     Energy Lost During Wheeling:  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
+     <span style="font-size: smaller; color: red;">(UB:${newBank} - W:${wheelingUnitsNew} - AW:${Bank_after_Wheeling} = ${EnergyLostWheeling.toFixed(2)})  </span><br>
+     <br> 
+
+     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+     Charges after adjusting wheeled units </h2> <br> 
+    
+    Charged Units: ${ConsumptionAfterWheeling.toFixed(2)} units<br>
+    <span style="font-size: smaller; color: red;">(WC:${wheeledConsumedUnits} - W:${wheelingUnitsNew} = ${ConsumptionAfterWheeling.toFixed(2)})</span><br><br>
+
+    Energy Charge: <strong> ₹ ${WheelEnergy_After.toFixed(2)} </strong><br>
+    <span style="font-size: smaller; color: red;">${WheelEString_After}</span> <br>
+    <span style=color: green;">
+     ${ renderWheeledBillingBlock(billmethWheel_After, ConsumptionAfterWheeling,  ConsESlabWheel, slabEConsWheel, todRates, wheelingCategory) }     
+    </span>
+    <br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${WheelAfterduty.toFixed(2)}</strong> <br>
+    <span style="font-size: smaller; color: red;">(${WheelEnergy_After.toFixed(2)} × ${duty}% = ${WheelAfterduty.toFixed(2)})</span><br><br>
+    
+
+    Fuel Surcharge (${surcharge}/unit):
+    <strong>₹ ${WheelAftersurcharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${ConsumptionAfterWheeling.toFixed(2)} × ${surcharge} = ${WheelAftersurcharge.toFixed(2)})</span><br><br>
+    
+    <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling): ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
+
+    
+    <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
+     Predicted charges without wheeled units </h2> <br> 
+    
+    Units Consumed: <strong>${wheeledConsumedUnits} units </strong><br><br>    
+
+     Energy Charge:<strong> ₹ ${WheelEnergy.toFixed(2)}</strong><br> 
+     <span style="font-size: smaller; color: red;">${WheelEString}</span> <br>
+     <span style=color: green;">
+     ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }     
+    </span>
+    <br>
+
+    Duty (${duty}% of Energy): <strong>₹ ${WheelB4duty.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${WheelEnergy.toFixed(2)} × ${duty}% = ${WheelB4duty.toFixed(2)})</span><br><br>
+
+    Fuel Surcharge (${surcharge}/unit):
+    <strong>₹ ${WheelB4surcharge.toFixed(2)}</strong><br>
+    <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
+    <br>
+    <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling): ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
+    </div>
+     `
+  :``}
 </div>
 `
   resultDiv.scrollIntoView({behavior: 'smooth'}); 
     // Optional: Enable debug panel if needed
     // showDebugPanel();
+    /* ------------------------------------------------------
+     downloadFullPDF & related input fiels hidden initially
+     ------------------------------------------------------ */
+document.getElementById("pdfNameInputs").style.display = "flex";
+document.getElementById("downloadFullPDF").style.display = "block";
 });
 
 });
