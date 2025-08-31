@@ -723,7 +723,7 @@ body,
 <script>
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate    = "30 Aug 2025"; // Last Software update Date
+  const updatedDate    = "31 Aug 2025"; // Last Software update Date
   let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
@@ -765,27 +765,61 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /* ------------------------------------------------------
      2. Wheeling Toggle
-     ------------------------------------------------------ */
+   ------------------------------------------------------ */
+
 // Main wheeling toggle for dropdown
-  document.getElementById("isWheeling").addEventListener("change", function () {
+document.getElementById("isWheeling").addEventListener("change", function () {
   document.getElementById("wheelingFields").style.display =
     (this.value === "Yes") ? "block" : "none";
+  handleWheelingTOD(); // re-evaluate whenever main toggle changes
 });
 
 // TOD toggle inside wheelingFields
-document.getElementById("TODAvailabilityWheel").addEventListener("change", function () {
-  if (this.value === "Yes") {
+document.getElementById("TODAvailabilityWheel").addEventListener("change", handleWheelingTOD);
+
+// When user enters total wheeled units
+document.getElementById("wheeledConsumedUnits").addEventListener("input", handleWheelingTOD);
+
+// When user changes wheeling category
+document.getElementById("wheelingCategory").addEventListener("change", handleWheelingTOD);
+
+let hasShownWheelingAlert = false; // track whether alert was already shown
+
+function handleWheelingTOD() {
+  const isWheeling = document.getElementById("isWheeling").value;
+  const TODAvailableWheel = document.getElementById("TODAvailabilityWheel").value;
+  const wheeledConsumedUnits = parseInt(document.getElementById("wheeledConsumedUnits").value || "0", 10);
+  const wheelingCategory = document.getElementById("wheelingCategory").value;
+
+  if (isWheeling === "Yes" && TODAvailableWheel === "Yes") {
+    // Normal TOD mode
     document.getElementById("row-wheeling-tod").style.display = "block";
     document.getElementById("row-wheeling-total").style.display = "none";
+    hasShownWheelingAlert = false; // reset alert state
+
+  } else if (
+    isWheeling === "Yes" &&
+    TODAvailableWheel === "No" &&
+    wheelingCategory === "LT1" &&
+    wheeledConsumedUnits > 500
+  ) {
+    // LT1 rule: Force TOD entry if consumption > 500
+    if (!hasShownWheelingAlert) {
+      alert("Since LT1 consumption > 500 units, please enter TOD readings to proceed.");
+      hasShownWheelingAlert = true; // prevent repeated alerts
+    }
+    document.getElementById("row-wheeling-tod").style.display = "block";
+    document.getElementById("row-wheeling-total").style.display = "none";
+
   } else {
+    // Default case: No TOD, normal total input
     document.getElementById("row-wheeling-tod").style.display = "none";
     document.getElementById("row-wheeling-total").style.display = "block";
+    hasShownWheelingAlert = false; // reset alert state
   }
-});
+}
 
-  /* ------------------------------------------------------
-     3. TOD Availability Toggle (controls which fields show)
-     ------------------------------------------------------ */
+
 /* ------------------------------------------------------
    3. TOD Availability Toggle (controls which fields show)
    ------------------------------------------------------ */
@@ -1884,6 +1918,10 @@ if (isWheeling === "Yes") {
   } 
 }
 
+if (isWheeling === "Yes" && TODAvailableWheel === "No" && wheeledConsumedUnits < 500) {
+  wheelTodNL = wheeledConsumedUnits;
+}
+
 
 // wheeling Energy calculations (before wheeling) 
    
@@ -1904,6 +1942,9 @@ if (isWheeling === "Yes") {
 
 
   wheelTodNL, wheelTodPK, wheelTodOP
+
+console.log("▶ wwheeledConsumedUnits =", wheeledConsumedUnits);
+console.log("▶ wheelingCategory =", wheelingCategory);
 console.log("▶ wheelTodNL =", wheelTodNL);
 console.log("▶ wheelTodPK =", wheelTodPK);
 console.log("▶ wheelTodOP =", wheelTodOP);
