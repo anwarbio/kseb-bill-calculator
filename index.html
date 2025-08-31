@@ -1491,48 +1491,66 @@ function renderConsumerBillingBlock(billmethCons, consumerImport, ConsESlab, sla
 // -- Render Wheeled Billing Block -----------------------------------------
 
 function renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits, ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) {
-  
+
   console.log("renderWheeledBillingBlock inputs:", {
     billmethWheel, 
     wheeledConsumedUnits,
     ConsESlabWheelB4, 
     slabEConsWheelB4, 
     todRates,
-     wheelingCategory,
+    wheelingCategory,
   });
-  
-  
+
   const slabText =
     (ConsESlabWheelB4.upper === Infinity)
       ? `Slab: ${slabEConsWheelB4}, Rate: ${ConsESlabWheelB4.base}`
-      : `Slab: 0 - ${ConsESlabWheelB4.upper}, Rate: ${ConsESlabWheelB4.base}`; 
- 
+      : `Slab: 0 - ${ConsESlabWheelB4.upper}, Rate: ${ConsESlabWheelB4.base}`;
+
+  // Compute the "Different TOD rates" note for LT1 only
+ let diffTodNote = "";
+if (wheelingCategory === "LT1" && billmethWheel == "non-telescopic" && ConsESlabWheelB4.upper <= CTodRStart) {
+    diffTodNote = `Different TOD rates only above ${CTodRStart} units`;
+}
+
   if (wheelingCategory === "LT1") {
 
-  if (billmethWheel !== "non-telescopic") return `
-  <span style="font-size: smaller; color: green;">
-      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br> </span>`;
+    if (billmethWheel !== "non-telescopic") {
+        // For telescopic billing, always show TOD rates + diffTodNote if exists
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units
+            ${diffTodNote ? "<br>" + diffTodNote : ""} <br> 
+        </span>`;
+    }
 
-  return `
-    <span style="font-size: smaller; color: green;">
-      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
-      ${slabText} <br>
-      TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
-    </span>
-  `;
+    // For non-telescopic billing
+    if (diffTodNote) {
+        // Only show the diffTodNote
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units
+            <br>${diffTodNote} <br>
+        </span>`;
+    } else {
+        // TOD rates exist, print normally
+        return `
+        <span style="font-size: smaller; color: green;">
+            ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+            ${slabText} <br>
+            TOD Rates: NL: ${todRates.nl}, OP: ${todRates.op}, PK: ${todRates.pk} <br>
+        </span>`;
+    }
+}
+
+  if (wheelingCategory === "LT7A" || wheelingCategory === "LT7B") {
+    return `
+      <span style="font-size: smaller; color: green;">
+        ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
+        ${slabText} <br>      
+      </span>
+    `;
   }
-
-if (wheelingCategory === "LT7A" || wheelingCategory === "LT7B"){
-  return `
-    <span style="font-size: smaller; color: green;">
-      ${wheelingCategory}, ${billmethWheel} for ${wheeledConsumedUnits.toFixed(2)} units <br>
-      ${slabText} <br>      
-    </span>
-  `;
-
 }
-}
-
 
 // -- Render TOD import breakdowwn Block -----------------------------------------
 /**
@@ -2305,8 +2323,8 @@ ${ TODAvailability === "yes"
     <span style=color: green;">
      ${ renderWheeledBillingBlock(billmethWheel_After, ConsumptionAfterWheeling,  ConsESlabWheel, slabEConsWheel, todRates, wheelingCategory) }     
     </span>
-    <br>
-
+    <br><br>
+    
     Duty (${duty}% of Energy): <strong>₹ ${WheelAfterduty.toFixed(2)}</strong> <br>
     <span style="font-size: smaller; color: red;">(${WheelEnergy_After.toFixed(2)} × ${duty}% = ${WheelAfterduty.toFixed(2)})</span><br><br>
     
@@ -2327,10 +2345,10 @@ ${ TODAvailability === "yes"
      Energy Charge:<strong> ₹ ${WheelEnergy.toFixed(2)}</strong><br> 
      <span style="font-size: smaller; color: red;">${WheelEString}</span> <br>
      <span style=color: green;">
-     ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }     
+     ${ renderWheeledBillingBlock(billmethWheel, wheeledConsumedUnits,  ConsESlabWheelB4, slabEConsWheelB4, todRates, wheelingCategory) }  
     </span>
-    <br>
-
+    <br><br>
+    
     Duty (${duty}% of Energy): <strong>₹ ${WheelB4duty.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${WheelEnergy.toFixed(2)} × ${duty}% = ${WheelB4duty.toFixed(2)})</span><br><br>
 
