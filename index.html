@@ -2055,6 +2055,7 @@ resultDiv.innerHTML = `
 <div id="pdfContent" style="width:210mm; max-width:100%; margin:0 auto;">
 
   <!-- ===== Title ===== -->
+  <br>
   <h2 style="font-size: larger"class="no-underline">KSEB Prosumer Bill Calculator</h2>
   <br>
 
@@ -2163,6 +2164,7 @@ resultDiv.innerHTML = `
   
   <!-- ===== Prosumer Section ===== -->
   <div class="pdf-page-break"></div>
+  <br>
   <h2 style="color: blue;">PROSUMER BILL</h2><br>
   Billing Type: <strong>${connectionType}, ${importUnits >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
@@ -2222,6 +2224,7 @@ ${ TODAvailability === "yes"
   <!-- ========================= Consumer Section ======================================== -->  
   
   <div class="avoid-page-break">
+    <br>
     <h2 style="color: blue;">PREDICTED BILL: if you were a consumer </h2><br>
     Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
@@ -2271,7 +2274,7 @@ ${ TODAvailability === "yes"
   ${isWheeling.toLowerCase() === "yes" 
   ? `
     <div class="pdf-page-break"></div>
-    
+    <br>
     <h2 style="color: blue;">WHEELING</h2> <br> 
     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
   Bank unit calculation </h2> <br>
@@ -2314,7 +2317,8 @@ ${ TODAvailability === "yes"
     
     <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling): ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
 
-    
+    <div class="pdf-page-break"></div>
+  <br>
     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
      Predicted charges without wheeled units </h2> <br> 
     
