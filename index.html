@@ -219,7 +219,13 @@ label {
   margin-top: 1rem;
 }
 
-.hidden { display: none; }
+
+.hidden {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important; /* optional, if border also contributes */
+}
 
 /* ===== 6. PDF Download Button Style =================== */
 #downloadFullPDF {
@@ -267,12 +273,11 @@ label {
 }
 
 /* === Print/PDF Styles for All Devices === */
-@media print {
+@media print { 
   #pdfContent {
-    width: 100% !important;
-    font-size: 12px !important;
-    transform: none !important;
-  }
+     width: 100% !important; 
+     font-size: 12px !important; 
+     transform: none !important; }
 
   /* hide interactive elements */
   #billForm,
@@ -363,7 +368,7 @@ body,
 <!-- Previous Bank Balance -->
 <div class="form-group">
   <label for="Bank"><b>Previous Bank Balance / മുൻ ബാങ്ക് ബാലൻസ്</b></label>
-  <input type="number" id="Bank" value="0" placeholder="e.g. 10" style="width:100px;">
+  <input type="number" id="Bank" value="0" style="width:100px;">
 </div>
 
 <!-- TOD Availability -->
@@ -601,6 +606,7 @@ body,
 
 <!-- pdf inputs for naming -->
 
+<!-- pdf inputs for naming -->
 <div style="width:100%; padding:0 20px; box-sizing:border-box;">  
   <div id="pdfNameInputs" 
        style="
@@ -644,9 +650,8 @@ body,
   </div>
 
   <!-- Helper text -->
-  <div style="font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
-    Please fill in details for custom naming the PDF
-  </div>
+<div id="pdfHelperText" style="display:none; font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
+  Please fill in details for custom naming the PDF
 </div>
 
 
@@ -910,6 +915,9 @@ function dragElement(el) {
   /* ------------------------------------------------------
      6. PDF Download Handler
      ------------------------------------------------------ */
+/* ------------------------------------------------------
+     6. PDF Download Handler
+     ------------------------------------------------------ */
 document.getElementById('downloadFullPDF').addEventListener('click', () => {
   // Hide all .no-print elements
   document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
@@ -947,6 +955,7 @@ document.getElementById('downloadFullPDF').addEventListener('click', () => {
     document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
   });
 });
+
 
   /* ------------------------------------------------------
      7. CSV Loading and Parsing Helper Functions
@@ -2043,7 +2052,7 @@ resultDiv.style.display = 'block';
 
 // Build HTML output
 resultDiv.innerHTML = `
-<div id="pdfContent">
+<div id="pdfContent" style="width:210mm; max-width:100%; margin:0 auto;">
 
   <!-- ===== Title ===== -->
   <h2 style="font-size: larger"class="no-underline">KSEB Prosumer Bill Calculator</h2>
@@ -2262,8 +2271,7 @@ ${ TODAvailability === "yes"
   ${isWheeling.toLowerCase() === "yes" 
   ? `
     <div class="pdf-page-break"></div>
-    <div class="avoid-page-break">
-
+    
     <h2 style="color: blue;">WHEELING</h2> <br> 
     <h2 style="color:#6A0DAD; font-size:larger; display:inline-block; border-bottom:2px solid #6A0DAD;">
   Bank unit calculation </h2> <br>
@@ -2327,7 +2335,7 @@ ${ TODAvailability === "yes"
     <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
     <br>
     <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling): ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
-    </div>
+    
      `
   :``}
 </div>
@@ -2339,6 +2347,7 @@ ${ TODAvailability === "yes"
      downloadFullPDF & related input fiels hidden initially
      ------------------------------------------------------ */
 document.getElementById("pdfNameInputs").style.display = "flex";
+document.getElementById("pdfHelperText").style.display = "block";  // <-- show helper now
 document.getElementById("downloadFullPDF").style.display = "inline-block";
 
 });
