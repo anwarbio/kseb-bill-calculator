@@ -786,37 +786,53 @@ document.getElementById("TODAvailabilityWheel").addEventListener("change", funct
   /* ------------------------------------------------------
      3. TOD Availability Toggle (controls which fields show)
      ------------------------------------------------------ */
-  const todDropdown      = document.getElementById('TODAvailability');
-  const todSection       = document.getElementById('todFields');
-  const importField      = document.getElementById('importField');
-  const importUnitsInput = document.getElementById('importUnits');
-  const exportField      = document.getElementById('exportField')
-  const exportUnitsInput = document.getElementById('exportUnits');
-  const SolarInput      = document.getElementById('SolarInput');
+/* ------------------------------------------------------
+   3. TOD Availability Toggle (controls which fields show)
+   ------------------------------------------------------ */
+const todDropdown      = document.getElementById('TODAvailability');
+const todSection       = document.getElementById('todFields');
+const importField      = document.getElementById('importField');
+const importUnitsInput = document.getElementById('importUnits');
+const exportField      = document.getElementById('exportField');
+const exportUnitsInput = document.getElementById('exportUnits');
+const solarField       = document.getElementById('solarField');   
+const SolarInput       = document.getElementById('SolarInput');
+const solarFieldTOD    = document.getElementById('solarFieldTOD');
 
-  // Show/hide TOD / Import fields based on dropdown value
-  function handleTODToggle() {
-    if (todDropdown.value === 'Yes') {
-      todSection.classList.remove('hidden');
-      importField.classList.add('hidden');
-      exportField.classList.add('hidden');
-      solarField.classList.add('hidden');
-      document.getElementById("solarFieldTOD").style.display = "block";
-      importUnitsInput.removeAttribute('required');      
-      exportUnitsInput.removeAttribute('required');
-      SolarInput.removeAttribute('required');
-    } else {
-      todSection.classList.add('hidden');
-      importField.classList.remove('hidden');
-      exportField.classList.remove('hidden');
-      document.getElementById("solarFieldTOD").style.display = "none";
-      importUnitsInput.setAttribute('required', '')
-      exportUnitsInput.setAttribute('required', '');
-      SolarInput.setAttribute('required', '');
-    }
+// Show/hide TOD / Import fields based on dropdown value
+function handleTODToggle() {
+  if (todDropdown.value === 'Yes') {
+    todSection.classList.remove('hidden');
+    solarFieldTOD.style.display = "block";
+
+    importField.classList.add('hidden');
+    exportField.classList.add('hidden');
+    solarField.classList.add('hidden');
+
+    importUnitsInput.removeAttribute('required');      
+    exportUnitsInput.removeAttribute('required');
+    SolarInput.removeAttribute('required');
+
+  } else {
+    todSection.classList.add('hidden');
+    solarFieldTOD.style.display = "none";
+
+    importField.classList.remove('hidden');
+    exportField.classList.remove('hidden');
+    solarField.classList.remove('hidden');
+
+    importUnitsInput.setAttribute('required', '');
+    exportUnitsInput.setAttribute('required', '');
+    SolarInput.setAttribute('required', '');
   }
-  todDropdown.addEventListener('change', handleTODToggle);
-  handleTODToggle();  // run on page load
+}
+
+todDropdown.addEventListener('change', handleTODToggle);
+handleTODToggle();  // run on page load
+
+
+/* To keep the field visibility same always*/
+  
 
   /* ------------------------------------------------------
      4. Custom Alert Utility (for messages that don't need Yes/No)
@@ -1699,7 +1715,7 @@ console.log("wheelTodNL:", wheelTodNL);
 console.log("wheelTodPK:", wheelTodPK);
 console.log("wheelTodOP:", wheelTodOP);
 
-   
+
   // ---------------------------
   // 2. Determine Import Units
   // ---------------------------
@@ -1929,7 +1945,7 @@ console.log("▶ wheelTodOP =", wheelTodOP);
   console.log("▶ slabEConsWheelr =", slabEConsWheel);
   }
 
-  
+  const WheelSaving = TotalB4Wheel - TotalAfterWheel;
      
     // // // // // // // // // // // // // 
     
@@ -1962,8 +1978,8 @@ if (userChoice === "" && TODAvailability === "yes" && consumerImport >= 250) {
   dayTotal = todDay + ownSolarDay;
 }
 
-// Prompt only when TOD is not available and import >=250
-if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
+// Prompt only when TOD is not available and import >500
+if (TODAvailability === "no" && consumerImport > 500 && userChoice === "") {
   const message = `📌 Do you want to skip estimating bill as a Consumer?<br>
   നിങ്ങൾ ഉപഭോക്തൃ ബിൽ കണക്കാക്കുന്നത് ഒഴിവാക്കണോ?`;
   const proceed = await showYesNoPrompt(message);
@@ -1973,7 +1989,13 @@ if (TODAvailability === "no" && consumerImport >= 250 && userChoice === "") {
 // -------------------------------------------------------------
 // 8. Consumer Mode Adjustments (when user wants the consumer calculation)
 // -------------------------------------------------------------
-if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) {
+
+if (TODAvailability === "no" && consumerImport <= 500) {
+dayTotal = consumerImport;  
+}
+
+
+if (userChoice === "need" && TODAvailability === "no" && consumerImport > 500) {
 
   // No TOD values entered
   if (todDay === 0 && todPeak === 0 && todOffpeak === 0) {
@@ -2005,7 +2027,7 @@ if (userChoice === "need" && TODAvailability === "no" && consumerImport >= 250) 
   // Set consumer daytime units to user-entered TOD Day value
   dayTotal = todDay;
 
-} else if (userChoice === "need" && TODAvailability === "yes" && consumerImport >= 250) {
+} else if (userChoice === "need" && TODAvailability === "yes" && consumerImport > 500) {
   // If TOD bill is available, daytime = TOD Day + ownSolarDay
   dayTotal = todDay + ownSolarDay;
 }
@@ -2060,6 +2082,8 @@ const consumerTotal = consumerEnergy
                      + consumerdutyAmount
                      + consumersurchargeAmount;
 
+const SavedSolar = consumerTotal - total;
+
 
   // =============================
 // 13. Render Calculation Result
@@ -2084,6 +2108,57 @@ resultDiv.innerHTML = `
   </span>
   <br><br>
 
+<!-- ===== Savings Section ===== -->
+  <br>
+  <h2>SAVINGS</h2> <br>
+
+  <span style="color: green; font-weight: bold;">
+  From direct solar usage: ₹ ${SavedSolar.toFixed(2)}
+</span><br>
+<span style=" color: red;">
+  (CT: ₹ ${consumerTotal.toFixed(2)} - PT: ₹ ${total.toFixed(2)})
+</span><br><br>
+
+   ${isWheeling.toLowerCase() === "yes" 
+  ? `<span style=" color: green; font-weight: bold;">
+       From wheeling: ₹ ${WheelSaving.toFixed(2)}
+     </span><br>
+     <span style="font-size: smaller; color: red;">
+        (B4W: ₹ ${TotalB4Wheel.toFixed(2)} - AFW: ₹ ${TotalAfterWheel.toFixed(2)})
+     </span><br><br>`
+  : ""
+}
+
+${isWheeling.toLowerCase() === "yes" 
+  ? `<span style=" color: green; font-weight: bold;">
+       Units saved: ${Bank_after_Wheeling}
+     </span>
+     <span style="font-size: smaller; color: red;">
+        (Updated total banked units)
+     </span><br>` 
+
+  : `<span style=" color: green; font-weight: bold;">
+       Units Saved: ${newBank}
+     </span>
+     <span style="font-size: smaller; color: red;">
+        (Updated total banked units)
+     </span><br>` 
+}
+ 
+
+${isWheeling.toLowerCase() === "yes" 
+  ? `<span style=" color: blue; font-weight: bold;">
+       Units lost: ${EnergyLostWheeling.toFixed(2)}
+     </span>
+     <span style="font-size: smaller; color: red;">
+        (Distribution loss)
+     </span><br>`  
+
+  : "" 
+}
+  
+
+ <br><br>
   <!-- ===== Input Summary ===== -->
   <h2>INPUT VALUES</h2> <br>
   Connection Type: <strong>${connectionType}</strong>,
@@ -2092,9 +2167,9 @@ resultDiv.innerHTML = `
 
   Is TOD bill available? <strong>${TODAvailability.charAt(0).toUpperCase() + TODAvailability.slice(1)}</strong><br><br>
 
-  <!-- ===== Show TOD Table if TOD available or Import >=250 ===== -->
+  <!-- ===== Show TOD Table if TOD available or Import > ===== -->
   ${
-    (TODAvailability === "yes" || consumerImport >= 250)
+    (TODAvailability === "yes" || consumerImport > 500)
       ? `
         ${
           TODAvailability === "yes"
@@ -2177,7 +2252,7 @@ resultDiv.innerHTML = `
       }
     `
   : ``
-}
+    }
 
   
   <!-- ===== Prosumer Section ===== -->
@@ -2201,7 +2276,6 @@ ${ TODAvailability === "yes"
     : ""
 }
 <br>
-
 
 
   <!-- Energy Charge (Prosumer) -->
@@ -2235,14 +2309,13 @@ ${ TODAvailability === "yes"
       <span style="font-size: smaller; color: green;">(${phaseType} phase, net meter rent)</span><br><br>`}
   </div>
 
-  <span style="font-size: larger; font-weight: bold;">TOTAL BILL (prosumer): ₹ ${total.toFixed(2)}</span><br>
-
-  <div class="pdf-page-break"></div>
+  <span style="font-size: larger; font-weight: bold;">TOTAL BILL (prosumer) [PT]: ₹ ${total.toFixed(2)}</span><br>
+  <br>
   
-  <!-- ========================= Consumer Section ======================================== -->  
-  
+  <div class="pdf-page-break"></div>  
+  <!-- ========================= Consumer Section ======================================== -->    
+  <br><br>
   <div class="avoid-page-break">
-    <br>
     <h2 style="color: blue;">PREDICTED BILL: if you were a consumer </h2><br>
     Billing Type: <strong>${connectionType}, ${consumerImport >= 250 ? 'TOD' : 'Non-TOD'}</strong><br><br>
 
@@ -2284,7 +2357,7 @@ ${ TODAvailability === "yes"
     Meter Rent: <strong>₹ ${consumerMeter.toFixed(2)}</strong>
     <span style="font-size: smaller; color: green;">(${phaseType} phase meter rent)</span>
   <br><br>
-    <span style="font-size: larger; font-weight: bold;">TOTAL BILL (consumer): ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</span>
+    <span style="font-size: larger; font-weight: bold;">TOTAL BILL (consumer) [CT]: ₹ ${userChoice === "skipped" ? 'NA' : consumerTotal.toFixed(2)}</span>
   
 
 <!-- ===== ==================== Wheeling Section =========================================== -->
@@ -2333,7 +2406,7 @@ ${ TODAvailability === "yes"
     <strong>₹ ${WheelAftersurcharge.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${ConsumptionAfterWheeling.toFixed(2)} × ${surcharge} = ${WheelAftersurcharge.toFixed(2)})</span><br><br>
     
-    <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling): ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
+    <span style="font-size: larger; font-weight: bold;">TOTAL (after wheeling) [AFW]: ₹ ${TotalAfterWheel.toFixed(2)}</span><br><br>
 
     <div class="pdf-page-break"></div>
   <br>
@@ -2356,7 +2429,7 @@ ${ TODAvailability === "yes"
     <strong>₹ ${WheelB4surcharge.toFixed(2)}</strong><br>
     <span style="font-size: smaller; color: red;">(${wheeledConsumedUnits} × ${surcharge} = ${WheelB4surcharge.toFixed(2)})</span><br>
     <br>
-    <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling): ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
+    <span style="font-size: larger; font-weight: bold;">TOTAL (without wheeling) [B4W]: ₹ ${TotalB4Wheel.toFixed(2)}</span><br>
     
      `
   :``}
