@@ -330,10 +330,10 @@
     <!-- Hidden field: software last update date -->
     <input type="hidden" id="lastUpdated">
 
-    <!-- ===== Main PDF Content ========================================== -->
+     <!-- ===== Main PDF Content ========================================== -->
 
     <!-- Title -->
-    <h1>KSEB Prosumer Bill Calculator / കെ.എസ്.ഇ.ബി. പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
+    <h1>KSEB Prosumer Bill Calculator / പ്രോസ്യൂമർ ബിൽ കാൽക്കുലേറ്റർ</h1>
 
     <!-- Top Info Bar: Timestamp & Last Update -->
     <div style="display:flex; justify-content:space-between; font-size:0.9rem; color:#555; margin-bottom:1rem;">
@@ -344,7 +344,7 @@
 
     <!-- Announcement text -->
 <div style="display: flex; flex-direction: column; font-size: 0.9rem; color: #f40808; margin-bottom: 1rem;">
-   Announcement: In the calculator, the surcharge has been updated to 10 paise per unit.<br><br>
+   Announcement: In the calculator, the surcharge has been updated to 10 paise per unit.<br>
    അറിയിപ്പ്: കാൽക്കുലേറ്ററിൽ സർചാർജ് യൂണിറ്റിന് 10 പൈസയായി പുതുക്കിയിരിക്കുന്നു.
 </div>
 
@@ -597,10 +597,11 @@
 
 <!-- ================= Solar Generation Groups ================= -->
 
+
 <!-- Solar Generation nonTOD Unit -->
 <div id="Generation_nonTOD_unit" style="display:none; margin:20px 0;">
   <div class="form-group" style="display:flex; align-items:center; gap:10px;">
-    <label for="solarGeneration_nonTOD_unit" style="margin:0; white-space:nowrap; flex:1;">
+    <label for="solarGeneration_nonTOD_unit" style="margin:0; white-space:nowrap;">
       <b>Solar Generation / ഊർജ ഉൽപാദനം</b>
     </label>
     <input type="number" id="solarGeneration_nonTOD_unit" 
@@ -700,7 +701,7 @@
         <!-- Wheeled location category -->
         <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
           <label for="wheelingCategory" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
-            Wheeled location Connection Type / വീലിംഗ് വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ കണക്ഷൻ തരം
+            Wheeled Location Connection Type / വീൽഡ് ലൊക്കേഷനിലെ കണക്ഷൻ തരം
           </label>
           <select id="wheelingCategory" name="wheelingCategory" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
             <option value="LT1">LT1</option>
@@ -709,10 +710,21 @@
           </select>
         </div>
 
+        <!-- Wheeled location Transformer -->
+        <div class="form-group" style="margin-bottom:10px; padding:10px; border-radius:6px; background-color:#ffe6cc; display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+          <label for="wheelingTransformer" style="font-weight:bold; flex:none; min-width:200px; margin:0; font-size:14px;">
+            Is it Under Same Transformer / അതെ ട്രാൻസ്ഫോർമറിന്റെ കീഴിൽ വരുമോ ?
+          </label>
+          <select id="wheelingTransformer" name="wheelingTransformer" style="flex:1 1 150px; max-width:200px; padding:5px; border-radius:4px; box-sizing:border-box;">
+            <option value="Yes" selected>Yes</option>
+          <option value="No">No</option>
+          </select>
+        </div>
+
         <!-- Wheeling TOD Availability -->
         <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
           <label for="TODAvailabilityWheel" style="margin-bottom:10px;">
-            <b>Is TOD Bill Available for Wheeled Location? / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
+            <b>Is TOD Bill Available for Wheeled Location? / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി ബിൽ ലഭ്യമാണോ?</b>
           </label>
           <select id="TODAvailabilityWheel" title="Select yes if TOD bill is available" style="width:120px;">
             <option value="No">No / ഇല്ല</option>
@@ -722,7 +734,7 @@
 
         <!-- Wheeling TOD Row -->
         <div id="row-wheeling-tod" style="display:none; margin-top:10px; background-color:#ffe6cc; padding:10px; border-radius:6px;">
-          <strong>Wheeled Site TOD / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ടിഒഡി</strong>
+          <strong>Wheeled Site TOD / വീൽഡ് ലൊക്കേഷനിലെ ടിഒഡി</strong>
           <div style="margin:8px 0;">
             <label><input type="radio" name="wheelMode" value="units" checked> Units Mode / യൂണിറ്റ് മോഡ്</label>
             <label style="margin-left:12px;"><input type="radio" name="wheelMode" value="meter"> Meter Reading Mode / മീറ്റർ റീഡിംഗ് മോഡ്</label>
@@ -733,7 +745,7 @@
         <!-- Total units consumed at wheeled location -->
         <div id="row-wheeling-total" style="margin-top:10px;">
           <div class="form-group" style="margin-bottom:10px; background-color:#ffe6cc;">
-            <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീലിംഗ് ചെയ്ത ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
+            <label for="wheeledConsumedUnits"><b>Total units consumed at wheeled location / വീൽഡ് ലൊക്കേഷനിലെ ഉപയോഗം</b></label>
             <input type="number" id="wheeledConsumedUnits" class="auto-meter" name="wheeledConsumedUnits" min="0" step="1">
           </div>
         </div>
@@ -790,6 +802,7 @@
       </div>
     </div>
 
+
     <!-- Latest Tariff Circular -->
     <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:0; margin-bottom:2;">
       <div class="pdf-container" style="margin-top:2px; margin-bottom:0;">
@@ -815,11 +828,12 @@
 
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate    = "06 Sep 2025"; // Last Software update Date
+  const updatedDate    = "09 Sep 2025"; // Last Software update Date
   let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
-  let DistLoss         = 4.99; // Distribution loss for wheeling is 4.99%
+  let DistLossSame     = 4.99; // Distribution loss for wheeling is 4.99% under same Transformer
+  let DistLossDiff     = 7.14 // Distribution loss for wheeling is 7.14% under different Transformer
   let wheelingRate     = 0.64; // Wheeling charge is Rs0.64/unit
   const CTodRStart     = 500; // threshold after which TOD rates apply for consumer non-telectopic LT1
 
@@ -833,6 +847,8 @@
   let cachedTodBaseTable = null;  // // will hold the entire parsed table
   let cachedTodBaseRate  = null;  // will hold the final rate when calculated later
   let debugLog = [];
+  
+
 
 
 
@@ -2251,6 +2267,7 @@ function getFormInputs() {
   const isWheeling        = document.getElementById("isWheeling")?.value || "No";
   const TODAvailableWheel = document.getElementById("TODAvailabilityWheel")?.value || "No";
   const wheelingCategory  = isWheeling === "Yes" ? document.getElementById("wheelingCategory")?.value || "" : "";
+  const WheelingTransformer = document.getElementById("wheelingTransformer")?.value || "Yes";
 
   let wheeledConsumedUnits = 0;
   let wheelTodNL = 0, wheelTodPK = 0, wheelTodOP = 0;
@@ -2308,6 +2325,7 @@ function getFormInputs() {
     SolarGen_OP,
     Solar,
     isWheeling,
+    WheelingTransformer,
     TODAvailableWheel,
     wheelingCategory,
     wheeledConsumedUnits,
@@ -2322,6 +2340,7 @@ function getFormInputs() {
   Object.assign(window, inputs);
   return inputs;
 }
+
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -2358,6 +2377,7 @@ let {
     SolarGen_OP,
     Solar,
     isWheeling,
+    WheelingTransformer,
     TODAvailableWheel,
     wheelingCategory,
     wheeledConsumedUnits,
@@ -2365,6 +2385,7 @@ let {
     wheelTodPK,
     wheelTodOP
   } = inputs;
+
 
 
 let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
@@ -2497,6 +2518,8 @@ let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
 
     if (isWheeling === "Yes") {
 
+         if (WheelingTransformer === "Yes") {DistLoss = DistLossSame;} else {DistLoss = DistLossDiff;}
+
     // wheeling Units calculations
       Avail_4_Wheel               = round2(newBank * (1 - DistLoss/100));
       Int_Avail_4_Wheel           = Avail_4_Wheel;
@@ -2509,14 +2532,14 @@ let importUnits = 0, exportUnits = 0, netUnits = 0, newBank = 0;
 
 
     // wheeling calculations        
-        Avail_4_Wheel_String        =  `UB:${newBank} × [1 - ${DistLoss/100}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
+        Avail_4_Wheel_String        =  `UB:${newBank} × [1 - ${round2(DistLoss/100)}] = ${Avail_4_Wheel}, Dist loss ${DistLoss}%`;
         Avail_After_Wheel           = round2(Avail_4_Wheel - wheelingUnitsNew);
         Avail_After_Wheel_String    = `BW:${Avail_4_Wheel} - W:${wheelingUnitsNew} = ${Avail_After_Wheel}`;
         Bank_after_Wheeling         = round2(Avail_After_Wheel / (1 - DistLoss/100));
-        Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${DistLoss/100}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
-        WheelingCharge              = round2(wheelingUnitsNew * wheelingRate);
+        Bank_after_Wheeling_String  =  `AW:${Avail_After_Wheel} ÷ [1 - ${round2(DistLoss/100)}] = ${Bank_after_Wheeling}, Dist loss ${DistLoss}%`;  
         ConsumptionAfterWheeling    = wheeledConsumedUnits -  wheelingUnitsNew;  
         EnergyLostWheeling          = newBank - wheelingUnitsNew - Bank_after_Wheeling;  
+        WheelingCharge              = round2((wheelingUnitsNew + EnergyLostWheeling) * wheelingRate);
     
 
  let WheelimportTOD = {day:wheelTodNL, offpeak:wheelTodOP, peak:wheelTodPK };   let WheelexportTOD = { day:0, offpeak:0, peak:0 };
@@ -2899,6 +2922,7 @@ ${isWheeling.toLowerCase() === "yes"
   ? `<br>
       Wheeled Units [W]: <strong>${wheelingUnitsNew}</strong> <br>
       Wheeled Location Category: <strong>${wheelingCategory}</strong> <br>
+      Wheeled Site Under Same Transformer ? : <strong>${WheelingTransformer}</strong> <br>
       ${
         TODAvailableWheel.toLowerCase() === "yes"
           ? `Wheeled Location TOD; NL: <strong>${wheelTodNL}</strong>,
@@ -2956,7 +2980,7 @@ ${ TODAvailability === "yes"
 
   ${(isWheeling.toLowerCase() === "yes" && Avail_After_Wheel >= 0) 
   ? `Wheeling Charges (${wheelingRate}/unit): <strong>₹ ${WheelingCharge}</strong><br>
-     <span style="font-size: smaller; color: red;">(W: ${wheelingUnitsNew} × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
+     <span style="font-size: smaller; color: red;">([W:${wheelingUnitsNew} + EL:${EnergyLostWheeling.toFixed(2)}] × ${wheelingRate} = ${WheelingCharge})</span><br><br>` 
   : ""}
   
    ${meterOwner.toLowerCase() === "prosumer" 
@@ -3037,7 +3061,7 @@ ${ TODAvailability === "yes"
      <strong>Updated Bank Closing</strong>: <strong>${Bank_after_Wheeling}</strong> units<br>
      <span style="font-size: smaller; color: red;">${Bank_after_Wheeling_String} </span><br>
      <br>
-     Energy Lost During Wheeling:  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
+     Energy Lost During Wheeling [EL]:  <strong>${EnergyLostWheeling.toFixed(2)}</strong> units<br>
      <span style="font-size: smaller; color: red;">(UB:${newBank} - W:${wheelingUnitsNew} - AW:${Bank_after_Wheeling} = ${EnergyLostWheeling.toFixed(2)})  </span><br>
      <br> 
 
