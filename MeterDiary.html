@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <title>Meter Records & Check Usage</title>
+  <style>
+  
+ /* =========================================================
+   Global resets (scoped to meter-body)
+   ========================================================= */
+body.meter-body,
+body.meter-body input,
+body.meter-body select,
+body.meter-body button,
+body.meter-body label,
+body.meter-body h1,
+body.meter-body h2,
+body.meter-body h3,
+body.meter-body h4,
+body.meter-body h5,
+body.meter-body h6,
+body.meter-body div,
+body.meter-body span {
+  font-family: Arial, Helvetica, "Noto Sans Malayalam", "Kartika", sans-serif;
+  font-size: 14px;
+  color: #222;
+}
+
+body.meter-body select,
+body.meter-body input[type="number"],
+body.meter-body button {
+  font-size: 16px;
+  padding: 8px;
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+body.meter-body input,
+body.meter-body select,
+body.meter-body textarea {
+  line-height: 1.4;
+  padding: 8px;
+}
+
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.hidden { display: none !important; }
+
+/* =========================================================
+   Input Sections (manual readings layout)
+   ========================================================= */
+#manualInitial_nonTod,
+#manualCurrent_nonTod,
+#manualInitial_Tod,
+#manualCurrent_Tod {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #fafafa;
+}
+
+#manualInitial_nonTod h3,
+#manualCurrent_nonTod h3,
+#manualInitial_Tod h3,
+#manualCurrent_Tod h3 {
+  flex-basis: 100%;
+  margin: 5px 0 10px;
+}
+
+/* =========================================================
+   Field Blocks (Unified)
+   ========================================================= */
+.field-block {
+  flex: 0 0 160px;         /* fixed width box */
+  max-width: 160px;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.field-block label {
+  font-size: 0.85em;
+  margin-bottom: 4px;
+  font-weight: bold;
+  color: #333;
+}
+.field-block input {
+  width: 100%;             /* fill block */
+  padding: 6px 8px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+/* Non-TOD Initial: Import + Export side by side, Bank below */
+#manualInitial_nonTod {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+#manualInitial_nonTod .field-block { flex: 0 0 160px; }
+#manualInitial_nonTod .bank-field {
+  flex: 0 0 160px;
+  margin-left: 0;
+  border-left: none;
+  padding-left: 0;
+  margin-top: 8px;
+}
+
+/* Non-TOD Current: Import + Export same row */
+#manualCurrent_nonTod {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+#manualCurrent_nonTod .field-block { flex: 0 0 160px; }
+
+/* TOD Initial/Current: 3 imports same row, Export + Bank next row */
+#manualInitial_Tod .row-block,
+#manualCurrent_Tod .row-block {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+#manualInitial_Tod .row-block .field-block,
+#manualCurrent_Tod .row-block .field-block {
+  flex: 0 0 160px;
+}
+#manualInitial_Tod .row-block .export-field,
+#manualCurrent_Tod .row-block .export-field,
+#manualInitial_Tod .row-block .bank-field,
+#manualCurrent_Tod .row-block .bank-field {
+  flex: 0 0 160px;
+  margin-left: 0;
+  border-left: none;
+  padding-left: 0;
+  margin-top: 8px;
+}
+
+/* =========================================================
+   Responsive tweak
+   ========================================================= */
+@media (max-width: 600px) {
+  .field-block {
+    flex: 0 0 140px;       /* shrink but keep side-by-side */
+    max-width: 140px;
+  }
+}
+
+/* =========================================================
+   Responsive tweak (mobile)
+   ========================================================= */
+@media (max-width: 600px) {
+  /* still keep them side by side, but shrink */
+  .field-block { flex: 0 0 120px; max-width: 120px; }
+  #manualInitial_nonTod,
+  #manualCurrent_nonTod,
+  #manualInitial_Tod .row-block,
+  #manualCurrent_Tod .row-block {
+    gap: 10px;
+  }
+}
+
+
+/* =========================================================
+   Buttons & Actions
+   ========================================================= */
+#meterActions,
+.actions-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 12px 0;
+}
+.meter-action-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+.autofill-btn { background-color: #3b82f6; }
+.autofill-btn:hover { background-color: #2563eb; transform: translateY(-2px); }
+.manual-btn { background-color: #10b981; }
+.manual-btn:hover { background-color: #059669; transform: translateY(-2px); }
+.reset-btn { background-color: #6b7280; }
+.reset-btn:hover { background-color: #4b5563; transform: translateY(-2px); }
+.calculate-btn { background-color: #f59e0b; }
+.calculate-btn:hover { background-color: #d97706; transform: translateY(-2px); }
+
+/* =========================================================
+   Tables
+   ========================================================= */
+.meter-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.meter-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+.meter-detail-table th,
+.meter-detail-table td {
+  padding: 10px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#billListTable button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+#billListTable button:hover { background-color: #0056b3; transform: translateY(-2px); }
+#billListTable tr.selected { background-color: #cce5ff !important; font-weight: bold; }
+
+/* =========================================================
+   Back Button
+   ========================================================= */
+#meterPageWrapper { position: relative; }
+.back-btn-row-meter { position: absolute; top: 10px; right: 10px; }
+.meter-back-btn {
+  font-size: 1em;
+  padding: 8px 14px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.meter-back-btn:hover { background: #0056b3; }
+
+/* =========================================================
+   Big Headings
+   ========================================================= */
+.meter-title.big {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-top: 25px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meter-title.big.usage::before { content: "⚡"; }
+.meter-title.big.records::before { content: "📜"; }
+
+#meterActions h3 {
+  flex-basis: 100%;   /* push heading to full row */
+  margin-bottom: 8px; /* spacing between heading and buttons */
+}
+
+/* ----- Enforce default visibility for Meter Diary (place at very end of your <style>) ----- */
+
+/* Default hidden sections (without !important so JS can override later) */
+body.meter-body #billingModeSection,
+body.meter-body #manualInitial_nonTod,
+body.meter-body #manualInitial_Tod,
+body.meter-body #manualCurrent_Tod,
+body.meter-body #initialBankUnit {
+  display: none;
+}
+
+/* Force show only Current Non-TOD by default */
+body.meter-body #manualCurrent_nonTod {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* Optional: make sure heading inside sections still spans full width */
+body.meter-body #manualInitial_nonTod h3,
+body.meter-body #manualCurrent_nonTod h3,
+body.meter-body #manualInitial_Tod h3,
+body.meter-body #manualCurrent_Tod h3 {
+  flex-basis: 100%;
+}
+
+
+</style>
+</head>
+
+
+
+
+<body class="meter-body">
+
+<!-- ===== Meter Page Wrapper ===== -->
+<div id="meterPageWrapper" 
+     style="margin:15px; padding:12px; border:1px solid #ccc; border-radius:8px; background:#f9f9f9;">
+
+  <!-- Back Button (top right) -->
+<div class="back-btn-row-meter">
+  <button class="meter-back-btn" onclick="window.location.href='index.html'">
+    ⬅ Back
+  </button>
+</div>
+  <!-- =================== Actions Box =================== -->
+<h2 class="meter-title big usage">Check Your Usage</h2>
+
+  
+
+  <!-- ========== Input Section ========== -->
+  <div class="meter-form-section">
+
+    <!-- Actions -->
+<div id="meterActions">
+  <h3>Initial Readings: </h3>
+  <button class="meter-action-btn autofill-btn" onclick="autofillEntry()">
+    📥 Autofill from Latest Bill
+  </button>
+  <button class="meter-action-btn manual-btn" onclick="enableManualEntry()">
+    ✍️ Enter Manually
+  </button>
+  <button class="meter-action-btn reset-btn" onclick="resetPage()">
+    🔄 Reset
+  </button>
+</div>
+
+
+    <!-- =================== Billing Mode =================== -->
+    <div id="billingModeSection" class="meter-box">
+      <label><input type="radio" name="billMode" value="read_non-tod"> Non-TOD</label>
+      <label><input type="radio" name="billMode" value="read_tod"> TOD</label>
+    </div>
+
+    <!-- =================== Initial Reading (Non-TOD) =================== -->
+    <div id="manualInitial_nonTod" class="meter-box">
+      <h3>Initial Reading</h3>
+      <div class="field-block">
+        <label for="initialImport"><b>Import</b></label>
+        <input type="number" id="initialImport">
+      </div>
+      <div class="field-block">
+        <label for="initialExport"><b>Export</b></label>
+        <input type="number" id="initialExport">
+      </div>
+      <div class="field-block bank-field">
+        <label for="initialBank_Tod"><b>Banked Units</b></label>
+        <input type="number" id="initialBank">
+      </div>
+    </div>
+
+    <!-- =================== Current Reading (Non-TOD) =================== -->
+    <div id="manualCurrent_nonTod" class="meter-box">
+      <h3>Current Reading</h3>
+      <div class="field-block">
+        <label for="currImport"><b>Import</b></label>
+        <input type="number" id="currImport">
+      </div>
+      <div class="field-block">
+        <label for="currExport"><b>Export</b></label>
+        <input type="number" id="currExport">
+      </div>
+    </div>
+
+    <!-- =================== Initial Reading (TOD) =================== -->
+    <div id="manualInitial_Tod" class="meter-box">
+      <h3>Initial Reading</h3>
+      <div class="row-block">
+        <!-- Import (3 fields inline) -->
+        <div class="field-block">
+          <label for="InitialimpDay"><b>Import NL/T1</b></label>
+          <input type="number" id="InitialimpDay">
+        </div>
+        <div class="field-block">
+          <label for="InitialimpPeak"><b>Import PK/T3</b></label>
+          <input type="number" id="InitialimpPeak">
+        </div>
+        <div class="field-block">
+          <label for="InitialimpOff"><b>Import OP/T2</b></label>
+          <input type="number" id="InitialimpOff">
+        </div>
+        <!-- Export (1 field) -->
+        <div class="field-block export-field">
+          <label for="InitialexpDay"><b>Export NL/T1</b></label>
+          <input type="number" id="InitialexpDay">
+        </div>
+        <!-- Bank -->
+        <div class="field-block bank-field">
+          <label for="initialBank_Tod"><b>Banked Units</b></label>
+          <input type="number" id="initialBank_Tod">
+        </div>
+      </div>
+    </div>
+
+    <!-- =================== Current Reading (TOD) =================== -->
+    <div id="manualCurrent_Tod" class="meter-box">
+      <h3>Current Reading</h3>
+      <div class="row-block">
+        <!-- Import (3 fields inline) -->
+        <div class="field-block">
+          <label for="currimpDay"><b>Import NL/T1</b></label>
+          <input type="number" id="currimpDay">
+        </div>
+        <div class="field-block">
+          <label for="currimpPeak"><b>Import PK/T3</b></label>
+          <input type="number" id="currimpPeak">
+        </div>
+        <div class="field-block">
+          <label for="currimpOff"><b>Import OP/T2</b></label>
+          <input type="number" id="currimpOff">
+        </div>
+        <!-- Export (1 field) -->
+        <div class="field-block export-field">
+          <label for="currexpDay"><b>Export NL/T1</b></label>
+          <input type="number" id="currexpDay">
+        </div>
+      </div>
+    </div>
+
+   <!-- =================== Calculate Buttons=================== -->
+  <!-- Actions -->
+<div id="meterActions" class="actions-row">
+  <button class="meter-action-btn calculate-btn" onclick="calculate()">
+    🧮 Calculate
+  </button>
+  <button class="meter-action-btn reset-btn" onclick="resetPage()">
+    🔄 Reset
+  </button>
+</div>
+
+
+    <!-- =================== Output Section =================== -->
+    <div id="Output" class="meter-box output-box">
+      <h3>Output</h3>
+      <div id="todResultText" class="output-text">--</div>
+    </div>
+
+    <!-- =================== Export button =================== -->
+    <div id="exportContainer" style="text-align:right; margin-top:15px;">
+      <button class="meter-action-btn autofill-btn" onclick="exportBillsCSV()">
+        📄 Export all Meter Data
+      </button>
+    </div>
+
+    <!-- =================== Bill List =================== -->
+    <div class="meter-table-wrapper">
+  <h2 class="meter-title big records">Meter Records</h2>
+      <table id="billListTable" class="meter-detail-table">
+        <thead>
+          <tr>
+            <th>Month-Year</th>
+            <th>ID / Name</th>
+            <th>Meter Mode</th>            
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- =================== Details box (hidden until selected) =================== -->
+    <div id="billDetailsContainer" style="display:none; margin-top:20px;">
+      <h3>Bill Details</h3>
+      <div id="billDetailsContent"></div>
+    </div>
+
+    <!-- =================== Table Section =================== -->
+    <div id="meterTableContainer" class="meter-table-wrapper">
+      <table id="meterDiaryTable" class="meter-detail-table">
+        <thead>
+          <tr>
+            <th>Meter Entry Details</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div> <!-- End meter-form-section -->
+
+</div> <!-- End meterPageWrapper -->
+
+ 
+
+<!-- Shared JS -->
+<script src="shared.js"></script>
+
+<script>
+
+/**
+ * Autofill from latest meterDB entry and set toggle + previous fields.
+ * Place this in meterdairy.html (after shared.js so getLatestMeterEntry/openMeterDB exist).
+ */
+async function autofillEntry() {
+  try {
+    // helper: fetch latest entry (use existing helper if available)
+    async function fetchLatest() {
+      if (typeof getLatestMeterEntry === "function") {
+        return await getLatestMeterEntry();
+      }
+      // fallback: open DB and read latest by savedAt index
+      const db = await openMeterDB();
+      const tx = db.transaction("meterReadings", "readonly");
+      const store = tx.objectStore("meterReadings");
+      const idx = store.index("bySavedAt");
+      return new Promise((resolve, reject) => {
+        const req = idx.openCursor(null, "prev");
+        req.onsuccess = (e) => resolve(e.target.result ? e.target.result.value : null);
+        req.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    const latest = await fetchLatest();
+    if (!latest) {
+      alert("No previous meter readings found to autofill.");
+      return;
+    }
+
+    // Ensure Billing Mode section is visible (so radios exist & change handler can show fields)
+    const billingDiv = document.getElementById("billingModeSection");
+    if (billingDiv) billingDiv.style.display = "block";
+
+    // helper to safely set input value if element exists and value is not empty/undefined
+    function safeSet(id, val) {
+      const el = document.getElementById(id);
+      if (!el) return false;
+      if (val === undefined || val === "" || val === null) return false;
+      el.value = val;
+      return true;
+    }
+
+    // AutofillEntry() ...
+    const bankVal = latest.LatestBankBalance ?? latest.Bank ?? null;
+    safeSet("initialBank", bankVal);      // Non-TOD
+    safeSet("initialBank_Tod", bankVal);  // TOD
+    safeSet("LatestBankBalance", bankVal);
+    safeSet("Bank", bankVal);
+    safeSet("bankBalance", bankVal);
+
+
+
+
+    const todFlag = (latest.TODAvailability || "no").toString().toLowerCase();
+
+    if (todFlag === "yes" || todFlag === "y" || todFlag === "true") {
+      // Set toggle to TOD and trigger change (so TOD fields become visible)
+      const todRadio = document.querySelector("input[name='billMode'][value='read_tod']");
+      if (todRadio) {
+        todRadio.checked = true;
+        todRadio.dispatchEvent(new Event("change"));
+      }
+
+      // Fill Initial (previous) TOD fields from latest.tod.*_curr
+      safeSet("InitialimpDay", latest.tod?.IM_TodNL_curr);
+      safeSet("InitialimpPeak", latest.tod?.IM_TodPK_curr);
+      safeSet("InitialimpOff", latest.tod?.IM_TodOP_curr);
+
+      safeSet("InitialexpDay", latest.tod?.EX_TodNL_curr);
+      safeSet("InitialexpPeak", latest.tod?.EX_TodPK_curr);
+      safeSet("InitialexpOff", latest.tod?.EX_TodOP_curr);
+
+      safeSet("InitialGenDay", latest.tod?.GEN_NL_curr);
+      safeSet("InitialGenPeak", latest.tod?.GEN_PK_curr);
+      safeSet("InitialGenOff", latest.tod?.GEN_OP_curr);
+
+    } else {
+      // Non-TOD path: set radio and trigger change
+      const nonTodRadio = document.querySelector("input[name='billMode'][value='read_non-tod']");
+      if (nonTodRadio) {
+        nonTodRadio.checked = true;
+        nonTodRadio.dispatchEvent(new Event("change"));
+      }
+
+      // Fill Initial (previous) Non-TOD fields from latest.nonTOD.*Curr
+      safeSet("initialImport", latest.nonTOD?.importCurr);
+      safeSet("initialExport", latest.nonTOD?.exportCurr);
+      safeSet("initialGen", latest.nonTOD?.genCurr);
+
+      // also set some alternate prev IDs if you use them elsewhere
+      safeSet("importUnits_prev", latest.nonTOD?.importCurr);
+      safeSet("exportUnits_prev", latest.nonTOD?.exportCurr);
+      safeSet("generation_prev", latest.nonTOD?.genCurr);
+    }
+
+    console.log("Autofill applied from:", latest.filename || latest.entryId);
+  } catch (err) {
+    console.error("autofillEntry error:", err);
+    alert("Error while autofilling readings. See console for details.");
+  }
+}
+
+
+function enableManualEntry() {
+  // Show the Billing Mode section
+  document.getElementById("billingModeSection").style.display = "block";
+
+  // Show the banked units field
+  document.getElementById("initialBank_Tod").style.display = "flex";
+
+
+  // Default to Non-TOD
+  const nonTodRadio = document.querySelector("input[name='billMode'][value='read_non-tod']");
+  if (nonTodRadio) {
+    nonTodRadio.checked = true;
+    nonTodRadio.dispatchEvent(new Event("change"));
+  }
+}
+
+
+/* -------- Mode toggle -------- */
+document.querySelectorAll("input[name='billMode']").forEach(radio => {
+  radio.addEventListener("change", () => {
+    const initNonTod = document.getElementById("manualInitial_nonTod");
+    const currNonTod = document.getElementById("manualCurrent_nonTod");
+    const initTod   = document.getElementById("manualInitial_Tod");
+    const currTod   = document.getElementById("manualCurrent_Tod");
+
+    if (radio.value === "read_tod" && radio.checked) {
+      initTod.style.display = "flex";
+      currTod.style.display = "flex";
+      initNonTod.style.display = "none";
+      currNonTod.style.display = "none";
+    } else if (radio.value === "read_non-tod" && radio.checked) {
+      initNonTod.style.display = "flex";
+      currNonTod.style.display = "flex";
+      initTod.style.display = "none";
+      currTod.style.display = "none";
+    }
+  });
+});
+
+
+
+/* -------- Set default visibility on page load -------- */
+window.addEventListener("DOMContentLoaded", () => {
+  const selected = document.querySelector("input[name='billMode']:checked");
+  if (selected) selected.dispatchEvent(new Event("change"));
+});
+
+
+
+/* -------- Load Diary -------- */
+async function loadMeterDiary() {
+  try {
+    const db = await openMeterDB();
+    const store = db.transaction("meterReadings", "readonly").objectStore("meterReadings");
+    const all = await new Promise((res, rej) => {
+      const r = store.getAll();
+      r.onsuccess = e => res(e.target.result || []);
+      r.onerror = e => rej(e);
+    });
+
+    console.log('loadMeterDiary: total entries found =', all.length);
+    if (all.length > 0) console.log('first entry sample:', all[0]);
+
+    // ✅ sort newest first
+    all.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+
+    // ✅ keep globally for showBillDetails()
+    window._allBills = all;
+
+    const tbody = document.querySelector("#meterDiaryTable tbody");
+    if (!tbody) return;
+
+    if (all.length === 0) {
+      // 🔹 No bills at all
+      tbody.innerHTML = `
+        <tr>
+          <td style="text-align:center; color:#666; padding:12px;">
+            No meter entries found.
+          </td>
+        </tr>
+      `;
+    } else {
+      // 🔹 Auto-select the latest bill
+      const latest = all[0];
+      showBillDetails(latest.entryId);
+
+      // 🔹 Highlight its row in billListTable if present
+      const clickedRow = document.querySelector(
+        `#billListTable tr td button[onclick*="${latest.entryId}"]`
+      )?.closest("tr");
+      if (clickedRow) {
+        clickedRow.classList.add("selected");
+        clickedRow.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+  } catch (err) {
+    console.error("❌ loadMeterDiary error:", err);
+  }
+}
+
+/* -------- Show Bill Details -------- */
+function showBillDetails(entryId) {
+  const entry = (window._allBills || []).find(e => e.entryId === entryId);
+  if (!entry) return;
+
+  // 🔹 Remove highlight from all rows
+  document.querySelectorAll("#billListTable tr").forEach(tr => tr.classList.remove("selected"));
+
+  // 🔹 Add highlight to the clicked row
+  const clickedRow = document.querySelector(
+    `#billListTable tr td button[onclick*="${entryId}"]`
+  )?.closest("tr");
+  if (clickedRow) clickedRow.classList.add("selected");
+
+  const non = entry.nonTOD || {};
+  const tod = entry.tod || {};
+  const todAvail = (entry.TODAvailability || "no").toLowerCase();
+
+  // 🔹 General bill details
+  const detailsHTML = `
+    <b>Filename:</b> ${entry.filename || ""}<br>
+    <b>Bill Month:</b> ${entry.billMonth || ""}<br>
+    <b>Bill Year:</b> ${entry.billYear || ""}<br>
+    <b>Consumer:</b> ${entry.consumerName || ""}<br>
+    <b>TOD Availability:</b> ${todAvail}<br>
+    <b>Latest Bank Balance:</b> ${entry.LatestBankBalance ?? ""}<br>
+  `;
+  document.getElementById("billDetailsContent").innerHTML = detailsHTML;
+  document.getElementById("billDetailsContainer").style.display = "block";
+
+  // 🔹 Reset details table
+  const tbody = document.querySelector("#meterDiaryTable tbody");
+  tbody.innerHTML = "";
+
+  let html = "";
+
+  if (todAvail === "yes" || todAvail === "y" || todAvail === "true") {
+    html = `
+      <tr><td>
+        <b>📌 TOD Readings</b><br>
+        <u>Import</u><br>
+        Current → NL/T1=${tod.IM_TodNL_curr ?? ""}, OP/T2=${tod.IM_TodOP_curr ?? ""}, PK/T3=${tod.IM_TodPK_curr ?? ""}<br>
+        Previous → NL/T1=${tod.IM_TodNL_prev ?? ""}, OP/T2=${tod.IM_TodOP_prev ?? ""}, PK/T3=${tod.IM_TodPK_prev ?? ""}<br><br>
+        <u>Export</u><br>
+        Current → NL/T1=${tod.EX_TodNL_curr ?? ""}, OP/T2=${tod.EX_TodOP_curr ?? ""}, PK/T3=${tod.EX_TodPK_curr ?? ""}<br>
+        Previous → NL/T1=${tod.EX_TodNL_prev ?? ""}, OP/T2=${tod.EX_TodOP_prev ?? ""}, PK/T3=${tod.EX_TodPK_prev ?? ""}<br><br>
+        <u>Generation</u><br>
+        Current → NL/T1=${tod.GEN_NL_curr ?? ""}, OP/T2=${tod.GEN_OP_curr ?? ""}, PK/T3=${tod.GEN_PK_curr ?? ""}<br>
+        Previous → NL/T1=${tod.GEN_NL_prev ?? ""}, OP/T2=${tod.GEN_OP_prev ?? ""}, PK/T3=${tod.GEN_PK_prev ?? ""}<br>
+      </td></tr>
+    `;
+  } else {
+    html = `
+      <tr><td>
+        <b>📌 Non-TOD Readings</b><br>
+        <u>Current</u><br>
+        Import=${non.importCurr ?? ""}, Export=${non.exportCurr ?? ""}, Generation=${non.genCurr ?? ""}<br><br>
+        <u>Previous</u><br>
+        Import=${non.importPrev ?? ""}, Export=${non.exportPrev ?? ""}, Generation=${non.genPrev ?? ""}<br>
+      </td></tr>
+    `;
+  }
+
+  tbody.insertAdjacentHTML("beforeend", html);
+}
+
+
+
+
+
+/* -------- Export CSV -------- */
+function exportMeterDiaryCSV() {
+  const table = document.getElementById("meterDiaryTable");
+  if (!table) return alert("⚠️ No meter diary table found.");
+  const rows = [];
+  table.querySelectorAll("thead tr, tbody tr").forEach(tr => {
+    const cols = Array.from(tr.querySelectorAll("th, td")).map(td => `"${(td.innerText||"").replace(/"/g,'""')}"`);
+    rows.push(cols.join(","));
+  });
+  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "meter_diary.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function resetPage() {
+  window.location.reload();
+}
+
+
+async function loadBillList() {
+  const db = await openMeterDB();
+  const store = db.transaction("meterReadings", "readonly").objectStore("meterReadings");
+  const all = await new Promise((res, rej) => {
+    const r = store.getAll();
+    r.onsuccess = e => res(e.target.result || []);
+    r.onerror = e => rej(e);
+  });
+
+  all.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt));
+
+  const tbody = document.querySelector("#billListTable tbody");
+  tbody.innerHTML = "";
+
+  if (all.length === 0) {
+    tbody.insertAdjacentHTML("beforeend", `<tr><td colspan="5">No bills found</td></tr>`);
+    return;
+  }
+
+  all.forEach(entry => {
+    const monthYear = `${entry.billMonth || ""}-${entry.billYear || ""}`;
+    const idName = entry.consumerName || entry.filename || "N/A";
+    const mode = entry.globalMode || "meter";
+    const tod = (entry.TODAvailability || "no").toUpperCase();
+
+    const row = `
+      <tr>
+        <td>${monthYear}</td>
+        <td>${idName}</td>
+        <td>${mode}</td>        
+        <td><button onclick="showBillDetails('${entry.entryId}')">View</button></td>
+      </tr>
+    `;
+    tbody.insertAdjacentHTML("beforeend", row);
+  });
+
+  window._allBills = all;
+}
+
+
+
+
+
+
+
+
+function exportBillsCSV() {
+  if (!window._allBills || window._allBills.length === 0) {
+    alert("No bills available to export.");
+    return;
+  }
+
+  const headers = [
+    "Filename","Bill Month","Bill Year","Consumer","TOD","Bank",
+    "Import Curr","Import Prev","Export Curr","Export Prev","Gen Curr","Gen Prev",
+    "IM_NL_Curr","IM_NL_Prev","IM_OP_Curr","IM_OP_Prev","IM_PK_Curr","IM_PK_Prev",
+    "EX_NL_Curr","EX_NL_Prev","EX_OP_Curr","EX_OP_Prev","EX_PK_Curr","EX_PK_Prev",
+    "GEN_NL_Curr","GEN_NL_Prev","GEN_OP_Curr","GEN_OP_Prev","GEN_PK_Curr","GEN_PK_Prev"
+  ];
+
+  const rows = [headers.join(",")];
+
+  window._allBills.forEach(entry => {
+    const non = entry.nonTOD || {};
+    const tod = entry.tod || {};
+    rows.push([
+      entry.filename, entry.billMonth, entry.billYear, entry.consumerName,
+      entry.TODAvailability, entry.LatestBankBalance,
+      non.importCurr, non.importPrev, non.exportCurr, non.exportPrev, non.genCurr, non.genPrev,
+      tod.IM_TodNL_curr, tod.IM_TodNL_prev, tod.IM_TodOP_curr, tod.IM_TodOP_prev, tod.IM_TodPK_curr, tod.IM_TodPK_prev,
+      tod.EX_TodNL_curr, tod.EX_TodNL_prev, tod.EX_TodOP_curr, tod.EX_TodOP_prev, tod.EX_TodPK_curr, tod.EX_TodPK_prev,
+      tod.GEN_NL_curr, tod.GEN_NL_prev, tod.GEN_OP_curr, tod.GEN_OP_prev, tod.GEN_PK_curr, tod.GEN_PK_prev
+    ].map(v => `"${v ?? ""}"`).join(","));
+  });
+
+  const blob = new Blob([rows.join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "meter_bills.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+
+function getMeterInputs() {
+  // Detect billing mode
+  const mode = document.querySelector("input[name='billMode']:checked")?.value || null;
+
+  // Non-TOD Initial
+  let iI = parseFloat(document.getElementById("initialImport")?.value) || 0;
+  let iE = parseFloat(document.getElementById("initialExport")?.value) || 0;
+  let iB = parseFloat(document.getElementById("initialBank")?.value) || 0; // non-TOD bank
+
+  // Non-TOD Current
+  let cI = parseFloat(document.getElementById("currImport")?.value) || 0;
+  let cE = parseFloat(document.getElementById("currExport")?.value) || 0;
+
+  // TOD Initial (Import)
+  let iINL = parseFloat(document.getElementById("InitialimpDay")?.value) || 0;
+  let iIPK = parseFloat(document.getElementById("InitialimpPeak")?.value) || 0;
+  let iIOP = parseFloat(document.getElementById("InitialimpOff")?.value) || 0;
+
+  // TOD Initial (Export)
+  let iENL = parseFloat(document.getElementById("InitialexpDay")?.value) || 0;
+
+  // TOD Initial (Bank) — overrides if TOD is used
+  let iBTOD = parseFloat(document.getElementById("initialBank_Tod")?.value) || 0;
+  if (mode === "read_tod") iB = iBTOD;
+
+  // TOD Current (Import)
+  let cINL = parseFloat(document.getElementById("currimpDay")?.value) || 0;
+  let cIPK = parseFloat(document.getElementById("currimpPeak")?.value) || 0;
+  let cIOP = parseFloat(document.getElementById("currimpOff")?.value) || 0;
+
+  // TOD Current (Export)
+  let cENL = parseFloat(document.getElementById("currexpDay")?.value) || 0;
+
+  // ✅ return everything including mode
+  const values = {
+    mode,  // "read_non-tod" or "read_tod" or null
+
+    // Non-TOD
+    iI, iE, 
+    cI, cE,
+
+    // TOD Initial
+    iINL, iIPK, iIOP,
+    iENL,
+
+    // TOD Current
+    cINL, cIPK, cIOP,
+    cENL,
+    
+    // Bank
+    iB
+  };
+
+  console.log("📊 getMeterInputs values:", values);
+  return values;
+}
+
+function calculate() {
+  const v = getMeterInputs(); // fetch all values including mode
+  let output = "";
+  let NetImport = 0;
+  let NetExport = 0;
+  let Bank = v.iB;
+
+  if (v.mode === "read_non-tod") {
+  let ImportU = v.cI - v.iI;
+  let ExportU = v.cE - v.iE; 
+
+  let NetImport = Math.max(ImportU - ExportU, 0);
+  let NetExport = Math.max(ExportU - ImportU, 0);
+
+  let Bank = v.iB || 0;
+  let netUnits  = Math.max(0, ImportU - (Bank + ExportU)); // N - B
+  let newBank   = Math.max(0, Bank + ExportU - ImportU);
+
+  // Base always-shown info
+  output = `
+    <b>Usage</b><br>
+    Non-TOD Mode, Import Units: ${ImportU}, Export Units: ${ExportU}, Banked Units: ${Bank}<br><br>
+  `;
+
+  // Conditional messages
+  if (NetExport > NetImport) {
+  output += `
+    ✅ Currently your <b>Export is more than Import</b>. Safe usage.<br>
+    You added <b>${NetExport}</b> units to your Bank. Updated Bank: <b>${newBank}</b> units.
+  `;
+} 
+else if (NetImport === NetExport) {
+  output += `
+    🔄 Currently your <b>Export and Import balance out</b>. Keep usage under banked units.<br>
+    Your Bank remains: <b>${newBank}</b> units.
+  `;
+} 
+else if (NetImport > NetExport && NetImport > Bank) {
+  const excess = NetImport - Bank;
+  output += `
+    🚨 Currently your <b>Import is too high</b>, you have <b>completely used up your banked units</b>.<br>
+    You will incur extra charges for <b>${excess}</b> units.
+  `;
+} 
+else if (NetImport > NetExport) {
+  output += `
+    ⚠️ Currently your <b>Import is more than Export</b>. Extra usage may incur charges.<br>
+    You used <b>${NetImport}</b> units from your Bank. Remaining Bank: <b>${newBank}</b> units.
+  `;
+}
+}
+
+  else if (v.mode === "read_tod") {
+    let ImportTodU = (v.cINL - v.iINL) + (v.cIPK - v.iIPK) + (v.cIOP - v.iIOP);
+    let ExportTodU = (v.cENL - v.iENL); // ✅ only cENL defined now
+
+// ✅ Import differences
+    let importTOD = {
+      day:     (v.cINL - v.iINL),   // NL/T1
+      peak:    (v.cIPK - v.iIPK),   // PK/T3
+      offpeak: (v.cIOP - v.iIOP)    // OP/T2
+    };
+
+    // ✅ Export differences
+    let exportTOD = {
+      day:     (v.cENL - v.iENL),   // NL/T1
+      peak:    0,                   // not implemented yet
+      offpeak: 0                    // not implemented yet
+    };
+         
+    let NetImpData = getNetImportTOD (importTOD, exportTOD, Bank);
+    console.log("etNetImportTOD result:", NetImpData);
+
+    let NetImport = Math.max(ImportTodU - ExportTodU, 0);
+    let NetExport = Math.max(ExportTodU - ImportTodU, 0);
+    let usedbankUnits = Math.max(Bank - NetImpData.currentBank, 0);    
+
+    // Base always-shown info
+    output = `
+    <b>Usage</b><br>
+    Non-TOD Mode, Import Units: ${ImportTodU}, Export Units: ${ExportTodU}, Banked Units: ${Bank}<br>
+    
+    Net Import: T1: ${NetImpData.netImport[0]}, T2: ${NetImpData.netImport[2]}, T3: ${NetImpData.netImport[1]} <br>
+    Adj Import: T1: ${NetImpData.adjImport[0]}, T2: ${NetImpData.adjImport[2]}, T3: ${NetImpData.adjImport[1]} <br>
+    Updated Bank: ${NetImpData.currentBank} <br><br>
+    `;
+
+// Conditional messages
+  if (NetExport > NetImport) {
+  output += `
+    ✅ Currently your <b>Export is more than Import</b>. Everything is under safe usage.<br>
+    You added <b>${NetExport}</b> units to your Bank. Updated Bank: <b>${NetImpData.currentBank}</b> units.
+  `;
+} 
+else if (NetExport === NetImport && NetExport === 0) {
+  output += `
+    ⚖️ Currently your <b>Export and Import balance out</b>.<br>
+    Keep usage under your banked units. Bank: <b>${NetImpData.currentBank}</b> units.
+  `;
+} 
+else if (NetImport > NetExport && NetImport > Bank) {
+  const excess = NetImport - Bank;
+  output += `
+    🚨 Currently your <b>Import is too high</b>, you have <b>completely used up your banked units</b>.<br>
+    You will incur extra charges for <b>${excess}</b> units.
+  `;
+} 
+else if (NetImport > NetExport) {
+  output += `
+    ⚠️ Currently your <b>Import is more than Export</b>. Extra usage may incur charges.<br>
+    You used <b>${NetImport}</b> units from your Bank. Remaining Bank: <b>${NetImpData.currentBank}</b> units.
+  `;
+}
+
+
+  } 
+  else {
+    output = "⚠️ Please select a billing mode.";
+  } 
+  
+  // ✅ Put result directly into Output box
+  document.getElementById("todResultText").innerHTML = output;
+}
+
+
+
+function getNetImportTOD(importTOD, exportTOD, bank) {
+
+  // STEP 1: Find actual import AND per-zone export surplus
+  const actualImport = [];
+  const extraExportPerZone = [];
+
+  // NL
+  actualImport[0] = Math.max(0, importTOD.day - exportTOD.day);
+  extraExportPerZone[0] = Math.max(0, exportTOD.day - importTOD.day);
+
+  // OP
+  actualImport[1] = Math.max(0, importTOD.offpeak - exportTOD.offpeak);
+  extraExportPerZone[1] = Math.max(0, exportTOD.offpeak - importTOD.offpeak);
+
+  // PK
+  actualImport[2] = Math.max(0, importTOD.peak - exportTOD.peak);
+  extraExportPerZone[2] = Math.max(0, exportTOD.peak - importTOD.peak);
+
+  console.log("▶ ActualImport =", actualImport);
+  console.log("▶ ExtraExportPerZone =", extraExportPerZone);
+
+  // STEP 2: Total remaining export (add all per-zone extras)
+  let remainingExport = extraExportPerZone.reduce((s,v)=>s+v, 0);
+
+  // STEP 3: Subtract remaining export from actualImport (NL→OP→PK)
+  let netImport = [...actualImport];
+  for (let i = 0; i < netImport.length && remainingExport > 0; i++) {
+    const used = Math.min(netImport[i], remainingExport);
+    netImport[i] -= used;
+    remainingExport -= used;
+  }
+
+  // STEP 4: Apply Bank (NL→OP→PK)
+  let adjImport = [...netImport];
+  let currentBank = bank;
+  for (let i = 0; i < adjImport.length && currentBank > 0; i++) {
+    const used = Math.min(adjImport[i], currentBank);
+    adjImport[i] -= used;
+    currentBank -= used;
+  }
+
+  // STEP 5: Any still remaining export goes to bank
+  if (remainingExport > 0) {
+    currentBank += remainingExport;
+  }
+
+  console.log("▶ netImport =", netImport);
+  console.log("▶ adjImport =", adjImport);
+  console.log("▶ updatedBank =", currentBank);
+
+  return { actualImport, netImport, adjImport, currentBank };
+}
+
+window.addEventListener("DOMContentLoaded", loadBillList);
+document.addEventListener('DOMContentLoaded', loadMeterDiary);
+window.addEventListener("load", cleanupOrphanedMeterEntries);
+
+
+
+
+</script>
+
+</body>
+</html>
+
+

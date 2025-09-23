@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KSEB Calculator - Backup & Restore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+   
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 15px;
+    background: #f9fafb;
+  }
+
+  .backup-container {
+    max-width: 650px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+
+  h1, h2 {
+    text-align: center;
+    color: #333;
+    margin-top: 0;
+  }
+
+  .section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background: #f8fafc;
+  }
+
+  button {
+    display: block;
+    width: 100%; /* Full width on mobile */
+    margin: 8px 0;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #3b82f6;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  button:hover { background: #2563eb; }
+
+  input[type="file"] {
+    margin: 10px 0;
+    width: 100%;
+  }
+
+  p {
+    font-size: 14px;
+    line-height: 1.5em;
+    color: #444;
+  }
+
+  #status {
+    margin-top: 10px;
+    padding: 8px;
+    background: #f3f4f6;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9em;
+    white-space: pre-line;
+  }
+
+  .reminder {
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 6px;
+    color: #856404;
+    font-size: 14px;
+  }
+
+  /* Back button */
+  .history-back-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: #e5e7eb;
+    color: #111;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .history-back-btn:hover {
+    background: #d1d5db;
+  }
+
+  /* Responsive */
+  @media (min-width: 600px) {
+    button {
+      width: auto; /* Normal width on larger screens */
+      display: inline-block;
+    }
+  }
+
+
+
+/* Back button */
+.backup-back-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: #3b82f6;   /* blue-500 */
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: inline-block;   /* ✅ prevent full width */
+  width: auto;             /* ✅ only as wide as needed */
+}
+.backup-back-btn:hover {
+  background: #2563eb;   /* darker blue */
+}
+
+</style>
+
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- Back Button -->
+<button class="backup-back-btn" onclick="window.location.href='index.html'">
+  ⬅ Back
+</button>
+
+
+<div class="backup-container">
+  <h1>📂 Backup & Restore</h1>
+  <p>
+    Use this page to back up or restore your meter and bill data.  
+    You can save a copy to your device or securely store it in your Google Drive.
+  </p>
+
+  <div id="reminderBox" class="reminder" style="display:none;">
+    ⚠️ Reminder: It has been more than 6 months since your last backup.  
+    Please back up your data to keep it safe.
+  </div>
+
+  <!-- Local Backup Section -->
+  <div class="section">
+    <h2>💾 Local Backup (Device File)</h2>
+    <p>
+      - <b>Backup</b>: Download your data as a JSON file.<br>
+      - <b>Restore</b>: Upload a backup file to restore.  
+      Data will be merged, duplicates removed.
+    </p>
+    <button onclick="backupToFile()">⬇️ Backup to File</button>
+    <input type="file" id="restoreFile" accept=".json">
+    <button onclick="restoreFromFile()">⬆️ Restore from File</button>
+  </div>
+
+  <!-- Google Drive Backup Section -->
+  <div class="section">
+    <h2>☁️ Google Drive Backup</h2>
+    <p>
+      - <b>Sign in</b> with your Google account.<br>
+      - <b>Backup</b>: Save your data to a secure folder in your Drive.<br>
+      - <b>Restore</b>: Load data back anytime.  
+      Old backups are preserved, duplicates removed.
+    </p>
+    <button onclick="handleAuthClick()">🔑 Sign in with Google</button>
+    <button onclick="backupToDrive()">⬆️ Backup to Drive</button>
+    <button onclick="restoreFromDrive()">⬇️ Restore from Drive</button>
+    <div id="status">Status: Not signed in</div>
+  </div>
+</div>
+
+
+  <script src="shared.js"></script>
+  <script>
+    /* ============ Local Backup ============ */
+    async function backupToFile() {
+      const allData = await exportAllDBData(); // must exist in shared.js
+      const blob = new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kseb_backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+
+      localStorage.setItem("lastBackup", Date.now()); // update reminder timestamp
+    }
+
+    async function restoreFromFile() {
+      const fileInput = document.getElementById("restoreFile");
+      if (!fileInput.files.length) return alert("Please select a file first.");
+      const file = fileInput.files[0];
+      const text = await file.text();
+      const data = JSON.parse(text);
+      await importAllDBData(data); // merge + dedupe
+      alert("✅ Data restored successfully.");
+    }
+
+    <!-- ============ Google Drive Config (No API Key) ============ -->
+
+  const CLIENT_ID = "493099672078-foqe6h1m3vog3lnpqleuvr6o1460uoqr.apps.googleusercontent.com";
+  const SCOPES    = "https://www.googleapis.com/auth/drive.file";
+  let tokenClient;
+
+  // Load GAPI client
+  gapi.load("client", initClient);
+
+  async function initClient() {
+    await gapi.client.init({
+      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
+      // ❌ apiKey removed — no need for public API key
+    });
+  }
+
+  // Initialize OAuth on window load
+  window.onload = () => {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      callback: (tokenResponse) => {
+        if (tokenResponse && tokenResponse.access_token) {
+          setStatus("✅ Signed in to Google Drive");
+        }
+      }
+    });
+    checkBackupReminder(); // your existing reminder function
+  };
+
+  // Trigger login
+  function handleAuthClick() {
+    tokenClient.requestAccessToken({ prompt: "" });
+  }
+
+  // Update status display
+  function setStatus(msg) {
+    document.getElementById("status").innerText = msg;
+    console.log(msg);
+  }
+
+    /* ============ Google Drive Helpers ============ */
+    async function findOrCreateFolder() {
+      const folderName = "KSEB_Backup";
+      const q = `mimeType='application/vnd.google-apps.folder' and name='${folderName}' and trashed=false`;
+      const res = await gapi.client.drive.files.list({ q, fields: "files(id,name)" });
+      if (res.result.files && res.result.files.length > 0) return res.result.files[0].id;
+      const folder = await gapi.client.drive.files.create({
+        resource: { name: folderName, mimeType: "application/vnd.google-apps.folder" },
+        fields: "id"
+      });
+      return folder.result.id;
+    }
+
+    async function backupToDrive() {
+      setStatus("Preparing backup...");
+      const data = await exportAllDBData();
+      const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
+
+      const folderId = await findOrCreateFolder();
+      const metadata = {
+        name: `backup_${new Date().toISOString().slice(0,10)}.json`,
+        parents: [folderId]
+      };
+
+      const form = new FormData();
+      form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+      form.append("file", blob);
+
+      const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
+        method: "POST",
+        headers: new Headers({ "Authorization": "Bearer " + gapi.client.getToken().access_token }),
+        body: form
+      });
+
+      if (res.ok) {
+        setStatus("✅ Backup uploaded to Google Drive.");
+        localStorage.setItem("lastBackup", Date.now());
+      } else {
+        setStatus("❌ Backup failed.");
+      }
+    }
+
+    async function restoreFromDrive() {
+      setStatus("Fetching latest backup...");
+      const folderId = await findOrCreateFolder();
+      const res = await gapi.client.drive.files.list({
+        q: `'${folderId}' in parents and trashed=false`,
+        orderBy: "createdTime desc",
+        pageSize: 1,
+        fields: "files(id,name,createdTime)"
+      });
+      if (!res.result.files || res.result.files.length === 0) {
+        setStatus("⚠️ No backup files found.");
+        return;
+      }
+      const file = res.result.files[0];
+      const download = await gapi.client.drive.files.get({ fileId: file.id, alt: "media" });
+      const data = JSON.parse(download.body);
+
+      await importAllDBData(data);
+      setStatus(`✅ Restored from ${file.name}`);
+    }
+
+    /* ============ Auto Reminder ============ */
+    function checkBackupReminder() {
+      const last = parseInt(localStorage.getItem("lastBackup") || "0", 10);
+      const sixMonths = 1000 * 60 * 60 * 24 * 30 * 6;
+      if (!last || (Date.now() - last) > sixMonths) {
+        document.getElementById("reminderBox").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>

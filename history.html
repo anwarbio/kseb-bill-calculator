@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>KSEB Bill History</title>
+
+
+<style>
+  /* ================== HISTORY PAGE ONLY CSS ================== */
+
+  body.history-body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 22px;   /* base font */
+    line-height: 1.6;
+  }
+
+  
+  /* Back Button RIGHT */
+.history-back-btn {
+  float: right;                 /* send to right side */
+  margin: 10px 0 20px 0;
+  font-size: 1.5em;
+  padding: 14px 20px;
+  font-weight: 700;
+  border-radius: 10px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.history-back-btn:hover {
+  background: #0056b3;
+}
+
+
+  /* Bill Range */
+  #historyRange .history-bill-range {
+    font-size: 1.5em;
+    font-weight: 700;
+    display: block;
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    margin: 10px 0;
+    background: #ede7f6;
+    color: #4a148c;
+  }
+
+  /* Totals as cards */
+  #historyTotals {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 14px 0;
+    width: 100%;
+  }
+  #historyTotals span {
+    width: 100%;
+    font-size: 1.4em;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  /* From/To controls in one row */
+  .history-range-controls {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 15px 0;
+  }
+  .history-range-controls label {
+    font-size: 1.4em;
+    font-weight: 700;
+  }
+  .history-range-controls select,
+  .history-range-controls button {
+    font-size: 1.3em;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  /* Buttons */
+  .history-action-btn {
+    font-size: 1.3em;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-weight: 700;
+    width: 100%;
+    max-width: 350px;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  .history-delete-btn { background-color: #f44336; }
+  .history-delete-btn:hover { background-color: #c12d2d; }
+  .history-csv-btn { background-color: #28a745; }
+  .history-csv-btn:hover { background-color: #1c7c2a; }
+
+  /* Table */
+  #historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    table-layout: auto;
+  }
+  #historyTable th,
+  #historyTable td {
+    font-size: 1.3em;
+    padding: 16px;
+    border: 1px solid #ccc;
+    text-align: center;
+    word-wrap: break-word;
+  }
+  #historyTable th {
+    background: #f4f4f4;
+    font-weight: 800;
+  }
+
+  /* Mobile Boost */
+  @media (max-width: 768px) {
+    body.history-body { font-size: 24px; }
+    #historyTable th, #historyTable td {
+      font-size: 1.4em;
+      padding: 18px;
+    }
+    .history-range-controls label { font-size: 1.5em; }
+  }
+
+  /* Apply button hover */
+.history-range-controls button {
+  background-color: #28a745;   /* green */
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.history-range-controls button:hover {
+  background-color: #218838;   /* darker green */
+  transform: translateY(-2px); /* lift effect */
+}
+
+.history-range-controls button:active {
+  background-color: #1e7e34;   /* pressed effect */
+  transform: scale(0.96);      /* slight press-down */
+}
+
+/* Enlarge checkboxes in history table */
+#historyTable input[type="checkbox"] {
+  transform: scale(2);           /* bigger than before */
+  margin: 8px;                   /* extra spacing */
+  cursor: pointer;
+}
+
+/* Header checkbox (Select All) */
+#historyTable thead input[type="checkbox"] {
+  transform: scale(2);           /* bigger */
+}
+
+
+
+
+/* ================== Desktop/Laptop Overrides ================== */
+@media (min-width: 992px) {
+  body.history-body {
+    font-size: 15px;    /* normal desktop size */
+    line-height: 1.5;
+  }
+
+  .history-back-btn {
+    font-size: 1em;
+    padding: 8px 14px;
+  }
+
+  #historyRange .history-bill-range {
+    font-size: 1.1em;
+    padding: 8px 12px;
+  }
+
+  #historyTotals span {
+    font-size: 1em;
+    padding: 8px 10px;
+  }
+
+  .history-range-controls label {
+    font-size: 1em;
+  }
+
+  .history-range-controls select,
+  .history-range-controls button {
+    font-size: 0.95em;
+    padding: 6px 10px;
+  }
+
+  .history-action-btn {
+    font-size: 1em;
+    padding: 8px 12px;
+    max-width: 220px;
+  }
+
+  #historyTable th,
+  #historyTable td {
+    font-size: 0.95em;
+    padding: 8px 10px;
+  }
+
+  #historyTable input[type="checkbox"] {
+    transform: scale(1.2);  /* smaller on desktop */
+  }
+}
+
+
+
+  </style>
+  
+</head>
+
+<body class="history-body">
+
+  <!-- ===== History Page Wrapper ===== -->
+<div id="historyPageWrapper" 
+     style="margin:15px; padding:12px; border:1px solid #ccc; border-radius:8px; background:#f9f9f9;">
+
+  <!-- Back Button (top right) -->
+<!-- Minimal Pill Back Button (arrow above text, bigger arrow) -->
+<button class="history-back-btn" onclick="window.location.href='index.html'">
+  ⬅ Back
+</button>
+
+
+
+     <h2 class="history-title">📜 Saved Bills History</h2>
+
+  <!-- Totals -->
+<div class="history-range-controls">
+  <label for="fromDate">From: </label>
+  <select id="fromDate"></select>
+
+  <label for="toDate">To: </label>
+  <select id="toDate"></select>
+
+  <button onclick="applyBillRange()">Apply</button>
+</div>
+
+
+<!-- Bill Range -->
+<div id="historyRange" style="margin-bottom: 10px;">
+  <span class="history-bill-range">Bill Range: N/A</span>
+</div>
+
+<!-- Summary Totals -->
+<div id="historyTotals" style="display: flex; flex-wrap: wrap; gap: 10px; font-weight: bold; margin-top: 10px;">
+  <span class="history-total-billed" style="background-color: #e6f2ff; color: #004085; padding: 6px 12px; border-radius: 6px; display: inline-block;">
+    Total Billed: 0.00
+  </span>
+  <span class="history-total-savings" style="background-color: #e6ffe6; color: #155724; padding: 6px 12px; border-radius: 6px; display: inline-block;">
+    Total Savings: 0.00
+  </span>
+  <span class="history-banked-units" style="background-color: #fff3cd; color: #856404; padding: 6px 12px; border-radius: 6px; display: inline-block;">
+    Bank Balance: 0.00
+  </span>
+</div>
+
+  <!-- Actions -->
+<div id="historyActions">
+  
+  <div class="history-action-row delete-row">
+    <button class="history-action-btn history-delete-btn" onclick="bulkDeleteSelected()">🗑 Delete Selected</button>
+  </div>
+</div>
+
+
+ <!-- Table -->
+  <div style="overflow-x:auto; width:100%;">
+        <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Month-Year</th>
+          <th>ID / Name</th>
+          <th>Billed Amount</th>
+          <th>Savings</th>
+          <th>🗑 Select<id="selectAllHistory"></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+<div class="history-action-row">
+    <button class="history-action-btn history-csv-btn" onclick="exportHistoryAsCSV()">📄 Export CSV</button>
+  </div>
+
+</div>
+  <!-- JS shared functions -->
+  <script src="shared.js"></script>
+  
+
+ <script>
+let billHistory = []; // Global cache for bills
+
+// ===== Apply Bill Range (updates totals only) =====
+function applyBillRange() {
+  if (!window.billHistory) return;
+
+  const fromDate = document.getElementById("fromDate").value;
+  const toDate = document.getElementById("toDate").value;
+
+  const fromIndex = window.billHistory.findIndex(b => b.date === fromDate);
+  const toIndex = window.billHistory.findIndex(b => b.date === toDate);
+
+  const [start, end] = fromIndex <= toIndex ? [fromIndex, toIndex] : [toIndex, fromIndex];
+  const rangeBills = window.billHistory.slice(start, end + 1);
+
+  updateSummaryTotals(rangeBills);
+
+  document.querySelector(".history-bill-range").textContent = `Bill Range: ${fromDate} → ${toDate}`;
+}
+
+
+
+// ===== Populate From/To Selectors =====
+// Make sure From/To dropdowns are populated from window.billHistory
+function populateDateSelectors() {
+  const fromDateSelect = document.getElementById("fromDate");
+  const toDateSelect = document.getElementById("toDate");
+
+  fromDateSelect.innerHTML = "";
+  toDateSelect.innerHTML = "";
+
+  if (!window.billHistory || !window.billHistory.length) {
+    fromDateSelect.innerHTML = "<option>No Bills</option>";
+    toDateSelect.innerHTML = "<option>No Bills</option>";
+    return;
+  }
+
+  window.billHistory.forEach(bill => {
+    const option = `<option value="${bill.date}">${bill.date}</option>`;
+    fromDateSelect.innerHTML += option;
+    toDateSelect.innerHTML += option;
+  });
+
+  fromDateSelect.value = window.billHistory[0].date;
+  toDateSelect.value = window.billHistory[window.billHistory.length - 1].date;
+}
+
+// ===== Update summary totals =====
+function updateSummaryTotals(bills) {
+  let totalBilled = 0;
+  let totalSavings = 0;
+
+  bills.forEach(b => {
+    totalBilled += parseFloat(b.Pros_Bill_Amt || 0);
+    totalSavings += parseFloat(b.totalSavings || 0);
+  });
+
+  // ✅ Banked units should come from the most recent bill only
+  const latestBanked = bills.length > 0 
+    ? parseFloat(bills[0].LatestBankBalance || 0) 
+    : 0;
+
+  document.querySelector(".history-total-billed").textContent = `Total Billed: ₹${totalBilled.toFixed(2)}`;
+  document.querySelector(".history-total-savings").textContent = `Total Savings: ₹${totalSavings.toFixed(2)}`;
+  document.querySelector(".history-banked-units").textContent = `Bank Balance: ${latestBanked.toFixed(2)}`;
+}
+
+
+
+// Run page load
+window.onload = loadHistoryPage;
+
+</script>
+
+
+</body>
+</html>
