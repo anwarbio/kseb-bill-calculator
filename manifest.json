@@ -1,6 +1,7 @@
 {
   "name": "KSEB Prosumer Bill Calculator",
   "short_name": "KSEB Calc",
+  "description": "A simple calculator for KSEB prosumer electricity bill calculations. Helps track usage, savings, meter records, and backup data locally or to Google Drive.",
   "start_url": "/kseb-bill-calculator/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -50,5 +51,6 @@
     }
   ]
 }
+
 
 
