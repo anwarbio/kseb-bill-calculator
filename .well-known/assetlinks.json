@@ -2,7 +2,7 @@
   "relation": ["delegate_permission/common.handle_all_urls"],
   "target": {
     "namespace": "android_app",
-    "package_name": "KSEB Prosumer Calculator",   
+    "package_name": "io.github.anwarbio.twa",   
     "sha256_cert_fingerprints": [
       "42:4E:CC:B0:F8:DB:60:39:46:E4:E4:66:19:E8:6B:FF:45:47:28:38:E4:FF:64:D9:1F:CA:95:86:01:2C:28:12"
     ]
