@@ -4133,61 +4133,147 @@ let offsetX = 0;
 let offsetY = 0;
 
 
-/* START */
+/* =========================
+   DESKTOP DRAG
+========================= */
 
 aiDragHandle.addEventListener(
   "mousedown",
-  (e) => {
-
-    isDragging = true;
-
-    offsetX =
-      e.clientX -
-      aiContainer.offsetLeft;
-
-    offsetY =
-      e.clientY -
-      aiContainer.offsetTop;
-
-  }
+  startDrag
 );
-
-
-/* MOVE */
 
 document.addEventListener(
   "mousemove",
-  (e) => {
-
-    if (!isDragging) return;
-
-    aiContainer.style.left =
-      (e.clientX - offsetX) + "px";
-
-    aiContainer.style.top =
-      (e.clientY - offsetY) + "px";
-
-    aiContainer.style.right =
-      "auto";
-
-    aiContainer.style.bottom =
-      "auto";
-
-  }
+  drag
 );
-
-
-/* STOP */
 
 document.addEventListener(
   "mouseup",
-  () => {
-
-    isDragging = false;
-
-  }
+  stopDrag
 );
 
+
+/* =========================
+   MOBILE DRAG
+========================= */
+
+aiDragHandle.addEventListener(
+  "touchstart",
+  startDragTouch,
+  { passive:false }
+);
+
+document.addEventListener(
+  "touchmove",
+  dragTouch,
+  { passive:false }
+);
+
+document.addEventListener(
+  "touchend",
+  stopDrag
+);
+
+
+/* =========================
+   START DESKTOP
+========================= */
+
+function startDrag(e) {
+
+  isDragging = true;
+
+  offsetX =
+    e.clientX -
+    aiContainer.offsetLeft;
+
+  offsetY =
+    e.clientY -
+    aiContainer.offsetTop;
+
+}
+
+
+/* =========================
+   DRAG DESKTOP
+========================= */
+
+function drag(e) {
+
+  if (!isDragging) return;
+
+  aiContainer.style.left =
+    (e.clientX - offsetX) + "px";
+
+  aiContainer.style.top =
+    (e.clientY - offsetY) + "px";
+
+  aiContainer.style.right =
+    "auto";
+
+  aiContainer.style.bottom =
+    "auto";
+
+}
+
+
+/* =========================
+   START MOBILE
+========================= */
+
+function startDragTouch(e) {
+
+  e.preventDefault();
+
+  isDragging = true;
+
+  offsetX =
+    e.touches[0].clientX -
+    aiContainer.offsetLeft;
+
+  offsetY =
+    e.touches[0].clientY -
+    aiContainer.offsetTop;
+
+}
+
+
+/* =========================
+   DRAG MOBILE
+========================= */
+
+function dragTouch(e) {
+
+  if (!isDragging) return;
+
+  e.preventDefault();
+
+  aiContainer.style.left =
+    (e.touches[0].clientX - offsetX)
+    + "px";
+
+  aiContainer.style.top =
+    (e.touches[0].clientY - offsetY)
+    + "px";
+
+  aiContainer.style.right =
+    "auto";
+
+  aiContainer.style.bottom =
+    "auto";
+
+}
+
+
+/* =========================
+   STOP
+========================= */
+
+function stopDrag() {
+
+  isDragging = false;
+
+}
 </script>
 
 </script>
