@@ -484,83 +484,39 @@ html, body, #pdfContent {
 }
 
 
-/* Floating AI Mic Button */
 
-.ai-mic-btn {
+/* =========================
+   AI FLOATING CONTAINER
+========================= */
+
+#aiContainer {
 
   position: fixed;
-  bottom: 95px;
+
   right: 16px;
-
-  width: 60px;
-  height: 60px;
-
-  border: none;
-  border-radius: 50%;
-
-  background: linear-gradient(135deg, #007bff, #7b2cff);
-
-  color: white;
-  font-size: 30px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  z-index: 9999;
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,0.3),
-    0 0 15px rgba(123,44,255,0.4);
-
-  transition: all 0.3s ease;
-}
-
-/* Hover / Tap Effect */
-
-.ai-mic-btn:active {
-  transform: scale(0.95);
-}
-
-/* Listening Animation */
-
-.ai-mic-btn.listening {
-
-  animation: aiPulse 1.2s infinite;
-}
-
-@keyframes aiPulse {
-
-  0% {
-    transform: scale(1);
-    box-shadow:
-      0 0 0 0 rgba(123,44,255,0.6);
-  }
-
-  70% {
-    transform: scale(1.08);
-    box-shadow:
-      0 0 0 18px rgba(123,44,255,0);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-
-#voiceLang {
-
-  position: fixed;
-
-  right: 18px;
-  bottom: 165px;
+  bottom: 90px;
 
   z-index: 999999;
 
-  width: 55px !important;
-  height: 32px !important;
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 8px;
+
+}
+
+
+/* =========================
+   LANGUAGE SELECTOR
+========================= */
+
+#voiceLang {
+
+  width: 55px;
+
+  height: 32px;
 
   padding: 2px 6px;
 
@@ -572,6 +528,131 @@ html, body, #pdfContent {
 
   font-size: 12px;
 
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.2);
+
+}
+
+
+/* =========================
+   DRAG HANDLE
+========================= */
+
+#aiDragHandle {
+
+  width: 32px;
+
+  height: 18px;
+
+  border-radius: 10px;
+
+  background: rgba(0,0,0,0.15);
+
+  color: #444;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+
+  cursor: move;
+
+  user-select: none;
+
+}
+
+
+/* =========================
+   AI MIC BUTTON
+========================= */
+
+.ai-mic-btn {
+
+  width: 60px;
+  height: 60px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #007bff,
+      #7b2cff
+    );
+
+  color: white;
+
+  font-size: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.3),
+    0 0 15px rgba(123,44,255,0.4);
+
+  transition: all 0.3s ease;
+
+  touch-action: none;
+
+  user-select: none;
+
+}
+
+
+/* =========================
+   BUTTON PRESS EFFECT
+========================= */
+
+.ai-mic-btn:active {
+
+  transform: scale(0.95);
+
+}
+
+
+/* =========================
+   LISTENING ANIMATION
+========================= */
+
+.ai-mic-btn.listening {
+
+  animation: aiPulse 1.2s infinite;
+
+}
+
+
+@keyframes aiPulse {
+
+  0% {
+
+    transform: scale(1);
+
+    box-shadow:
+      0 0 0 0 rgba(123,44,255,0.6);
+
+  }
+
+  70% {
+
+    transform: scale(1.08);
+
+    box-shadow:
+      0 0 0 18px rgba(123,44,255,0);
+
+  }
+
+  100% {
+
+    transform: scale(1);
+
+  }
 
 }
