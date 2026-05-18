@@ -56,12 +56,40 @@ if ('serviceWorker' in navigator) {
 
 <!-- Announcement text -->
 <div class="announcement" id="announcementBox">
-  <span class="announcement-text">
-    അറിയിപ്പ്: കാൽക്കുലേറ്ററിൽ സർചാർജ് യൂണിറ്റിന് 1 പൈസയായി  പുതുക്കിയിരിക്കുന്നു - April 2026.
-  </span>
- <button class="announcement-close" onclick="closeAnnouncement()">✖</button>
-  
-   </div>
+
+  <div class="announcement-text" id="announcementText"></div>
+
+  <button class="announcement-close" onclick="closeAnnouncement()">✖</button>
+
+</div>
+
+
+<!-- pdf inputs for naming -->
+    <div style="width:100%; padding:0 20px; box-sizing:border-box;">
+      <div id="pdfNameInputs" style="display:flex; flex-wrap:nowrap; align-items:center; gap:1rem; width:100%; max-width:900px; margin:0 auto;">
+        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
+          <input type="text" id="consumerName" style="width:110px; margin:0; box-sizing:border-box;">
+        </div>
+        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
+          <select id="billMonth" style="width:100px; margin:0; box-sizing:border-box;">
+            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
+            <option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option>
+            <option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option>
+            <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
+          </select>
+        </div>
+        <div style="flex:0 0 auto; display:block; flex-direction:column; margin:0;">
+          <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
+          <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:80px; margin:0; box-sizing:border-box;">
+        </div>
+      </div>
+
+      <div id="pdfHelperText" style="display:block; font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
+        Please fill in details for correct charges and custom naming the PDF
+      </div>
+
 
 
 <!-- Floating Diff Panel -->
@@ -538,31 +566,7 @@ background-color:#ffe6cc;">
       <div class="result" id="result" style="display:none;"></div>
     </div>
 
-    <!-- pdf inputs for naming -->
-    <div style="width:100%; padding:0 20px; box-sizing:border-box;">
-      <div id="pdfNameInputs" style="display:none; flex-wrap:nowrap; align-items:center; gap:1rem; width:100%; max-width:900px; margin:0 auto;">
-        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
-          <input type="text" id="consumerName" style="width:110px; margin:0; box-sizing:border-box;">
-        </div>
-        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
-          <select id="billMonth" style="width:100px; margin:0; box-sizing:border-box;">
-            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
-            <option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option>
-            <option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option>
-            <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
-          </select>
-        </div>
-        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
-          <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:80px; margin:0; box-sizing:border-box;">
-        </div>
-      </div>
-
-      <div id="pdfHelperText" style="display:none; font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
-        Please fill in details for custom naming the PDF
-      </div>
+    
 
       <!-- Download PDF Button -->
       <div class="form-group" style="width:100%; display:flex; justify-content:center; margin-top:10px; padding:0 10px; box-sizing:border-box;">
@@ -1570,12 +1574,173 @@ function base64ToBlob(base64) {
 
   // Other Charges (Duty, Surcharge)
   function parseCharges(text) {
-    const lines = text.trim().split('\n').slice(1);
-    chargesTable = lines.map(line => {
-      const [label, duty, surcharge] = line.split(',');
-      return { label: label.trim(), duty: parseFloat(duty), surcharge: parseFloat(surcharge) };
-    });
+
+  console.log("🔥 RAW CSV TEXT:");
+  console.log(text);
+
+  const lines = text.trim().split('\n').slice(1);
+
+  console.log("🔥 CSV lines:", lines);
+
+  chargesTable = lines.map(line => {
+
+    console.log("Processing line:", line);
+
+    const [year, month, label, duty, surcharge] =
+      line.split(',');
+
+    return {
+      year: parseInt(year),
+      month: month.trim(),
+      label: label.trim(),
+      duty: parseFloat(duty),
+      surcharge: parseFloat(surcharge)
+    };
+
+  });
+
+  console.log("✅ chargesTable populated:");
+  console.table(chargesTable);
+
+}
+
+
+  
+  function getOtherCharges() {
+
+  const now = new Date();
+
+  // Current month/year
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  const currentMonth = months[now.getMonth()];
+  const currentYear = now.getFullYear();
+
+  console.log("Using billing period:", currentMonth, currentYear);
+
+  const lt1Row = chargesTable.find(row => {
+
+    return (
+      row.label.trim().toUpperCase() === "LT1" &&
+      row.month === currentMonth &&
+      row.year === currentYear
+    );
+
+  });
+
+  if (lt1Row) {
+
+    return {
+      duty: lt1Row.duty,
+      surcharge: lt1Row.surcharge
+    };
+
   }
+
+  console.warn("No matching charges found");
+
+  return {
+    duty: 0,
+    surcharge: 0
+  };
+
+}
+
+
+
+function updateAnnouncement() {
+
+  // Get selected month/year from inputs
+  const selectedMonth = document.getElementById("billMonth")?.value;
+  const selectedYear = document.getElementById("billYear")?.value;
+
+  console.log("selectedMonth =", selectedMonth);
+  console.log("selectedYear =", selectedYear);
+
+  // Convert month number to names
+  const shortMonths = {
+    "01": "Jan",
+    "02": "Feb",
+    "03": "Mar",
+    "04": "Apr",
+    "05": "May",
+    "06": "Jun",
+    "07": "Jul",
+    "08": "Aug",
+    "09": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
+  };
+
+  const longMonths = {
+    "01": "January",
+    "02": "February",
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "August",
+    "09": "September",
+    "10": "October",
+    "11": "November",
+    "12": "December"
+  };
+
+const billMonthShort = shortMonths[selectedMonth];
+const billMonthLong = longMonths[selectedMonth];
+
+console.log("Selected Month:", billMonthShort);
+console.log("Selected Year:", selectedYear);
+
+console.table(chargesTable);
+
+// Find matching row in chargesTable
+const row = chargesTable.find(r => {
+
+  console.log(
+    "Checking:",
+    r.month,
+    r.year,
+    r.label
+  );
+
+  return (
+    r.label?.trim().toUpperCase() === "LT1" &&
+    r.month?.trim().toLowerCase() === billMonthShort.trim().toLowerCase() &&
+    String(r.year).trim() === String(selectedYear).trim()
+  );  
+
+});
+console.log("Matched row =", row);
+
+ 
+  // Default fallback
+  let duty = 10;
+  let surcharge = 0;
+
+  if (row) {
+    duty = row.duty;
+    surcharge = row.surcharge;
+  }
+
+  const announcement = `
+  ${billMonthLong} ${selectedYear} കാലയളവിൽ 
+  സർചാർജ് (FS) ₹${surcharge}/യൂണിറ്റും 
+  ഡ്യൂട്ടി (ED) ${duty}% ആകുന്നു.
+ 
+  `;
+
+  document.getElementById("announcementText").innerHTML = announcement;
+
+}
+
+
+
 
   // Fixed Charges
   function parseFixedCharges(text) {
@@ -2160,7 +2325,29 @@ async function setupBilling() {
   const csvFiles = [
     { file: 'fixed_charge.csv', parser: parseFixedCharges, name: 'Fixed Charges' },
     { file: 'meter_charges.csv', parser: parseMeterCharges, name: 'Meter Charges' },
-    { file: 'other_charges.csv', parser: parseCharges, name: 'Other Charges' },
+
+    {
+  file: 'other_charges.csv',
+
+  parser: (text) => {
+
+    console.log("🔥 other_charges.csv loaded");
+    console.log(text);
+
+    parseCharges(text);
+
+    console.log("🔥 chargesTable after parsing:");
+    console.table(chargesTable);
+
+    updateAnnouncement();
+
+    console.log("✅ Announcement updated");
+
+  },
+
+  name: 'Other Charges'
+},
+
     { file: 'tariff_tod.csv', parser: parseTODRates, name: 'TOD Rates' },
     { file: 'tariff_domestic_telescopic.csv', parser: parseSlabs, name: 'Domestic Slabs' },
     { 
@@ -3549,7 +3736,11 @@ window.addEventListener("load", async () => {
   console.log("✅ Page load autofill complete.");
 });
 
+document.getElementById("billMonth")
+  .addEventListener("change", updateAnnouncement);
 
+document.getElementById("billYear")
+  .addEventListener("input", updateAnnouncement);
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
@@ -3559,11 +3750,19 @@ if ('serviceWorker' in navigator) {
 }
 
 
+window.addEventListener("DOMContentLoaded", async () => {
+
+  console.log("▶ Page load started…");
+
+  await setupBilling();
+
+  console.log("✅ setupBilling complete.");
+
+});
 
 </script>
 </body>
 </html>
-
 
 
 
