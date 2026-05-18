@@ -65,30 +65,61 @@ if ('serviceWorker' in navigator) {
 
 
 <!-- pdf inputs for naming -->
-    <div style="width:100%; padding:0 20px; box-sizing:border-box;">
-      <div id="pdfNameInputs" style="display:flex; flex-wrap:nowrap; align-items:center; gap:1rem; width:100%; max-width:900px; margin:0 auto;">
-        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Name/ID:</b></label>
-          <input type="text" id="consumerName" style="width:110px; margin:0; box-sizing:border-box;font-size:16px;">
-        </div>
-        <div style="flex:0 0 auto; display:flex; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Bill Month:</b></label>
-          <select id="billMonth" style="width:100px; margin:0; box-sizing:border-box;">
-            <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
-            <option value="04">Apr</option><option value="05">May</option><option value="06">Jun</option>
-            <option value="07">Jul</option><option value="08">Aug</option><option value="09">Sep</option>
-            <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dec</option>
-          </select>
-        </div>
-        <div style="flex:0 0 auto; display:block; flex-direction:column; margin:0;">
-          <label style="margin-bottom:0.2rem;"><b>Bill Year:</b></label>
-          <input type="number" id="billYear" placeholder="2025" min="2000" max="2100" style="width:80px; margin:0; box-sizing:border-box;">
-        </div>
-      </div>
 
-      <div id="pdfHelperText" style="display:block; font-size:0.7rem; color:#555; margin-top:2px; text-align:left;">
-        Please fill in details for correct charges and custom naming the PDF
-      </div>
+<div style="width:100%; padding:0 20px; box-sizing:border-box;">
+
+  <div id="pdfNameInputs" class="pdf-name-inputs">
+
+    <div class="pdf-field">
+      <label><b>Name/ID:</b></label>
+
+      <input
+        type="text"
+        id="consumerName"
+        class="pdf-input"
+      >
+    </div>
+
+    <div class="pdf-field">
+      <label><b>Bill Month:</b></label>
+
+      <select id="billMonth" class="pdf-input">
+        <option value="01">Jan</option>
+        <option value="02">Feb</option>
+        <option value="03">Mar</option>
+        <option value="04">Apr</option>
+        <option value="05">May</option>
+        <option value="06">Jun</option>
+        <option value="07">Jul</option>
+        <option value="08">Aug</option>
+        <option value="09">Sep</option>
+        <option value="10">Oct</option>
+        <option value="11">Nov</option>
+        <option value="12">Dec</option>
+      </select>
+    </div>
+
+    <div class="pdf-field">
+      <label><b>Bill Year:</b></label>
+
+      <input
+        type="number"
+        id="billYear"
+        placeholder="2025"
+        min="2000"
+        max="2100"
+        class="pdf-input pdf-year"
+      >
+    </div>
+
+  </div>
+
+  <div id="pdfHelperText" class="pdf-helper-text">
+    Please fill in details for correct charges and custom naming the PDF
+  </div>
+
+</div>
+
 
 
 
@@ -3659,7 +3690,7 @@ ${ TODAvailability === "yes"
     /* ------------------------------------------------------
      downloadFullPDF & related input fiels hidden initially
      ------------------------------------------------------ */
-document.getElementById("pdfNameInputs").style.display = "flex";
+//document.getElementById("pdfNameInputs").style.display = "flex";
 document.getElementById("pdfHelperText").style.display = "block";  // <-- show helper now
 document.getElementById("downloadFullPDF").style.display = "inline-block";
 
@@ -3759,6 +3790,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ setupBilling complete.");
 
 });
+
+
 
 </script>
 </body>
