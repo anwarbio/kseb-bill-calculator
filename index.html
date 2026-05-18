@@ -1839,12 +1839,60 @@ function getMeterRent(connectionType, phaseType, customer, meterOwner) {
 
 
 function getOtherCharges() {
-  // Always return LT1 row (first row of other_charges.csv)
-  const lt1Row = chargesTable.find(row => row.label.trim().toUpperCase() === "LT1");
-  if (lt1Row) {
-    return { duty: lt1Row.duty, surcharge: lt1Row.surcharge };
+
+  // Get selected month/year
+  const selectedMonth =
+    document.getElementById("billMonth")?.value;
+
+  const selectedYear =
+    document.getElementById("billYear")?.value;
+
+  // Convert month number to short month
+  const shortMonths = {
+    "01": "Jan",
+    "02": "Feb",
+    "03": "Mar",
+    "04": "Apr",
+    "05": "May",
+    "06": "Jun",
+    "07": "Jul",
+    "08": "Aug",
+    "09": "Sep",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
+  };
+
+  const billMonthShort =
+    shortMonths[selectedMonth];
+
+  // Find exact matching row
+  const row = chargesTable.find(r => {
+
+    return (
+      r.label?.trim().toUpperCase() === "LT1" &&
+      r.month?.trim().toLowerCase() ===
+        billMonthShort.trim().toLowerCase() &&
+      String(r.year).trim() ===
+        String(selectedYear).trim()
+    );
+
+  });
+
+  console.log("Matched row =", row);
+
+  // fallback
+  if (!row) {
+    return {
+      duty: 0,
+      surcharge: 0
+    };
   }
-  return { duty: 0, surcharge: 0 }; // fallback if CSV missing
+
+  return {
+    duty: row.duty,
+    surcharge: row.surcharge
+  };
 }
 
   /* ------------------------------------------------------
