@@ -427,6 +427,68 @@ html, body, #pdfContent {
 }
 
 
+#pdfNameInputs{
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:flex-end !important;
+  justify-content:flex-start !important;
+  gap:1rem !important;
+
+  width:100% !important;
+  max-width:900px !important;
+  margin:0 auto !important;
+
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+#pdfNameInputs .pdf-field{
+  display:flex !important;
+  flex-direction:column !important;
+  flex:0 0 auto !important;
+}
+
+#pdfNameInputs label{
+  margin-bottom:0.2rem;
+}
+
+.pdf-input{
+  margin:0;
+  box-sizing:border-box;
+  font-size:16px;
+}
+
+#consumerName{
+  width:110px;
+}
+
+#billMonth{
+  width:100px;
+}
+
+.pdf-year{
+  width:80px;
+}
+
+#pdfHelperText{
+  display:block !important;
+
+  font-size:0.7rem;
+  color:#555;
+  margin-top:2px;
+  text-align:left;
+
+  visibility:visible !important;
+  opacity:1 !important;
+}
+
+
+
+
+
+
+
 
 
 
