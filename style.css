@@ -505,8 +505,9 @@ html, body, #pdfContent {
 
   gap: 8px;
 
-}
+  touch-action: none;
 
+}
 
 /* =========================
    LANGUAGE SELECTOR
