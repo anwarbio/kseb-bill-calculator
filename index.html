@@ -160,9 +160,6 @@ if ('serviceWorker' in navigator) {
 
 
 
-
-
-
 <!-- Floating Diff Panel -->
 <div id="diffPanel" style="
   position: fixed;
@@ -719,12 +716,47 @@ background-color:#ffe6cc;">
     <!-- ===== End of Main PDF Content ===== -->
   </div>
 
- 
+ <!-- Floating AI Mic Button -->
+<button id="aiMicBtn" class="ai-mic-btn">
+  🎙️
+</button>
+
+<!-- Voice Language Selector -->
+
+<select id="voiceLang"
+  style="
+    position: fixed;
+    bottom: 165px;
+    right: 18px;
+
+    z-index: 9999;
+
+    padding: 4px 6px;
+
+    border-radius: 8px;
+
+    border: 1px solid #ccc;
+
+    background: white;
+
+    font-size: 12px;
+  ">
+
+  <option value="en-IN">
+    EN
+  </option>
+
+  <option value="ml-IN">
+    ML
+  </option>
+
+</select>
+
   <script>
 
 
 /* ================Initial values assumed before functions ====================================== */
-  const updatedDate    = "18 May 2026"; // Last Software update Date
+  const updatedDate    = "17 May 2026"; // Last Software update Date
   let NonTelStartUnit  = 250; // Units above 250 are taiken for non-Telescopic Billing
   let ConTODStartUnit  = 500; // Units above 500 then TOD rates apply for consumer
   let ProsTODStartUnit = 250; // Net Units above 250, then TOD rates apply for prosumer
@@ -1934,7 +1966,6 @@ function getOtherCharges() {
     surcharge: row.surcharge
   };
 }
-
   /* ------------------------------------------------------
      9. Billing Type (Prosumer / Consumer Mode)
      ------------------------------------------------------ */
@@ -3880,6 +3911,212 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 
+
+// =========================
+// AI MIC
+// =========================
+
+const micBtn = document.getElementById("aiMicBtn");
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition = new SpeechRecognition();
+
+recognition.lang = "ml-IN";
+
+recognition.interimResults = true;
+
+recognition.continuous = false;
+
+
+/* Selected input */
+
+let activeInput = null;
+
+
+/* Track selected input */
+
+document.querySelectorAll("input").forEach(input => {
+
+  input.addEventListener("focus", () => {
+
+    activeInput = input;
+
+    console.log("Focused:", input.id);
+
+  });
+
+  input.addEventListener("click", () => {
+
+    activeInput = input;
+
+    console.log("Clicked:", input.id);
+
+  });
+
+});
+
+
+/* MIC BUTTON */
+
+micBtn.addEventListener("click", () => {
+
+  if (!activeInput) {
+
+    alert("Please select a field first");
+
+    return;
+  }
+
+  /* Restore focus */
+
+  activeInput.focus();
+
+  recognition.lang =
+  document.getElementById("voiceLang").value;
+
+  recognition.start();
+
+  micBtn.classList.add("listening");
+
+});
+
+
+/* Voice Result */
+
+recognition.onresult = function(event) {
+
+  let transcript =
+    event.results[0][0].transcript;
+
+  console.log("Voice:", transcript);
+
+  transcript = transcript.toLowerCase();
+
+  /* Replace commas with spaces */
+
+  transcript =
+    transcript.replace(/,/g, ' ');
+
+  let converted = "";
+
+  /* Direct numeric speech */
+
+  if (!isNaN(transcript.replace(/\s/g,''))) {
+
+    converted =
+      transcript.replace(/\s/g,'');
+
+  }
+
+  /* Malayalam / Manglish digit conversion */
+
+  const numberMap = {
+
+    "zero": "0",
+    "poojyam": "0",
+
+    "one": "1",
+    "onnu": "1",
+
+    "two": "2",
+    "randu": "2",
+    "rendu": "2",
+
+    "three": "3",
+    "moonu": "3",
+
+    "four": "4",
+    "naalu": "4",
+    "naalai": "4",
+
+    "five": "5",
+    "anchu": "5",
+    "anju": "5",
+
+    "six": "6",
+    "aaru": "6",
+
+    "seven": "7",
+    "ezhu": "7",
+
+    "eight": "8",
+    "ettu": "8",
+
+    "nine": "9",
+    "ombathu": "9"
+
+  };
+
+  /* Convert words only if still empty */
+
+  if (converted === "") {
+
+    let words =
+      transcript.split(" ");
+
+    words.forEach(word => {
+
+      word = word.trim();
+
+      if (numberMap[word] !== undefined) {
+
+        converted += numberMap[word];
+
+      }
+
+      /* Keep spoken digits */
+
+      else if (!isNaN(word)) {
+
+        converted += word;
+
+      }
+
+    });
+
+  }
+
+  console.log("Converted:", converted);
+
+  if (activeInput && converted !== "") {
+
+    activeInput.value = converted;
+
+    activeInput.dispatchEvent(
+      new Event("input", { bubbles: true })
+    );
+
+    activeInput.dispatchEvent(
+      new Event("change", { bubbles: true })
+    );
+
+    console.log(
+      "Inserted:",
+      activeInput.value
+    );
+
+  }
+
+};
+
+/* Stop animation */
+
+recognition.onend = function() {
+
+  micBtn.classList.remove("listening");
+
+};
+
+
+recognition.onerror = function(err) {
+
+  console.error(err);
+
+  micBtn.classList.remove("listening");
+
+};
 
 </script>
 </body>
