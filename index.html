@@ -717,41 +717,39 @@ background-color:#ffe6cc;">
   </div>
 
  <!-- Floating AI Mic Button -->
-<button id="aiMicBtn" class="ai-mic-btn">
-  🎙️
-</button>
+<!-- AI FLOATING CONTAINER -->
 
-<!-- Voice Language Selector -->
+<!-- AI FLOATING CONTAINER -->
 
-<select id="voiceLang"
-  style="
-    position: fixed;
-    bottom: 165px;
-    right: 18px;
+<div id="aiContainer">
 
-    z-index: 9999;
+  <!-- Language Selector -->
 
-    padding: 4px 6px;
+  <select id="voiceLang">
 
-    border-radius: 8px;
+    <option value="en-IN">
+      EN
+    </option>
 
-    border: 1px solid #ccc;
+    <option value="ml-IN">
+      ML
+    </option>
 
-    background: white;
+  </select>
 
-    font-size: 12px;
-  ">
+  <!-- Drag Handle -->
 
-  <option value="en-IN">
-    EN
-  </option>
+  <div id="aiDragHandle">
+    ⋮⋮
+  </div>
 
-  <option value="ml-IN">
-    ML
-  </option>
+  <!-- AI Mic Button -->
 
-</select>
+  <button id="aiMicBtn" class="ai-mic-btn">
+    🎙️
+  </button>
 
+</div>
   <script>
 
 
@@ -4117,6 +4115,80 @@ recognition.onerror = function(err) {
   micBtn.classList.remove("listening");
 
 };
+
+
+
+/* =========================
+   DRAG AI CONTAINER
+========================= */
+const aiContainer =
+  document.getElementById("aiContainer");
+
+const aiDragHandle =
+  document.getElementById("aiDragHandle");
+
+let isDragging = false;
+
+let offsetX = 0;
+let offsetY = 0;
+
+
+/* START */
+
+aiDragHandle.addEventListener(
+  "mousedown",
+  (e) => {
+
+    isDragging = true;
+
+    offsetX =
+      e.clientX -
+      aiContainer.offsetLeft;
+
+    offsetY =
+      e.clientY -
+      aiContainer.offsetTop;
+
+  }
+);
+
+
+/* MOVE */
+
+document.addEventListener(
+  "mousemove",
+  (e) => {
+
+    if (!isDragging) return;
+
+    aiContainer.style.left =
+      (e.clientX - offsetX) + "px";
+
+    aiContainer.style.top =
+      (e.clientY - offsetY) + "px";
+
+    aiContainer.style.right =
+      "auto";
+
+    aiContainer.style.bottom =
+      "auto";
+
+  }
+);
+
+
+/* STOP */
+
+document.addEventListener(
+  "mouseup",
+  () => {
+
+    isDragging = false;
+
+  }
+);
+
+</script>
 
 </script>
 </body>
