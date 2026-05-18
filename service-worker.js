@@ -1,7 +1,7 @@
 // === service-worker.js ===
 
 // bump this when you want to reset cache
-const CACHE_NAME = "kseb-cache-v8";  
+const CACHE_NAME = "kseb-cache-v10";  
 
 const FILES_TO_CACHE = [
   "/kseb-bill-calculator/",
