@@ -1,5 +1,5 @@
 {
-  "id": "io.github.anwarbio.kspc",
+  "id": "io.github.anwarbio.twa",
   "name": "Kerala Solar Prosumer Bill Calculator",
   "short_name": "KSPC",
   "description": "An independent utility app for Kerala electricity bill estimation, solar prosumer calculations, TOD billing, meter tracking, and local backup management.",
