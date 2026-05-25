@@ -6,9 +6,14 @@
   "start_url": "/kseb-bill-calculator/",
   "scope": "/kseb-bill-calculator/",
   "display": "standalone",
+  "display_override": ["standalone", "browser"],
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
+  "categories": ["utilities"],
+  "lang": "en",
+  "dir": "ltr",
+
 
   "icons": [
     {
