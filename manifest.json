@@ -1,14 +1,15 @@
 {
-  "id": "io.github.anwarbio.ksebcalculator",
+  "id": "io.github.anwarbio.kspc",
   "name": "Kerala Solar Prosumer Bill Calculator",
   "short_name": "KSPC",
-  "description": "A simple calculator for KSEB prosumer electricity bill calculations. Helps track usage, savings, meter records, and backup data locally or to Google Drive.",
+  "description": "An independent utility app for Kerala electricity bill estimation, solar prosumer calculations, TOD billing, meter tracking, and local backup management.",
   "start_url": "/kseb-bill-calculator/",
   "scope": "/kseb-bill-calculator/",
   "display": "standalone",
-   "orientation": "portrait",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0d6efd",
+
   "icons": [
     {
       "src": "icon-192.png",
@@ -21,36 +22,37 @@
       "type": "image/png"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screen_1.png",
-      "sizes": "591x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "screen_2.png",
-      "sizes": "591x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "screen_3.png",
-      "sizes": "591x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "screen_4.png",
-      "sizes": "591x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "screen_5.png",
-      "sizes": "591x1280",
-      "type": "image/png",
-      "form_factor": "narrow"
-    }
-  ]
+
+ "screenshots": [
+  {
+    "src": "screen_1.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow"
+  },
+  {
+    "src": "screen_2.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow"
+  },
+  {
+    "src": "screen_3.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow"
+  },
+  {
+    "src": "screen_4.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow"
+  },
+  {
+    "src": "screen_5.png",
+    "sizes": "1080x1920",
+    "type": "image/png",
+    "form_factor": "narrow"
+  }
+]
 }
