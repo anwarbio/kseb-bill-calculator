@@ -1,7 +1,7 @@
 {
   "id": "io.github.anwarbio.ksebcalculator",
-  "name": "KSEB Prosumer Bill Calculator",
-  "short_name": "KSEB Calc",
+  "name": "Kerala Solar Prosumer Bill Calculator",
+  "short_name": "KSPC",
   "description": "A simple calculator for KSEB prosumer electricity bill calculations. Helps track usage, savings, meter records, and backup data locally or to Google Drive.",
   "start_url": "/kseb-bill-calculator/",
   "scope": "/kseb-bill-calculator/",
