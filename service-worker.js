@@ -60,16 +60,19 @@ self.addEventListener("fetch", event => {
   }
 
   // For other files (icons, CSS, JS) → cache first
-  event.respondWith(
-    caches.match(req).then(cached =>
+event.respondWith(
+  caches.match(req).then(cached => {
+    return (
       cached ||
-      fetch(req).then(res =>
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(req, res.clone());
-          return res;
-        })
-      )
-    )
-  );
+      fetch(req)
+        .then(res =>
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(req, res.clone());
+            return res;
+          })
+        )
+        .catch(() => caches.match(req))
+    );
+  })
+);
 });
-
