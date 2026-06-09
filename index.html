@@ -34,6 +34,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
  <script>
+   
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('service-worker.js')
@@ -45,15 +46,55 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
-</script>
 
-</head>
+ </script>
 
-<body>
+
+<script>
+const isAndroid = /Android/i.test(navigator.userAgent);
+
+const isTWA =
+  document.referrer.includes('android-app://io.github.anwarbio.twa');
+
+const isInstalled =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true;
+
+// Show banner again after 30 days
+const DISMISS_DAYS = 30;
+
+const dismissedUntil = localStorage.getItem('playStoreBannerDismissedUntil');
+const now = Date.now();
+
+const bannerDismissed =
+  dismissedUntil && now < Number(dismissedUntil);
+
+if (isAndroid && !isTWA && !isInstalled && !bannerDismissed) {
+  document.getElementById('playStoreBanner').style.display = 'flex';
+}
+
+document.getElementById('closeBanner').addEventListener('click', () => {
+  document.getElementById('playStoreBanner').style.display = 'none';
+
+  const dismissUntil =
+    Date.now() + (DISMISS_DAYS * 24 * 60 * 60 * 1000);
+
+  localStorage.setItem(
+    'playStoreBannerDismissedUntil',
+    dismissUntil
+  );
+});
+</script>  
+ 
+ </head>
+ 
+  <body>
   <div class="container">
     <!-- Hidden field: software last update date -->
     <input type="hidden" id="lastUpdated">
 
+   
+    
     <!-- ===== Main PDF Content ========================================== -->
 
 <!-- Title in a box -->
@@ -76,6 +117,18 @@ if ('serviceWorker' in navigator) {
 
 </div>
 
+    <div id="playStoreBanner" style="display:none;">
+  <span>
+    📱 മികച്ച അനുഭവത്തിനായി KSEB Prosumer Bill Calculator ആപ്പ് Google Play Store-ൽ നിന്ന് ഇൻസ്റ്റാൾ ചെയ്യൂ.
+  </span>
+
+  <a href="https://play.google.com/store/apps/details?id=io.github.anwarbio.twa&pcampaignid=web_share"
+     target="_blank">
+     Install App
+  </a>
+
+  <button id="closeBanner" aria-label="Close">✕</button>
+</div>
 
 <!-- pdf inputs for naming -->
 
