@@ -685,3 +685,25 @@ body {
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+#playStoreBanner{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:10px;
+  background:#e8f5e9;
+  border-bottom:1px solid #ccc;
+  font-size:14px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+#closeBanner{
+  border:none;
+  background:none;
+  font-size:18px;
+  cursor:pointer;
+  padding:0 5px;
+}
