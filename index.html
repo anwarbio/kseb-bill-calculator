@@ -48,44 +48,6 @@ if ('serviceWorker' in navigator) {
 }
 
  </script>
-
-
-<script>
-const isAndroid = /Android/i.test(navigator.userAgent);
-
-const isTWA =
-  document.referrer.includes('android-app://io.github.anwarbio.twa');
-
-const isInstalled =
-  window.matchMedia('(display-mode: standalone)').matches ||
-  window.navigator.standalone === true;
-
-// Show banner again after 30 days
-const DISMISS_DAYS = 30;
-
-const dismissedUntil = localStorage.getItem('playStoreBannerDismissedUntil');
-const now = Date.now();
-
-const bannerDismissed =
-  dismissedUntil && now < Number(dismissedUntil);
-
-if (isAndroid && !isTWA && !isInstalled && !bannerDismissed) {
-  document.getElementById('playStoreBanner').style.display = 'flex';
-}
-
-document.getElementById('closeBanner').addEventListener('click', () => {
-  document.getElementById('playStoreBanner').style.display = 'none';
-
-  const dismissUntil =
-    Date.now() + (DISMISS_DAYS * 24 * 60 * 60 * 1000);
-
-  localStorage.setItem(
-    'playStoreBannerDismissedUntil',
-    dismissUntil
-  );
-});
-</script>  
- 
  </head>
  
   <body>
@@ -4351,6 +4313,43 @@ function stopDrag() {
   Disclaimer: This app is an independent utility calculator and is not affiliated with, endorsed by, or officially connected to Kerala State Electricity Board (KSEB) or any government organization. Billing calculations are estimates based on publicly available tariff information.
 </div>
 
+<script>
+const isAndroid = /Android/i.test(navigator.userAgent);
+
+const isTWA =
+  document.referrer.includes('android-app://io.github.anwarbio.twa');
+
+const isInstalled =
+  window.matchMedia('(display-mode: standalone)').matches ||
+  window.navigator.standalone === true;
+
+// Show banner again after 30 days
+const DISMISS_DAYS = 30;
+
+const dismissedUntil = localStorage.getItem('playStoreBannerDismissedUntil');
+const now = Date.now();
+
+const bannerDismissed =
+  dismissedUntil && now < Number(dismissedUntil);
+
+if (isAndroid && !isTWA && !isInstalled && !bannerDismissed) {
+  document.getElementById('playStoreBanner').style.display = 'flex';
+}
+
+document.getElementById('closeBanner').addEventListener('click', () => {
+  document.getElementById('playStoreBanner').style.display = 'none';
+
+  const dismissUntil =
+    Date.now() + (DISMISS_DAYS * 24 * 60 * 60 * 1000);
+
+  localStorage.setItem(
+    'playStoreBannerDismissedUntil',
+    dismissUntil
+  );
+});
+</script>  
+
+    
 </body>
 </html>
 
