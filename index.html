@@ -8,8 +8,15 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-GRW9Q674Q8');
+</script>
+
+  <script>
+  function trackEvent(name) {
+    if (typeof gtag === 'function') {
+      gtag('event', name);
+    }
+  }
 </script>
   
   <meta charset="UTF-8">
@@ -225,10 +232,12 @@ if ('serviceWorker' in navigator) {
 
 <!-- ================= Bill History & Meter Records Section ================= -->
 <div class="btn-row">
-  <button class="action-btn btn-blue" onclick="location.href='history.html'">
+  <button class="action-btn btn-blue"
+        onclick="trackEvent('history_opened'); location.href='history.html'">
   📜 Savings & Bill History
 </button>
-<button class="action-btn btn-green" onclick="location.href='MeterDiary.html'">
+<button class="action-btn btn-green"
+        onclick="trackEvent('meter_diary_opened'); location.href='MeterDiary.html'">
   🔢 Check Usage & Meter Records
 </button>
 <button class="action-btn btn-purple" onclick="location.href='backup.html'">
@@ -3850,6 +3859,8 @@ ${ TODAvailability === "yes"
 document.getElementById("pdfHelperText").style.display = "block";  // <-- show helper now
 document.getElementById("downloadFullPDF").style.display = "inline-block";
 
+  // GA4: successful bill calculation
+trackEvent('bill_calculated');
 });
 
 // === Register Service Worker + Update Banner ===
